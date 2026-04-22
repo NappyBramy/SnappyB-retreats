@@ -42,20 +42,20 @@ module.exports = async function(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { return res.status(200).end(); }
+  
   const { action, accessId, accessSecret, baseUrl, token, deviceId, code, effectiveTime, invalidTime } = req.body;
+  
   if (action === 'getToken') {
     const result = await tuyaRequest('GET', '/v1.0/token?grant_type=1', null, accessId, accessSecret, baseUrl, null);
     return res.json(result);
   }
+  
   if (action === 'setPassword') {
     const ticketRes = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/password-ticket', '{}', accessId, accessSecret, baseUrl, token);
     if (!ticketRes.success) { return res.json({success: false, msg: 'TICKET: ' + JSON.stringify(ticketRes)}); }
+    
     const ticketId = ticketRes.result.ticket_id;
     const ticketKey = ticketRes.result.ticket_key;
     const encryptedPwd = aesEncrypt(code, ticketKey);
-    const body = JSON.stringify({ name: 'Guest_' + Date.now(), password: encryptedPwd, password_type: 'ticket', ticket_id: ticketId, effective_time: effectiveTime, invalid_time: invalidTime });
-    const result = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/temp-password', body, accessId, accessSecret, baseUrl, token);
-    return res.json({result: result, debug: {encryptedPwd: encryptedPwd, ticketId: ticketId}});
-  }
-  return res.json({success: false, msg: 'Unknown action'});
-};
+    
+    const body = JSON.stringify(
