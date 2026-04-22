@@ -606,7 +606,7 @@ function submitForm(platform) {
   const msg = `🏨 New Guest Registration — ${propName}\n\n👤 Name: ${name}\n🏙️ City: ${city}\n📮 ZIP: ${zip}\n🪪 ${idLabel}: ${idVal}\n\n— SnappyB Retreats Guest Form`;
 
   const url = platform === 'viber'
-    ? `viber://chat?number=%2B${WHATSAPP_NUMBER}&text=${encodeURIComponent(msg)}`
+    ? `viber://pa?chatURI=${WHATSAPP_NUMBER}&context=${encodeURIComponent(msg)}`
     : `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 
   window.open(url, '_blank');
