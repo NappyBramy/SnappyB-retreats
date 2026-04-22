@@ -3,7 +3,7 @@ const crypto = require('crypto');
 function aesEncrypt(password, ticketKey) {
   const key = Buffer.from(ticketKey.substring(0, 32), 'hex');
   const pwd = Buffer.alloc(16, 0);
-  Buffer.from(password).copy(pwd);
+  Buffer.from(password, 'ascii').copy(pwd);
   const cipher = crypto.createCipheriv('aes-128-ecb', key, null);
   cipher.setAutoPadding(false);
   const encrypted = Buffer.concat([cipher.update(pwd), cipher.final()]);
