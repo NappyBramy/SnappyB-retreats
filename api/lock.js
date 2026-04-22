@@ -1,12 +1,17 @@
 const crypto = require('crypto');
 
-function aesEncrypt(password, ticketKey) {
-  const key = Buffer.from(ticketKey.substring(0, 32), 'hex');
-  const pwd = Buffer.alloc(16, 0);
-  Buffer.from(password, 'ascii').copy(pwd);
+function decryptTicketKey(ticketKey, accessSecret) {
+  const decipher = crypto.createDecipheriv('aes-256-ecb', Buffer.from(accessSecret, 'utf8'), null);
+  decipher.setAutoPadding(true);
+  const decrypted = Buffer.concat([decipher.update(Buffer.from(ticketKey, 'hex')), decipher.final()]);
+  return decrypted.toString('utf8');
+}
+
+function encryptPassword(password, decryptedKey) {
+  const key = Buffer.from(decryptedKey, 'utf8');
   const cipher = crypto.createCipheriv('aes-128-ecb', key, null);
-  cipher.setAutoPadding(false);
-  const encrypted = Buffer.concat([cipher.update(pwd), cipher.final()]);
+  cipher.setAutoPadding(true);
+  const encrypted = Buffer.concat([cipher.update(Buffer.from(password, 'utf8')), cipher.final()]);
   return encrypted.toString('hex').toUpperCase();
 }
 
@@ -46,11 +51,11 @@ module.exports = async function(req, res) {
       if (!ticketRes.success) { return res.json({success: false, msg: 'TICKET: ' + JSON.stringify(ticketRes)}); }
       const ticketId = ticketRes.result.ticket_id;
       const ticketKey = ticketRes.result.ticket_key;
-      const encryptedPwd = aesEncrypt(code, ticketKey);
+      const decryptedKey = decryptTicketKey(ticketKey, accessSecret);
+      const encryptedPwd = encryptPassword(code, decryptedKey);
       const pwdBody = JSON.stringify({ name: 'Guest_' + Date.now(), password: encryptedPwd, password_type: 'ticket', ticket_id: ticketId, effective_time: parseInt(effectiveTime), invalid_time: parseInt(invalidTime) });
       const result = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/temp-password', pwdBody, accessId, accessSecret, baseUrl, token);
-      const parsed = JSON.parse(pwdBody);
-      return res.json({result: result, sent: parsed});
+      return res.json(result);
     }
     return res.json({success: false, msg: 'Unknown action'});
   } catch(err) {
