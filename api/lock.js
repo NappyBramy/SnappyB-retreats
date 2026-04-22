@@ -39,7 +39,7 @@ module.exports = async function(req, res) {
     const { action, accessId, accessSecret, baseUrl, token, deviceId, code, effectiveTime, invalidTime } = req.body;
     if (action === 'getToken') {
       const result = await tuyaRequest('GET', '/v1.0/token?grant_type=1', null, accessId, accessSecret, baseUrl, null);
-      return res.json(result);
+      return res.json({tuya: result, sent: JSON.parse(body), times: {effectiveTime, invalidTime}});
     }
     if (action === 'setPassword') {
       const ticketRes = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/password-ticket', '{}', accessId, accessSecret, baseUrl, token);
