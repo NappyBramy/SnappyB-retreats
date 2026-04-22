@@ -20,6 +20,7 @@ function hmacSign(str, secret) {
 
 async function tuyaRequest(method, path, body, accessId, accessSecret, baseUrl, accessToken) {
   const t = Date.now().toString();
+  
   const nonce = crypto.randomBytes(8).toString('hex');
   const bodyHash = sha256(body || '');
   const strToSign = accessId + (accessToken || '') + t + nonce + method + '\n' + bodyHash + '\n\n' + path;
