@@ -1,12 +1,10 @@
 const crypto = require('crypto');
-
 function decryptTicketKey(ticketKey, accessSecret) {
   const decipher = crypto.createDecipheriv('aes-256-ecb', Buffer.from(accessSecret, 'utf8'), null);
   decipher.setAutoPadding(true);
   const decrypted = Buffer.concat([decipher.update(Buffer.from(ticketKey, 'hex')), decipher.final()]);
   return decrypted.toString('utf8');
 }
-
 function encryptPassword(password, decryptedKey) {
   const key = Buffer.from(decryptedKey, 'utf8');
   const cipher = crypto.createCipheriv('aes-128-ecb', key, null);
@@ -14,15 +12,12 @@ function encryptPassword(password, decryptedKey) {
   const encrypted = Buffer.concat([cipher.update(Buffer.from(password, 'utf8')), cipher.final()]);
   return encrypted.toString('hex').toUpperCase();
 }
-
 function sha256(str) {
   return crypto.createHash('sha256').update(str).digest('hex');
 }
-
 function hmacSign(str, secret) {
   return crypto.createHmac('sha256', secret).update(str).digest('hex').toUpperCase();
 }
-
 async function tuyaRequest(method, path, body, accessId, accessSecret, baseUrl, accessToken) {
   const t = Date.now().toString();
   const nonce = crypto.randomBytes(8).toString('hex');
@@ -34,14 +29,13 @@ async function tuyaRequest(method, path, body, accessId, accessSecret, baseUrl, 
   const response = await fetch(baseUrl + path, { method: method, headers: headers, body: body || undefined });
   return response.json();
 }
-
 module.exports = async function(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { return res.status(200).end(); }
   try {
-    const { action, accessId, accessSecret, baseUrl, token, deviceId, code, effectiveTime, invalidTime } = req.body;
+    const { action, accessId, accessSecret, baseUrl, token, deviceId, code, effectiveTime, invalidTime, guestName } = req.body;
     if (action === 'getToken') {
       const result = await tuyaRequest('GET', '/v1.0/token?grant_type=1', null, accessId, accessSecret, baseUrl, null);
       return res.json(result);
@@ -53,7 +47,7 @@ module.exports = async function(req, res) {
       const ticketKey = ticketRes.result.ticket_key;
       const decryptedKey = decryptTicketKey(ticketKey, accessSecret);
       const encryptedPwd = encryptPassword(code, decryptedKey);
-      const pwdBody = JSON.stringify({ name: 'Guest_' + Date.now(), password: encryptedPwd, password_type: 'ticket', ticket_id: ticketId, effective_time: parseInt(effectiveTime), invalid_time: parseInt(invalidTime) });
+      const pwdBody = JSON.stringify({ name: code + '_' + (guestName || 'Guest'), password: encryptedPwd, password_type: 'ticket', ticket_id: ticketId, effective_time: parseInt(effectiveTime), invalid_time: parseInt(invalidTime) });
       const result = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/temp-password', pwdBody, accessId, accessSecret, baseUrl, token);
       return res.json(result);
     }
