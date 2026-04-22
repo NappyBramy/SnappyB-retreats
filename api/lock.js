@@ -20,7 +20,6 @@ function hmacSign(str, secret) {
 
 async function tuyaRequest(method, path, body, accessId, accessSecret, baseUrl, accessToken) {
   const t = Date.now().toString();
-  
   const nonce = crypto.randomBytes(8).toString('hex');
   const bodyHash = sha256(body || '');
   const strToSign = accessId + (accessToken || '') + t + nonce + method + '\n' + bodyHash + '\n\n' + path;
@@ -40,7 +39,7 @@ module.exports = async function(req, res) {
     const { action, accessId, accessSecret, baseUrl, token, deviceId, code, effectiveTime, invalidTime } = req.body;
     if (action === 'getToken') {
       const result = await tuyaRequest('GET', '/v1.0/token?grant_type=1', null, accessId, accessSecret, baseUrl, null);
-      return res.json({tuya: result, sent: JSON.parse(body), times: {effectiveTime, invalidTime}});
+      return res.json(result);
     }
     if (action === 'setPassword') {
       const ticketRes = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/password-ticket', '{}', accessId, accessSecret, baseUrl, token);
@@ -48,10 +47,10 @@ module.exports = async function(req, res) {
       const ticketId = ticketRes.result.ticket_id;
       const ticketKey = ticketRes.result.ticket_key;
       const encryptedPwd = aesEncrypt(code, ticketKey);
-      const body = JSON.stringify({ name: 'Guest_' + Date.now(), password: encryptedPwd, password_type: 'ticket', ticket_id: ticketId, effective_time: parseInt(effectiveTime), invalid_time: parseInt(invalidTime) });
       const pwdBody = JSON.stringify({ name: 'Guest_' + Date.now(), password: encryptedPwd, password_type: 'ticket', ticket_id: ticketId, effective_time: parseInt(effectiveTime), invalid_time: parseInt(invalidTime) });
-const result = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/temp-password', pwdBody, accessId, accessSecret, baseUrl, token);
-return res.json({tuya: result, sent: JSON.parse(pwdBody)});
+      const result = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/temp-password', pwdBody, accessId, accessSecret, baseUrl, token);
+      return res.json(result);
+    }
     return res.json({success: false, msg: 'Unknown action'});
   } catch(err) {
     return res.json({success: false, msg: err.toString()});
