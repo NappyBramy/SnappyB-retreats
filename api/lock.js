@@ -67,9 +67,7 @@ module.exports = async function(req, res) {
       invalid_time: parseInt(invalidTime)
     });
     
-    const result = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/temp-password', body, accessId, accessSecret, baseUrl, token);
-    return res.json(result);
-  }
-  
+  const result = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/temp-password', body, accessId, accessSecret, baseUrl, token);
+return res.json({...result, _sent: JSON.parse(body), _times: {effectiveTime, invalidTime}});
   return res.json({success: false, msg: 'Unknown action'});
 };
