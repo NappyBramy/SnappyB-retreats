@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnappyB Retreats — Hotel Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #5a7a4a;
+    --green-light: #8aad72;
+    --green-pale: #e8f0e2;
+    --cream: #faf8f3;
+    --dark: #1e2419;
+    --gray: #6b7568;
+    --border: #d4e0cc;
+    --white: #ffffff;
+    --shadow: 0 4px 24px rgba(90,122,74,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--green);
+    color: white;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  header .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  header .subtitle {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+
+  .tabs {
+    display: flex;
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+    padding: 0 16px;
+  }
+
+  .tab {
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gray);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+
+  .container {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* SETTINGS */
+  .settings-note {
+    background: #fffbe6;
+    border: 1px solid #f0d060;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    color: #7a6000;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+
+  .card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--green);
+    margin-bottom: 14px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--gray);
+    margin-bottom: 5px;
+    margin-top: 12px;
+  }
+
+  label:first-of-type { margin-top: 0; }
+
+  input[type="text"], input[type="password"], input[type="tel"] {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--dark);
+    background: var(--cream);
+    transition: border-color 0.2s;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--green-light);
+    background: white;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 16px;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.98); }
+  .btn:hover { background: #4a6a3a; }
+
+  .btn.secondary {
+    background: var(--green-pale);
+    color: var(--green);
+  }
+
+  .btn.secondary:hover { background: #d4e8c8; }
+
+  /* LOCK TOOL */
+  select {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--dark);
+    background: var(--cream);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a7a4a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+
+  select:focus { outline: none; border-color: var(--green-light); }
+
+  input[type="datetime-local"] {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--dark);
+    background: var(--cream);
+  }
+
+  input[type="datetime-local"]:focus { outline: none; border-color: var(--green-light); }
+
+  .result-box {
+    background: var(--green-pale);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .result-box.show { display: block; }
+
+  .result-box .code-display {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.1em;
+    text-align: center;
+    margin: 8px 0 16px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .message-preview {
+    background: white;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    color: var(--dark);
+    border: 1px solid var(--border);
+    margin-top: 10px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .status-badge.success { background: #e0f5e0; color: #2a7a2a; }
+  .status-badge.error { background: #fce8e8; color: #c00; }
+  .status-badge.loading { background: #e8f0fe; color: #1a5cc8; }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid #c0d0ff;
+    border-top-color: #1a5cc8;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* GUEST FORM */
+  .lang-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .lang-btn {
+    flex: 1;
+    padding: 8px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    color: var(--gray);
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .lang-btn.active {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-pale);
+    font-weight: 500;
+  }
+
+  .form-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--green);
+    margin-bottom: 6px;
+  }
+
+  .form-subtitle {
+    font-size: 0.82rem;
+    color: var(--gray);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .file-upload {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--cream);
+  }
+
+  .file-upload:hover { border-color: var(--green-light); background: var(--green-pale); }
+
+  .file-upload input { display: none; }
+
+  .file-upload .upload-icon { font-size: 2rem; margin-bottom: 6px; }
+
+  .file-upload .upload-text {
+    font-size: 0.82rem;
+    color: var(--gray);
+  }
+
+  .file-upload .file-name {
+    font-size: 0.8rem;
+    color: var(--green);
+    font-weight: 500;
+    margin-top: 6px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  .success-screen {
+    text-align: center;
+    padding: 30px 20px;
+    display: none;
+  }
+
+  .success-screen.show { display: block; }
+
+  .success-icon { font-size: 3rem; margin-bottom: 12px; }
+
+  .success-screen h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .success-screen p {
+    font-size: 0.85rem;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+
+  /* Share link section */
+  .share-section {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+
+  .share-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+
+  .share-section p {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .copy-link-box {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .copy-link-box input {
+    flex: 1;
+    font-size: 0.78rem;
+    padding: 8px 10px;
+  }
+
+  .copy-btn {
+    padding: 8px 14px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .error-msg {
+    color: #c00;
+    font-size: 0.78rem;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  .section-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--green-light);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .prop-btn {
+    padding: 5px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    background: white;
+    color: var(--gray);
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .prop-btn.active {
+    border-color: var(--green);
+    color: var(--green);
+    background: var(--green-pale);
+    font-weight: 600;
+  }
+
+  /* Responsive */
+  @media (max-width: 400px) {
+    .tab { padding: 12px 12px; font-size: 0.78rem; }
+    header .logo { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">🌿 SnappyB Retreats</div>
+    <div class="subtitle">Hotel Management Tool</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('locks')">🔑 Lock Codes</div>
+  <div class="tab" onclick="switchTab('guest')">📋 Guest Form</div>
+  <div class="tab" onclick="switchTab('settings')">⚙️ Settings</div>
+</div>
+
+<!-- Property selector -->
+<div style="background:#f0f5ec; border-bottom:1px solid var(--border); padding:10px 16px; display:flex; gap:8px; align-items:center;">
+  <span style="font-size:0.75rem; color:var(--gray); font-weight:500;">Property:</span>
+  <button class="prop-btn active" onclick="setProperty('pistacchio')" id="prop-pistacchio">🏠 Pistacchio</button>
+  <button class="prop-btn" onclick="setProperty('living')" id="prop-living">🏡 Living Spaces</button>
+</div>
+
+<!-- ==================== LOCK CODES PANEL ==================== -->
+<div id="panel-locks" class="panel active">
+  <div class="container">
+
+    <div class="card">
+      <div class="section-label">New Booking</div>
+
+      <div id="no-locks-notice" style="display:none; background:#fff8e6; border:1px solid #f0d060; border-radius:10px; padding:12px; font-size:0.82rem; color:#7a5500; margin-bottom:14px;">
+        🔒 SnappyB Living Spaces doesn't have smart locks yet. Use the <strong>Guest Form</strong> tab to collect guest details.
+      </div>
+
+      <div id="lock-form">
+        <label>Room</label>
+        <select id="room-select">
+          <option value="">— Select Room —</option>
+        </select>
+
+        <label>Guest Name</label>
+        <input type="text" id="guest-name" placeholder="e.g. John Smith">
+
+        <label>Check-in</label>
+        <input type="datetime-local" id="checkin">
+
+        <label>Check-out</label>
+        <input type="datetime-local" id="checkout">
+
+        <button class="btn" onclick="generateCode()">
+          🔑 Generate Code & Message
+        </button>
+      </div>
+    </div>
+
+    <div class="result-box" id="result-box">
+      <div class="section-label">Generated Code</div>
+      <div class="code-display" id="code-display">——</div>
+      <div id="lock-status"></div>
+      <div id="tuya-btns"></div>
+      <div class="section-label" style="margin-top:14px;">WhatsApp Message</div>
+      <div class="message-preview" id="message-preview"></div>
+      <button class="btn" style="margin-top:12px;" onclick="copyMessage()">📋 Copy Message</button>
+      <button class="btn secondary" style="margin-top:8px;" onclick="openWhatsApp()">💬 Open WhatsApp</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== GUEST FORM PANEL ==================== -->
+<div id="panel-guest" class="panel">
+  <div class="container">
+
+    <div class="share-section">
+      <h3>📤 Share Form with Guest</h3>
+      <p>Send this link to your guest so they can submit their ID details securely — without sending personal documents over WhatsApp.</p>
+      <div class="copy-link-box">
+        <input type="text" id="share-link" readonly value="Save this file and open it on any device">
+        <button class="copy-btn" onclick="copyShareLink()">Copy</button>
+      </div>
+    </div>
+
+    <!-- Guest-facing form -->
+    <div class="card" id="guest-form-section">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">🇬🇧 English</button>
+        <button class="lang-btn" onclick="setLang('el')">🇬🇷 Ελληνικά</button>
+      </div>
+
+      <div id="form-title-en">
+        <div class="form-title">Welcome! 🌿</div>
+        <div class="form-subtitle" id="form-subtitle-en">Please fill in your details below. Your information is required before we can send you the door access code.</div>
+      </div>
+      <div id="form-title-el" style="display:none">
+        <div class="form-title">Καλώς ήρθατε! 🌿</div>
+        <div class="form-subtitle" id="form-subtitle-el">Παρακαλούμε συμπληρώστε τα στοιχεία σας. Απαιτούνται πριν σας στείλουμε τον κωδικό πόρτας.</div>
+      </div>
+
+      <label id="lbl-fullname">Full Name</label>
+      <input type="text" id="f-name" placeholder="John Smith">
+
+      <label id="lbl-city">City of Residence</label>
+      <input type="text" id="f-city" placeholder="Istanbul">
+
+      <label id="lbl-zip">ZIP / Postal Code</label>
+      <input type="text" id="f-zip" placeholder="34000">
+
+      <label id="lbl-id">ID / Passport Number</label>
+      <input type="text" id="f-idnum" placeholder="AB123456">
+      <label id="lbl-photo">Upload ID Photo</label>
+      <div class="file-upload" onclick="document.getElementById('f-photo').click()">
+        <input type="file" id="f-photo" accept="image/*" onchange="handleFile(this)">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text" id="upload-text-en">Tap to upload a photo of your ID, passport or driver's license</div>
+        <div class="upload-text" id="upload-text-el" style="display:none">Πατήστε για να ανεβάσετε φωτογραφία ταυτότητας, διαβατηρίου ή άδειας οδήγησης</div>
+        <div class="file-name" id="file-name-display"></div>
+      </div>
+
+      <div class="error-msg" id="form-error">Please fill in all fields and upload your ID photo.</div>
+
+      <button class="btn" onclick="submitGuestForm()" id="submit-btn">
+        <span id="submit-text-en">Submit & Send via WhatsApp</span>
+        <span id="submit-text-el" style="display:none">Υποβολή & Αποστολή μέσω WhatsApp</span>
+      </button>
+    </div>
+
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon">✅</div>
+      <h2>Details Submitted!</h2>
+      <p>Your information has been sent successfully. You will receive your access code shortly.</p>
+      <br>
+      <p style="color:var(--green); font-style:italic;">— Napoleon, Pistacchio by SnappyB</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== SETTINGS PANEL ==================== -->
+<div id="panel-settings" class="panel">
+  <div class="container">
+
+    <div class="settings-note">
+      ⚠️ Your credentials are saved only on this device and never shared with anyone. Keep this page bookmarked.
+    </div>
+
+    <div class="card">
+      <h3>🔑 Tuya API Credentials</h3>
+      <label>Access ID (Client ID)</label>
+      <input type="password" id="s-access-id" placeholder="Your Tuya Access ID">
+      <label>Access Secret (Client Secret)</label>
+      <input type="password" id="s-access-secret" placeholder="Your Tuya Access Secret">
+      <label>Data Center Region</label>
+      <select id="s-region">
+        <option value="eu">Europe (eu.iotapi.tuya.com)</option>
+        <option value="us">Americas (us.iotapi.tuya.com)</option>
+        <option value="cn">China (openapi.tuyacn.com)</option>
+        <option value="in">India (in.iotapi.tuya.com)</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h3>📱 WhatsApp Number</h3>
+      <label>Your WhatsApp number (with country code)</label>
+      <input type="tel" id="s-whatsapp" placeholder="+30 694 XXX XXXX">
+      <div style="font-size:0.75rem; color:var(--gray); margin-top:6px;">Guest ID forms will be sent to this number.</div>
+    </div>
+
+    <div class="card">
+      <h3>🏨 Check-in / Check-out Times</h3>
+      <label>Default Check-in Time</label>
+      <input type="text" id="s-checkin-time" placeholder="15:00" value="15:00">
+      <label>Default Check-out Time</label>
+      <input type="text" id="s-checkout-time" placeholder="11:00" value="11:00">
+    </div>
+
+    <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+    <div id="save-status" style="text-align:center; margin-top:10px; font-size:0.82rem; color:var(--green); display:none;">✅ Settings saved!</div>
+
+  </div>
+</div>
+
+<script>
+const ROOMS_PISTACCHIO = {
+  pink: { name:"Pink Pistacchio", deviceId:"bfb8b058be4ba00036bhgp", mainDeviceId:"bf8813f5ada12d1f579dff", doorName:"PINK", floor:"1️⃣ first floor", side:"left side", wifi:"Pink Pistacchio", wifiPass:"WelcomeHome" },
+  green: { name:"Green Pistacchio", deviceId:"bff4b4c51c02b68ca3umm9", mainDeviceId:"bf8813f5ada12d1f579dff", doorName:"GREEN", floor:"1️⃣ first floor", side:"right side", wifi:"Green Pistacchio", wifiPass:"WelcomeHome" },
+  candy: { name:"Candy Pistacchio", deviceId:"bf56547ae5b89549b1sgug", mainDeviceId:"bf8813f5ada12d1f579dff", doorName:"CANDY", floor:"2️⃣ second floor", side:"left side", wifi:"Candy Pistacchio", wifiPass:"WelcomeHome" },
+  funky: { name:"Funky Pistacchio", deviceId:"bfcdac5caef86128c5r8cw", mainDeviceId:"bf8813f5ada12d1f579dff", doorName:"FUNKY", floor:"2️⃣ second floor", side:"right side", wifi:"Funky Pistacchio", wifiPass:"WelcomeHome" },
+  forest: { name:"Forest Pistacchio", deviceId:"bf0c216153d54e7248ysdv", mainDeviceId:"bf8813f5ada12d1f579dff", doorName:"FOREST", floor:"3️⃣ third floor", side:"left side", wifi:"Forest Pistacchio", wifiPass:"WelcomeHome" },
+  blossom: { name:"Blossom Pistacchio", deviceId:"bf2d997471b8f56dd3tq8e", mainDeviceId:"bf8813f5ada12d1f579dff", doorName:"BLOSSOM", floor:"3️⃣ third floor", side:"right side", wifi:"Blossom Pistacchio", wifiPass:"WelcomeHome" }
+};
+const ROOMS_LIVING = {
+  primopiano:{name:"Primopiano"}, terracotta:{name:"Terracotta"}, reef:{name:"Reef"}, minimalo:{name:"Minimalo"}, colours:{name:"Colours"}
+};
+
+const PROXY_URL = 'https://snappy-b-retreats-briv003yh-nappybramys-projects.vercel.app/api/lock';
+
+let currentLang='en', currentProperty='pistacchio', generatedCode='', generatedMessage='';
+
+function setProperty(prop){
+  currentProperty=prop;
+  document.getElementById('prop-pistacchio').classList.toggle('active',prop==='pistacchio');
+  document.getElementById('prop-living').classList.toggle('active',prop==='living');
+  const noLocks=document.getElementById('no-locks-notice');
+  const lockForm=document.getElementById('lock-form');
+  if(prop==='living'){noLocks.style.display='block';lockForm.style.display='none';}
+  else{noLocks.style.display='none';lockForm.style.display='block';}
+  updateRoomSelect();
+}
+
+function updateRoomSelect(){
+  const sel=document.getElementById('room-select');
+  sel.innerHTML='<option value="">— Select Room —</option>';
+  const rooms=currentProperty==='pistacchio'?ROOMS_PISTACCHIO:ROOMS_LIVING;
+  Object.entries(rooms).forEach(([key,r])=>{
+    const opt=document.createElement('option');
+    opt.value=key; opt.textContent=r.name; sel.appendChild(opt);
+  });
+}
+
+function loadSettings(){
+  const s=JSON.parse(localStorage.getItem('snappyb_settings')||'{}');
+  if(s.accessId)document.getElementById('s-access-id').value=s.accessId;
+  if(s.accessSecret)document.getElementById('s-access-secret').value=s.accessSecret;
+  if(s.region)document.getElementById('s-region').value=s.region;
+  if(s.whatsapp)document.getElementById('s-whatsapp').value=s.whatsapp;
+  if(s.checkinTime)document.getElementById('s-checkin-time').value=s.checkinTime;
+  if(s.checkoutTime)document.getElementById('s-checkout-time').value=s.checkoutTime;
+}
+
+function saveSettings(){
+  const s={
+    accessId:document.getElementById('s-access-id').value.trim(),
+    accessSecret:document.getElementById('s-access-secret').value.trim(),
+    region:document.getElementById('s-region').value,
+    whatsapp:document.getElementById('s-whatsapp').value.trim(),
+    checkinTime:document.getElementById('s-checkin-time').value,
+    checkoutTime:document.getElementById('s-checkout-time').value
+  };
+  localStorage.setItem('snappyb_settings',JSON.stringify(s));
+  const el=document.getElementById('save-status');
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',2500);
+}
+
+function getSettings(){return JSON.parse(localStorage.getItem('snappyb_settings')||'{}');}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['locks','guest','settings'][i]===tab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+async function proxyCall(payload){
+  const res=await fetch(PROXY_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  const text=await res.text();
+  try{return JSON.parse(text);}
+  catch(e){throw new Error('Proxy error: '+text.slice(0,200));}
+}
+
+async function getToken(accessId,secret,baseUrl){
+  return await proxyCall({action:'getToken',accessId,accessSecret:secret,baseUrl});
+}
+
+async function setTempPassword(accessId,secret,token,baseUrl,deviceId,code,effectiveTime,invalidTime){
+  return await proxyCall({action:'setPassword',accessId,accessSecret:secret,token,baseUrl,deviceId,code,effectiveTime,invalidTime});
+}
+
+function getBaseUrl(region){
+  return {eu:'https://openapi.tuyaeu.com',us:'https://openapi.tuyaus.com',cn:'https://openapi.tuyacn.com',in:'https://openapi.tuyain.com'}[region]||'https://openapi.tuyaeu.com';
+}
+
+async function generateCode(){
+  const roomKey=document.getElementById('room-select').value;
+  const guestName=document.getElementById('guest-name').value.trim();
+  const checkin=document.getElementById('checkin').value;
+  const checkout=document.getElementById('checkout').value;
+  if(!roomKey||!guestName||!checkin||!checkout){alert('Please fill in all fields.');return;}
+  const settings=getSettings();
+  if(!settings.accessId||!settings.accessSecret){alert('Please set your Tuya credentials in Settings first!');switchTab('settings');return;}
+  const room=ROOMS_PISTACCHIO[roomKey];
+  const code=Math.floor(100000+Math.random()*900000).toString();
+  const effectiveTime=Math.floor(new Date(checkin).getTime()/1000);
+  const invalidTime=Math.floor(new Date(checkout).getTime()/1000);
+  const baseUrl=getBaseUrl(settings.region||'eu');
+
+  document.getElementById('result-box').classList.add('show');
+  document.getElementById('code-display').textContent='......';
+  document.getElementById('lock-status').innerHTML='<span class="status-badge loading"><span class="spinner"></span> Setting lock codes...</span>';
+  document.getElementById('tuya-btns').innerHTML='';
+
+  try{
+    const tokenRes=await getToken(settings.accessId,settings.accessSecret,baseUrl);
+    if(!tokenRes.success)throw new Error('Token: '+JSON.stringify(tokenRes));
+    const token=tokenRes.result.access_token;
+    const [r1,r2]=await Promise.all([
+      setTempPassword(settings.accessId,settings.accessSecret,token,baseUrl,room.deviceId,code,effectiveTime,invalidTime),
+      setTempPassword(settings.accessId,settings.accessSecret,token,baseUrl,room.mainDeviceId,code,effectiveTime,invalidTime)
+    ]);
+    if(r1.success&&r2.success){
+      document.getElementById('lock-status').innerHTML='<span class="status-badge success">✅ Both locks set successfully</span>';
+    }else{
+      document.getElementById('lock-status').innerHTML=`<span class="status-badge error">⚠️ Room: ${JSON.stringify(r1)} | Entrance: ${JSON.stringify(r2)}</span>`;
+    }
+  }catch(e){
+    document.getElementById('lock-status').innerHTML=`<span class="status-badge error">❌ Error: ${e.message}</span>`;
+  }
+
+  generatedCode=code;
+  document.getElementById('code-display').textContent=code+'#';
+  generatedMessage=`${room.name}\n\nEnter to the building and the apartment by using the keyless entry code: ${code}#\n\nAfter entering the main door, the apartment is on the ${room.floor} on the ${room.side}.\n\nDoor name: ${room.doorName}\n\n🛜 Wi-Fi Information:\n* Name: ${room.wifi}\n* Password: ${room.wifiPass}\n\n🔔To use the doorbell, first press the left button🔊 with the speaker icon to talk, then press the right button🔑with the key icon to unlock the door.\n\n🚭 Smoking is strictly not permitted inside the apartment.\n       For your safety, the apartment is equipped with smoke alarms.\n\nℹ️ Please validate your arrival by writing "we are home".\n\nSincerely, Napoleon 🙏🏼`;
+  document.getElementById('message-preview').textContent=generatedMessage;
+}
+
+function copyMessage(){navigator.clipboard.writeText(generatedMessage).then(()=>alert('Message copied! Paste it in WhatsApp.'));}
+function openWhatsApp(){window.open('https://wa.me/?text='+encodeURIComponent(generatedMessage),'_blank');}
+
+function setLang(lang){
+  currentLang=lang;
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',['en','el'][i]===lang));
+  const isEl=lang==='el';
+  document.getElementById('form-title-en').style.display=isEl?'none':'block';
+  document.getElementById('form-title-el').style.display=isEl?'block':'none';
+  document.getElementById('upload-text-en').style.display=isEl?'none':'block';
+  document.getElementById('upload-text-el').style.display=isEl?'block':'none';
+  document.getElementById('submit-text-en').style.display=isEl?'none':'inline';
+  document.getElementById('submit-text-el').style.display=isEl?'inline':'none';
+  const labels={
+    en:['Full Name','City of Residence','ZIP / Postal Code','ID / Passport Number','Upload ID Photo'],
+    el:['Ονοματεπώνυμο','Πόλη Κατοικίας','ΤΚ / Ταχυδρομικός Κωδικός','ΑΦΜ','Ανέβασμα Φωτογραφίας Ταυτότητας']
+  };
+  const placeholders={
+    en:['John Smith','Istanbul','34000','AB123456'],
+    el:['Γιώργης Παπαδόπουλος','Αθήνα','10431','123456789']
+  };
+  ['lbl-fullname','lbl-city','lbl-zip','lbl-id'].forEach((id,i)=>document.getElementById(id).textContent=labels[lang][i]);
+  ['f-name','f-city','f-zip','f-idnum'].forEach((id,i)=>document.getElementById(id).placeholder=placeholders[lang][i]);
+  document.getElementById('lbl-photo').textContent=labels[lang][4];
+}
+
+function handleFile(input){
+  if(input.files&&input.files[0])document.getElementById('file-name-display').textContent='📎 '+input.files[0].name;
+}
+
+function submitGuestForm(){
+  const name=document.getElementById('f-name').value.trim();
+  const city=document.getElementById('f-city').value.trim();
+  const zip=document.getElementById('f-zip').value.trim();
+  const idnum=document.getElementById('f-idnum').value.trim();
+  const photo=document.getElementById('f-photo').files[0];
+  const errEl=document.getElementById('form-error');
+  if(!name||!city||!zip||!idnum||!photo){
+    errEl.classList.add('show');
+    errEl.textContent=currentLang==='el'?'Παρακαλούμε συμπληρώστε όλα τα πεδία και ανεβάστε φωτογραφία.':'Please fill in all fields and upload your ID photo.';
+    return;
+  }
+  errEl.classList.remove('show');
+  const propName=currentProperty==='pistacchio'?'Pistacchio by SnappyB':'SnappyB Living Spaces';
+  const idLabel=currentLang==='el'?'ΑΦΜ':'ID/Passport';
+  const settings=getSettings();
+  const waNum=settings.whatsapp?settings.whatsapp.replace(/\D/g,''):'';
+  const msg=`🏨 New Guest Submission — ${propName}\n\n👤 Name: ${name}\n🏙️ City: ${city}\n📮 ZIP: ${zip}\n🪪 ${idLabel}: ${idnum}\n📎 ID Photo: [attached separately]\n\n— Sent from SnappyB Retreats Guest Form`;
+  const waUrl=waNum?`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`:`https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl,'_blank');
+  document.getElementById('guest-form-section').style.display='none';
+  document.getElementById('success-screen').classList.add('show');
+}
+
+function copyShareLink(){navigator.clipboard.writeText(window.location.href).then(()=>alert('Link copied! Send it to your guest.'));}
+
+loadSettings();
+updateRoomSelect();
+const _now=new Date(), _tom=new Date(_now);
+_tom.setDate(_tom.getDate()+1);
+const _s=getSettings();
+document.getElementById('checkin').value=_tom.toISOString().slice(0,11)+(_s.checkinTime||'15:00');
+const _da=new Date(_tom);
+_da.setDate(_da.getDate()+2);
+document.getElementById('checkout').value=_da.toISOString().slice(0,11)+(_s.checkoutTime||'11:00');
+</script>
+</body>
+</html>
