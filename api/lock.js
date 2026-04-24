@@ -1,23 +1,35 @@
 const crypto = require('crypto');
+
 function decryptTicketKey(ticketKey, accessSecret) {
-  const decipher = crypto.createDecipheriv('aes-256-ecb', Buffer.from(accessSecret, 'utf8'), null);
+  const key = Buffer.from(accessSecret.substring(0, 32), 'utf8');
+  const decipher = crypto.createDecipheriv('aes-256-ecb', key, null);
   decipher.setAutoPadding(true);
-  const decrypted = Buffer.concat([decipher.update(Buffer.from(ticketKey, 'hex')), decipher.final()]);
-  return decrypted.toString('utf8');
+  const decrypted = Buffer.concat([
+    decipher.update(Buffer.from(ticketKey, 'hex')),
+    decipher.final()
+  ]);
+  return decrypted.toString('utf8').replace(/\0/g, '');
 }
+
 function encryptPassword(password, decryptedKey) {
-  const key = Buffer.from(decryptedKey, 'utf8');
+  const key = Buffer.from(decryptedKey.substring(0, 16), 'utf8');
   const cipher = crypto.createCipheriv('aes-128-ecb', key, null);
   cipher.setAutoPadding(true);
-  const encrypted = Buffer.concat([cipher.update(Buffer.from(password, 'utf8')), cipher.final()]);
+  const encrypted = Buffer.concat([
+    cipher.update(Buffer.from(password, 'utf8')),
+    cipher.final()
+  ]);
   return encrypted.toString('hex').toUpperCase();
 }
+
 function sha256(str) {
   return crypto.createHash('sha256').update(str).digest('hex');
 }
+
 function hmacSign(str, secret) {
   return crypto.createHmac('sha256', secret).update(str).digest('hex').toUpperCase();
 }
+
 async function tuyaRequest(method, path, body, accessId, accessSecret, baseUrl, accessToken) {
   const t = Date.now().toString();
   const nonce = crypto.randomBytes(8).toString('hex');
@@ -29,6 +41,7 @@ async function tuyaRequest(method, path, body, accessId, accessSecret, baseUrl, 
   const response = await fetch(baseUrl + path, { method: method, headers: headers, body: body || undefined });
   return response.json();
 }
+
 module.exports = async function(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
