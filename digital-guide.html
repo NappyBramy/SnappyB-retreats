@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Οδηγός Φιλοξενίας | Guest Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --terra: #B85C38;
+    --terra-light: #D4815F;
+    --sand: #F2E8D9;
+    --sand-dark: #E0CEB5;
+    --olive: #5C6B3A;
+    --olive-light: #7A8F50;
+    --cream: #FBF7F1;
+    --dark: #2C2416;
+    --mid: #6B5A44;
+    --light-text: #9B8A78;
+    --white: #FFFFFF;
+    --shadow: 0 4px 24px rgba(44,36,22,0.10);
+    --shadow-sm: 0 2px 12px rgba(44,36,22,0.08);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .hero {
+    background: linear-gradient(160deg, #2C2416 0%, #4A3520 60%, #6B4C2A 100%);
+    padding: 56px 24px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 1;
+  }
+  .hero-icon {
+    width: 64px; height: 64px;
+    background: var(--terra);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(184,92,56,0.4);
+  }
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 300;
+    color: var(--sand);
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    position: relative;
+  }
+  .hero h1 span {
+    color: var(--terra-light);
+    font-style: italic;
+  }
+  .hero-sub {
+    font-size: 0.85rem;
+    color: rgba(242,232,217,0.55);
+    margin-top: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 300;
+    position: relative;
+  }
+
+  /* ── LANG SWITCHER ── */
+  .lang-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--sand-dark);
+    padding: 0 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    scrollbar-width: none;
+  }
+  .lang-bar::-webkit-scrollbar { display: none; }
+  .lang-btn {
+    flex-shrink: 0;
+    padding: 14px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--light-text);
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    margin-bottom: -1px;
+  }
+  .lang-btn:hover { color: var(--terra); }
+  .lang-btn.active {
+    color: var(--terra);
+    border-bottom-color: var(--terra);
+    font-weight: 500;
+  }
+  .lang-flag { margin-right: 6px; font-size: 1rem; }
+
+  /* ── MAIN ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 16px 60px;
+  }
+
+  /* ── WELCOME BANNER ── */
+  .welcome {
+    background: linear-gradient(135deg, var(--terra) 0%, var(--terra-light) 100%);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 28px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(184,92,56,0.25);
+  }
+  .welcome::after {
+    content: '🏠';
+    position: absolute;
+    right: -8px; bottom: -12px;
+    font-size: 80px;
+    opacity: 0.15;
+  }
+  .welcome h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+  .welcome p { font-size: 0.88rem; opacity: 0.9; line-height: 1.6; }
+
+  /* ── SECTION CARDS ── */
+  .section-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    border: 1px solid rgba(224,206,181,0.5);
+    transition: box-shadow 0.2s;
+  }
+  .section-card:hover { box-shadow: var(--shadow); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .card-header:hover { background: rgba(242,232,217,0.3); }
+
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .icon-terra { background: rgba(184,92,56,0.12); }
+  .icon-olive { background: rgba(92,107,58,0.12); }
+  .icon-sand { background: rgba(224,206,181,0.5); }
+  .icon-blue { background: rgba(74,115,163,0.12); }
+  .icon-amber { background: rgba(200,145,50,0.12); }
+  .icon-rose { background: rgba(180,80,100,0.12); }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark);
+    flex: 1;
+  }
+  .card-chevron {
+    color: var(--light-text);
+    font-size: 1.1rem;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .section-card.open .card-chevron { transform: rotate(180deg); }
+
+  .card-body {
+    display: none;
+    padding: 0 24px 24px;
+    border-top: 1px solid var(--sand);
+    animation: fadeDown 0.25s ease;
+  }
+  .section-card.open .card-body { display: block; }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── INFO ROWS ── */
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--sand);
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--light-text);
+    font-weight: 500;
+    min-width: 110px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+  .info-value {
+    font-size: 0.95rem;
+    color: var(--dark);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  .info-value strong { color: var(--terra); font-weight: 500; }
+
+  /* ── WIFI BOX ── */
+  .wifi-box {
+    background: linear-gradient(135deg, var(--olive) 0%, var(--olive-light) 100%);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    margin-top: 16px;
+    color: white;
+  }
+  .wifi-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.75; margin-bottom: 4px; }
+  .wifi-value { font-size: 1.05rem; font-weight: 500; }
+  .wifi-divider { height: 1px; background: rgba(255,255,255,0.2); margin: 14px 0; }
+  .wifi-copy-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.2);
+    border: none; border-radius: 20px;
+    padding: 7px 14px; color: white;
+    font-size: 0.8rem; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+  .wifi-copy-btn:hover { background: rgba(255,255,255,0.3); }
+
+  /* ── SERVICE GRID ── */
+  .service-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .service-item {
+    background: var(--sand);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--dark);
+  }
+  .service-item span:first-child { font-size: 1.2rem; }
+
+  /* ── RULES ── */
+  .rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--sand);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .rule-item:last-child { border-bottom: none; }
+  .rule-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .dot-green { background: rgba(92,107,58,0.15); color: var(--olive); }
+  .dot-red { background: rgba(180,80,80,0.12); color: #B45050; }
+
+  /* ── LOCAL RECS ── */
+  .local-category { margin-top: 18px; }
+  .local-cat-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--terra);
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .local-cat-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--sand-dark);
+  }
+  .place-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--sand);
+    font-size: 0.88rem;
+  }
+  .place-item:last-child { border-bottom: none; }
+  .place-emoji { font-size: 1.1rem; margin-top: 1px; flex-shrink: 0; }
+  .place-name { font-weight: 500; color: var(--dark); }
+  .place-desc { color: var(--light-text); font-size: 0.82rem; margin-top: 2px; }
+
+  /* ── CONTACT ── */
+  .contact-card {
+    background: var(--dark);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    transition: transform 0.2s;
+  }
+  .contact-card:hover { transform: translateY(-2px); }
+  .contact-icon-wrap {
+    width: 48px; height: 48px;
+    background: var(--terra);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .contact-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-bottom: 3px; font-weight: 400; }
+  .contact-value { font-size: 1.05rem; color: white; font-weight: 500; }
+
+  .emergency-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .emergency-item {
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.2s;
+  }
+  .emergency-item:hover { transform: translateY(-2px); }
+  .em-police { background: #1A3A6B; color: white; }
+  .em-fire { background: #8B2000; color: white; }
+  .em-amb { background: #005C2E; color: white; }
+  .em-gen { background: var(--dark); color: white; }
+  .emergency-item .em-num { font-size: 1.6rem; font-weight: 500; font-family: 'Cormorant Garamond', serif; }
+  .emergency-item .em-label { font-size: 0.72rem; opacity: 0.75; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--light-text);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--sand-dark);
+    margin-top: 16px;
+  }
+  .footer strong { color: var(--terra); }
+
+  /* ── LANGUAGE CONTENT VISIBILITY ── */
+  [data-lang] { display: none; }
+  [data-lang].active { display: block; }
+  .lang-inline { display: none; }
+  .lang-inline.active { display: inline; }
+
+  /* ── Placeholder note ── */
+  .placeholder-note {
+    background: rgba(200,145,50,0.1);
+    border: 1px dashed rgba(200,145,50,0.4);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    color: #805A00;
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 420px) {
+    .service-grid { grid-template-columns: 1fr; }
+    .emergency-grid { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 40px 20px 64px; }
+    .container { padding: 24px 12px 48px; }
+    .card-header { padding: 18px 20px; }
+    .card-body { padding: 0 20px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-icon">🏡</div>
+  <h1>Καλώς <span>ήρθατε</span></h1>
+  <p class="hero-sub">Ενοικιαζόμενα Δωμάτια · Rental Rooms · Наемни стаи</p>
+</div>
+
+<!-- LANGUAGE SWITCHER -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('el')"><span class="lang-flag">🇬🇷</span>Ελληνικά</button>
+  <button class="lang-btn" onclick="setLang('en')"><span class="lang-flag">🇬🇧</span>English</button>
+  <button class="lang-btn" onclick="setLang('tr')"><span class="lang-flag">🇹🇷</span>Türkçe</button>
+  <button class="lang-btn" onclick="setLang('bg')"><span class="lang-flag">🇧🇬</span>Български</button>
+  <button class="lang-btn" onclick="setLang('ro')"><span class="lang-flag">🇷🇴</span>Română</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- WELCOME -->
+  <div class="welcome">
+    <h2 data-lang="el" class="active">Καλώς ορίσατε! 🌿</h2>
+    <h2 data-lang="en">Welcome! 🌿</h2>
+    <h2 data-lang="tr">Hoş geldiniz! 🌿</h2>
+    <h2 data-lang="bg">Добре дошли! 🌿</h2>
+    <h2 data-lang="ro">Bine ați venit! 🌿</h2>
+
+    <p data-lang="el" class="active">Χαρούμαστε που μας επιλέξατε. Σε αυτόν τον οδηγό θα βρείτε όλα όσα χρειάζεστε για μια άνετη και αξέχαστη διαμονή.</p>
+    <p data-lang="en">We are happy you chose us. In this guide you will find everything you need for a comfortable and memorable stay.</p>
+    <p data-lang="tr">Bizi seçtiğiniz için mutluyuz. Bu rehberde konforlu ve unutulmaz bir konaklama için ihtiyaç duyduğunuz her şeyi bulacaksınız.</p>
+    <p data-lang="bg">Радваме се, че ни избрахте. В този наръчник ще намерите всичко необходимо за комфортен и незабравим престой.</p>
+    <p data-lang="ro">Suntem bucuroși că ne-ați ales. În acest ghid veți găsi tot ce aveți nevoie pentru un sejur confortabil și memorabil.</p>
+  </div>
+
+  <!-- ══════ CARD 1: CHECK-IN / CHECK-OUT ══════ -->
+  <div class="section-card open">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-icon icon-terra">🗝️</div>
+      <div class="card-title">
+        <span data-lang="el" class="lang-inline active">Check-in & Check-out</span>
+        <span data-lang="en" class="lang-inline">Check-in & Check-out</span>
+        <span data-lang="tr" class="lang-inline">Giriş & Çıkış</span>
+        <span data-lang="bg" class="lang-inline">Настаняване & Напускане</span>
+        <span data-lang="ro" class="lang-inline">Check-in & Check-out</span>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="info-row">
+        <div class="info-label" data-lang="el" style="display:block">Check-in</div>
+        <div class="info-label" data-lang="en">Check-in</div>
+        <div class="info-label" data-lang="tr">Giriş saati</div>
+        <div class="info-label" data-lang="bg">Настаняване</div>
+        <div class="info-label" data-lang="ro">Sosire</div>
+        <div class="info-value"><strong>15:00 – 22:00</strong></div>
+      </div>
+      <div class="info-row">
+        <div class="info-label" data-lang="el" style="display:block">Check-out</div>
+        <div class="info-label" data-lang="en">Check-out</div>
+        <div class="info-label" data-lang="tr">Çıkış saati</div>
+        <div class="info-label" data-lang="bg">Напускане</div>
+        <div class="info-label" data-lang="ro">Plecare</div>
+        <div class="info-value"><strong>έως / by 11:00</strong></div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">
+          <span data-lang="el" class="lang-inline active">Αφίξεις</span>
+          <span data-lang="en" class="lang-inline">Arrivals</span>
+          <span data-lang="tr" class="lang-inline">Varışlar</span>
+          <span data-lang="bg" class="lang-inline">Пристигания</span>
+          <span data-lang="ro" class="lang-inline">Sosiri</span>
+        </div>
+        <div class="info-value">
+          <span data-lang="el" class="lang-inline active">Παρακαλούμε ενημερώστε μας για την ώρα άφιξής σας εκ των προτέρων.</span>
+          <span data-lang="en" class="lang-inline">Please let us know your arrival time in advance.</span>
+          <span data-lang="tr" class="lang-inline">Lütfen varış saatinizi önceden bize bildirin.</span>
+          <span data-lang="bg" class="lang-inline">Моля, уведомете ни предварително за часа на пристигане.</span>
+          <span data-lang="ro" class="lang-inline">Vă rugăm să ne informați în prealabil despre ora sosirii.</span>
+        </div>
+      </div>
+      <div class="placeholder-note">✏️
+        <span data-lang="el" class="lang-inline active">Αλλάξτε τις ώρες check-in/out με τις δικές σας.</span>
+        <span data-lang="en" class="lang-inline">Edit the check-in/out times with your own.</span>
+        <span data-lang="tr" class="lang-inline">Giriş/çıkış saatlerini kendinize göre düzenleyin.</span>
+        <span data-lang="bg" class="lang-inline">Редактирайте часовете с вашите собствени.</span>
+        <span data-lang="ro" class="lang-inline">Editați orele cu propriile dvs. informații.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CARD 2: WiFi ══════ -->
+  <div class="section-card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-icon icon-olive">📶</div>
+      <div class="card-title">
+        <span data-lang="el" class="lang-inline active">WiFi & Κωδικοί</span>
+        <span data-lang="en" class="lang-inline">WiFi & Codes</span>
+        <span data-lang="tr" class="lang-inline">WiFi & Şifreler</span>
+        <span data-lang="bg" class="lang-inline">WiFi & Кодове</span>
+        <span data-lang="ro" class="lang-inline">WiFi & Coduri</span>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="wifi-box">
+        <div class="wifi-label">
+          <span data-lang="el" class="lang-inline active">Δίκτυο</span>
+          <span data-lang="en" class="lang-inline">Network</span>
+          <span data-lang="tr" class="lang-inline">Ağ</span>
+          <span data-lang="bg" class="lang-inline">Мрежа</span>
+          <span data-lang="ro" class="lang-inline">Rețea</span>
+        </div>
+        <div class="wifi-value" id="wifi-ssid">MyHotel_WiFi</div>
+        <div class="wifi-divider"></div>
+        <div class="wifi-label">
+          <span data-lang="el" class="lang-inline active">Κωδικός</span>
+          <span data-lang="en" class="lang-inline">Password</span>
+          <span data-lang="tr" class="lang-inline">Şifre</span>
+          <span data-lang="bg" class="lang-inline">Парола</span>
+          <span data-lang="ro" class="lang-inline">Parolă</span>
+        </div>
+        <div class="wifi-value" id="wifi-pass">welcome2024</div>
+        <button class="wifi-copy-btn" onclick="copyWifi()">📋
+          <span data-lang="el" class="lang-inline active">Αντιγραφή κωδικού</span>
+          <span data-lang="en" class="lang-inline">Copy password</span>
+          <span data-lang="tr" class="lang-inline">Şifreyi kopyala</span>
+          <span data-lang="bg" class="lang-inline">Копиране на паролата</span>
+          <span data-lang="ro" class="lang-inline">Copiați parola</span>
+        </button>
+      </div>
+      <div class="placeholder-note">✏️
+        <span data-lang="el" class="lang-inline active">Αλλάξτε το SSID "MyHotel_WiFi" και τον κωδικό "welcome2024" με τα πραγματικά στοιχεία σας στον κώδικα HTML.</span>
+        <span data-lang="en" class="lang-inline">Replace "MyHotel_WiFi" and "welcome2024" with your actual WiFi details in the HTML code.</span>
+        <span data-lang="tr" class="lang-inline">HTML kodunda "MyHotel_WiFi" ve "welcome2024" bilgilerini gerçekleriyle değiştirin.</span>
+        <span data-lang="bg" class="lang-inline">Заменете "MyHotel_WiFi" и "welcome2024" с вашите реални данни в HTML кода.</span>
+        <span data-lang="ro" class="lang-inline">Înlocuiți "MyHotel_WiFi" și "welcome2024" cu datele reale în codul HTML.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CARD 3: SERVICES ══════ -->
+  <div class="section-card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-icon icon-blue">✨</div>
+      <div class="card-title">
+        <span data-lang="el" class="lang-inline active">Υπηρεσίες Καταλύματος</span>
+        <span data-lang="en" class="lang-inline">Room Services</span>
+        <span data-lang="tr" class="lang-inline">Konaklama Hizmetleri</span>
+        <span data-lang="bg" class="lang-inline">Услуги</span>
+        <span data-lang="ro" class="lang-inline">Servicii</span>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <div style="margin-top:8px; font-size:0.88rem; color:var(--mid); line-height:1.6;">
+        <span data-lang="el" class="lang-inline active">Παρακαλούμε να μη ζητάτε υπηρεσίες εκτός ωραρίου. Για ερωτήσεις, επικοινωνήστε μαζί μας.</span>
+        <span data-lang="en" class="lang-inline">Please do not request services outside working hours. For questions, contact us.</span>
+        <span data-lang="tr" class="lang-inline">Lütfen mesai saatleri dışında hizmet talep etmeyin. Sorularınız için bize ulaşın.</span>
+        <span data-lang="bg" class="lang-inline">Моля, не искайте услуги извън работното време. За въпроси се свържете с нас.</span>
+        <span data-lang="ro" class="lang-inline">Vă rugăm să nu solicitați servicii în afara orelor de lucru. Pentru întrebări, contactați-ne.</span>
+      </div>
+      <div class="service-grid">
+        <div class="service-item">
+          <span>🛁</span>
+          <span data-lang="el" class="lang-inline active">Ιδιωτικό μπάνιο</span>
+          <span data-lang="en" class="lang-inline">Private bathroom</span>
+          <span data-lang="tr" class="lang-inline">Özel banyo</span>
+          <span data-lang="bg" class="lang-inline">Частна баня</span>
+          <span data-lang="ro" class="lang-inline">Baie privată</span>
+        </div>
+        <div class="service-item">
+          <span>❄️</span>
+          <span data-lang="el" class="lang-inline active">Κλιματισμός</span>
+          <span data-lang="en" class="lang-inline">Air conditioning</span>
+          <span data-lang="tr" class="lang-inline">Klima</span>
+          <span data-lang="bg" class="lang-inline">Климатик</span>
+          <span data-lang="ro" class="lang-inline">Aer condiționat</span>
+        </div>
+        <div class="service-item">
+          <span>🛏️</span>
+          <span data-lang="el" class="lang-inline active">Καθημερινή αλλαγή λευκών</span>
+          <span data-lang="en" class="lang-inline">Daily linen change</span>
+          <span data-lang="tr" class="lang-inline">Günlük çarşaf değişimi</span>
+          <span data-lang="bg" class="lang-inline">Ежедневна смяна на спално</span>
+          <span data-lang="ro" class="lang-inline">Schimb zilnic de lenjerie</span>
+        </div>
+        <div class="service-item">
+          <span>🧹</span>
+          <span data-lang="el" class="lang-inline active">Καθαριότητα</span>
+          <span data-lang="en" class="lang-inline">Daily cleaning</span>
+          <span data-lang="tr" class="lang-inline">Günlük temizlik</span>
+          <span data-lang="bg" class="lang-inline">Ежедневно почистване</span>
+          <span data-lang="ro" class="lang-inline">Curățenie zilnică</span>
+        </div>
+        <div class="service-item">
+          <span>🅿️</span>
+          <span data-lang="el" class="lang-inline active">Πάρκινγκ</span>
+          <span data-lang="en" class="lang-inline">Parking</span>
+          <span data-lang="tr" class="lang-inline">Otopark</span>
+          <span data-lang="bg" class="lang-inline">Паркинг</span>
+          <span data-lang="ro" class="lang-inline">Parcare</span>
+        </div>
+        <div class="service-item">
+          <span>☕</span>
+          <span data-lang="el" class="lang-inline active">Κουζίνα</span>
+          <span data-lang="en" class="lang-inline">Kitchenette</span>
+          <span data-lang="tr" class="lang-inline">Mutfak</span>
+          <span data-lang="bg" class="lang-inline">Кухненски кът</span>
+          <span data-lang="ro" class="lang-inline">Bucătărie</span>
+        </div>
+      </div>
+      <div class="placeholder-note">✏️
+        <span data-lang="el" class="lang-inline active">Προσαρμόστε τις υπηρεσίες ανάλογα με το δικό σας κατάλυμα.</span>
+        <span data-lang="en" class="lang-inline">Customize the services according to your property.</span>
+        <span data-lang="tr" class="lang-inline">Hizmetleri kendi mülkünüze göre özelleştirin.</span>
+        <span data-lang="bg" class="lang-inline">Персонализирайте услугите според вашия имот.</span>
+        <span data-lang="ro" class="lang-inline">Personalizați serviciile conform proprietății dvs.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CARD 4: LOCAL RECS ══════ -->
+  <div class="section-card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-icon icon-sand">🗺️</div>
+      <div class="card-title">
+        <span data-lang="el" class="lang-inline active">Τοπικές Συστάσεις</span>
+        <span data-lang="en" class="lang-inline">Local Recommendations</span>
+        <span data-lang="tr" class="lang-inline">Yerel Öneriler</span>
+        <span data-lang="bg" class="lang-inline">Местни Препоръки</span>
+        <span data-lang="ro" class="lang-inline">Recomandări Locale</span>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <!-- Restaurants -->
+      <div class="local-category">
+        <div class="local-cat-title">
+          🍽️&nbsp;
+          <span data-lang="el" class="lang-inline active">Εστιατόρια & Ταβέρνες</span>
+          <span data-lang="en" class="lang-inline">Restaurants & Tavernas</span>
+          <span data-lang="tr" class="lang-inline">Restoranlar</span>
+          <span data-lang="bg" class="lang-inline">Ресторанти & Таверни</span>
+          <span data-lang="ro" class="lang-inline">Restaurante</span>
+        </div>
+        <div class="place-item">
+          <span class="place-emoji">🥗</span>
+          <div>
+            <div class="place-name">Ταβέρνα Παραδοσιακή</div>
+            <div class="place-desc">
+              <span data-lang="el" class="lang-inline active">Αυθεντική ελληνική κουζίνα, 5 λεπτά με τα πόδια</span>
+              <span data-lang="en" class="lang-inline">Authentic Greek cuisine, 5 min walk</span>
+              <span data-lang="tr" class="lang-inline">Otantik Yunan mutfağı, 5 dakika yürüme</span>
+              <span data-lang="bg" class="lang-inline">Автентична гръцка кухня, 5 минути пеша</span>
+              <span data-lang="ro" class="lang-inline">Bucătărie grecească autentică, 5 min pe jos</span>
+            </div>
+          </div>
+        </div>
+        <div class="place-item">
+          <span class="place-emoji">🐟</span>
+          <div>
+            <div class="place-name">Ψαροταβέρνα Γαλάζιο</div>
+            <div class="place-desc">
+              <span data-lang="el" class="lang-inline active">Φρέσκα ψάρια, παραλία, 10 λεπτά</span>
+              <span data-lang="en" class="lang-inline">Fresh fish, beachside, 10 min away</span>
+              <span data-lang="tr" class="lang-inline">Taze balık, sahilde, 10 dakika uzakta</span>
+              <span data-lang="bg" class="lang-inline">Пресни риби, на плажа, 10 минути</span>
+              <span data-lang="ro" class="lang-inline">Pește proaspăt, la plajă, 10 min</span>
+            </div>
+          </div>
+        </div>
+        <div class="place-item">
+          <span class="place-emoji">☕</span>
+          <div>
+            <div class="place-name">Καφέ Αιγαίο</div>
+            <div class="place-desc">
+              <span data-lang="el" class="lang-inline active">Πρωινό & καφές, ανοιχτό από τις 07:30</span>
+              <span data-lang="en" class="lang-inline">Breakfast & coffee, open from 07:30</span>
+              <span data-lang="tr" class="lang-inline">Kahvaltı & kahve, 07:30'dan itibaren açık</span>
+              <span data-lang="bg" class="lang-inline">Закуска & кафе, отворено от 07:30</span>
+              <span data-lang="ro" class="lang-inline">Mic dejun & cafea, deschis de la 07:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Sights -->
+      <div class="local-category">
+        <div class="local-cat-title">
+          🏛️&nbsp;
+          <span data-lang="el" class="lang-inline active">Αξιοθέατα</span>
+          <span data-lang="en" class="lang-inline">Sights & Attractions</span>
+          <span data-lang="tr" class="lang-inline">Gezilecek Yerler</span>
+          <span data-lang="bg" class="lang-inline">Забележителности</span>
+          <span data-lang="ro" class="lang-inline">Obiective Turistice</span>
+        </div>
+        <div class="place-item">
+          <span class="place-emoji">🏖️</span>
+          <div>
+            <div class="place-name">
+              <span data-lang="el" class="lang-inline active">Κεντρική Παραλία</span>
+              <span data-lang="en" class="lang-inline">Main Beach</span>
+              <span data-lang="tr" class="lang-inline">Ana Plaj</span>
+              <span data-lang="bg" class="lang-inline">Централен плаж</span>
+              <span data-lang="ro" class="lang-inline">Plaja Principală</span>
+            </div>
+            <div class="place-desc">300m</div>
+          </div>
+        </div>
+        <div class="place-item">
+          <span class="place-emoji">🏛️</span>
+          <div>
+            <div class="place-name">
+              <span data-lang="el" class="lang-inline active">Αρχαιολογικός Χώρος</span>
+              <span data-lang="en" class="lang-inline">Archaeological Site</span>
+              <span data-lang="tr" class="lang-inline">Arkeolojik Alan</span>
+              <span data-lang="bg" class="lang-inline">Археологически обект</span>
+              <span data-lang="ro" class="lang-inline">Sit Arheologic</span>
+            </div>
+            <div class="place-desc">2 km</div>
+          </div>
+        </div>
+        <div class="place-item">
+          <span class="place-emoji">🛍️</span>
+          <div>
+            <div class="place-name">
+              <span data-lang="el" class="lang-inline active">Κεντρική Αγορά</span>
+              <span data-lang="en" class="lang-inline">Central Market</span>
+              <span data-lang="tr" class="lang-inline">Merkez Çarşı</span>
+              <span data-lang="bg" class="lang-inline">Централен пазар</span>
+              <span data-lang="ro" class="lang-inline">Piața Centrală</span>
+            </div>
+            <div class="place-desc">800m</div>
+          </div>
+        </div>
+      </div>
+      <div class="placeholder-note">✏️
+        <span data-lang="el" class="lang-inline active">Προσθέστε τα δικά σας αγαπημένα εστιατόρια και αξιοθέατα της περιοχής.</span>
+        <span data-lang="en" class="lang-inline">Add your own favorite local restaurants and attractions.</span>
+        <span data-lang="tr" class="lang-inline">Kendi favori restoranlarınızı ve turistik yerlerinizi ekleyin.</span>
+        <span data-lang="bg" class="lang-inline">Добавете своите любими местни ресторанти и забележителности.</span>
+        <span data-lang="ro" class="lang-inline">Adăugați propriile restaurante și atracții locale preferate.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CARD 5: HOUSE RULES ══════ -->
+  <div class="section-card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-icon icon-rose">📋</div>
+      <div class="card-title">
+        <span data-lang="el" class="lang-inline active">Κανόνες Σπιτιού</span>
+        <span data-lang="en" class="lang-inline">House Rules</span>
+        <span data-lang="tr" class="lang-inline">Ev Kuralları</span>
+        <span data-lang="bg" class="lang-inline">Правила на Дома</span>
+        <span data-lang="ro" class="lang-inline">Regulile Casei</span>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <div class="rule-item">
+        <div class="rule-dot dot-red">🚭</div>
+        <div>
+          <span data-lang="el" class="lang-inline active">Απαγορεύεται αυστηρά το κάπνισμα στους εσωτερικούς χώρους.</span>
+          <span data-lang="en" class="lang-inline">Smoking is strictly prohibited indoors.</span>
+          <span data-lang="tr" class="lang-inline">İç mekânlarda sigara içmek kesinlikle yasaktır.</span>
+          <span data-lang="bg" class="lang-inline">Тютюнопушенето на закрито е строго забранено.</span>
+          <span data-lang="ro" class="lang-inline">Fumatul în interior este strict interzis.</span>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-dot dot-red">🔕</div>
+        <div>
+          <span data-lang="el" class="lang-inline active">Ησυχία από τις 23:00 έως τις 08:00 (ώρες κοινής ησυχίας).</span>
+          <span data-lang="en" class="lang-inline">Quiet hours from 23:00 to 08:00.</span>
+          <span data-lang="tr" class="lang-inline">23:00 ile 08:00 arasında sessizlik saatleri.</span>
+          <span data-lang="bg" class="lang-inline">Тишина от 23:00 до 08:00 часа.</span>
+          <span data-lang="ro" class="lang-inline">Ore de liniște de la 23:00 la 08:00.</span>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-dot dot-red">🎉</div>
+        <div>
+          <span data-lang="el" class="lang-inline active">Απαγορεύονται πάρτι ή μεγάλες συγκεντρώσεις χωρίς προηγούμενη άδεια.</span>
+          <span data-lang="en" class="lang-inline">Parties or large gatherings are not allowed without prior permission.</span>
+          <span data-lang="tr" class="lang-inline">Önceden izin alınmadan parti veya büyük toplantılar yasaktır.</span>
+          <span data-lang="bg" class="lang-inline">Партита или големи събирания не са разрешени без предварително разрешение.</span>
+          <span data-lang="ro" class="lang-inline">Petrecerile sau adunările mari nu sunt permise fără permisiune prealabilă.</span>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-dot dot-red">🐾</div>
+        <div>
+          <span data-lang="el" class="lang-inline active">Δεν επιτρέπονται κατοικίδια χωρίς προηγούμενη συμφωνία.</span>
+          <span data-lang="en" class="lang-inline">Pets are not allowed without prior agreement.</span>
+          <span data-lang="tr" class="lang-inline">Evcil hayvanlar, önceden anlaşmadan kabul edilmez.</span>
+          <span data-lang="bg" class="lang-inline">Домашни любимци не се допускат без предварително съгласие.</span>
+          <span data-lang="ro" class="lang-inline">Animalele de companie nu sunt permise fără acord prealabil.</span>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-dot dot-green">✅</div>
+        <div>
+          <span data-lang="el" class="lang-inline active">Παρακαλούμε να φροντίζετε τον χώρο με σεβασμό όπως το δικό σας σπίτι.</span>
+          <span data-lang="en" class="lang-inline">Please treat the space with respect, as if it were your own home.</span>
+          <span data-lang="tr" class="lang-inline">Lütfen mekânı kendi eviniz gibi saygıyla kullanın.</span>
+          <span data-lang="bg" class="lang-inline">Моля, отнасяйте се към помещението с уважение, като към вашия дом.</span>
+          <span data-lang="ro" class="lang-inline">Vă rugăm să tratați spațiul cu respect, ca și cum ar fi casa dvs.</span>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-dot dot-green">✅</div>
+        <div>
+          <span data-lang="el" class="lang-inline active">Τα κλειδιά παραδίδονται κατά το check-in και επιστρέφονται κατά το check-out.</span>
+          <span data-lang="en" class="lang-inline">Keys are given at check-in and returned at check-out.</span>
+          <span data-lang="tr" class="lang-inline">Anahtarlar check-in'de verilir ve check-out'ta iade edilir.</span>
+          <span data-lang="bg" class="lang-inline">Ключовете се предават при настаняване и се връщат при напускане.</span>
+          <span data-lang="ro" class="lang-inline">Cheile se predau la check-in și se returnează la check-out.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ CARD 6: CONTACT ══════ -->
+  <div class="section-card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <div class="card-icon icon-amber">📞</div>
+      <div class="card-title">
+        <span data-lang="el" class="lang-inline active">Επικοινωνία & Επείγοντα</span>
+        <span data-lang="en" class="lang-inline">Contact & Emergencies</span>
+        <span data-lang="tr" class="lang-inline">İletişim & Acil Durumlar</span>
+        <span data-lang="bg" class="lang-inline">Контакти & Спешни случаи</span>
+        <span data-lang="ro" class="lang-inline">Contact & Urgențe</span>
+      </div>
+      <span class="card-chevron">▾</span>
+    </div>
+    <div class="card-body">
+      <a class="contact-card" href="tel:+306900000000">
+        <div class="contact-icon-wrap">📱</div>
+        <div>
+          <div class="contact-label">
+            <span data-lang="el" class="lang-inline active">Ιδιοκτήτης / Host</span>
+            <span data-lang="en" class="lang-inline">Host / Owner</span>
+            <span data-lang="tr" class="lang-inline">Ev Sahibi</span>
+            <span data-lang="bg" class="lang-inline">Домакин</span>
+            <span data-lang="ro" class="lang-inline">Proprietar / Gazdă</span>
+          </div>
+          <div class="contact-value">+30 690 000 0000</div>
+        </div>
+      </a>
+
+      <a class="contact-card" href="https://wa.me/306900000000" style="margin-top:10px; background:#1A5C36;">
+        <div class="contact-icon-wrap" style="background:#25D366;">💬</div>
+        <div>
+          <div class="contact-label">WhatsApp</div>
+          <div class="contact-value">
+            <span data-lang="el" class="lang-inline active">Στείλτε μήνυμα</span>
+            <span data-lang="en" class="lang-inline">Send a message</span>
+            <span data-lang="tr" class="lang-inline">Mesaj gönderin</span>
+            <span data-lang="bg" class="lang-inline">Изпратете съобщение</span>
+            <span data-lang="ro" class="lang-inline">Trimiteți un mesaj</span>
+          </div>
+        </div>
+      </a>
+
+      <div style="margin-top: 20px; margin-bottom:10px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--light-text); font-weight:500;">
+        <span data-lang="el" class="lang-inline active">⚠️ Αριθμοί Έκτακτης Ανάγκης</span>
+        <span data-lang="en" class="lang-inline">⚠️ Emergency Numbers</span>
+        <span data-lang="tr" class="lang-inline">⚠️ Acil Durum Numaraları</span>
+        <span data-lang="bg" class="lang-inline">⚠️ Спешни Номера</span>
+        <span data-lang="ro" class="lang-inline">⚠️ Numere de Urgență</span>
+      </div>
+
+      <div class="emergency-grid">
+        <a class="emergency-item em-gen" href="tel:112">
+          <div class="em-num">112</div>
+          <div class="em-label">
+            <span data-lang="el" class="lang-inline active">Γενικό SOS</span>
+            <span data-lang="en" class="lang-inline">General SOS</span>
+            <span data-lang="tr" class="lang-inline">Genel Acil</span>
+            <span data-lang="bg" class="lang-inline">Обща Спешна</span>
+            <span data-lang="ro" class="lang-inline">SOS General</span>
+          </div>
+        </a>
+        <a class="emergency-item em-police" href="tel:100">
+          <div class="em-num">100</div>
+          <div class="em-label">
+            <span data-lang="el" class="lang-inline active">Αστυνομία</span>
+            <span data-lang="en" class="lang-inline">Police</span>
+            <span data-lang="tr" class="lang-inline">Polis</span>
+            <span data-lang="bg" class="lang-inline">Полиция</span>
+            <span data-lang="ro" class="lang-inline">Poliție</span>
+          </div>
+        </a>
+        <a class="emergency-item em-amb" href="tel:166">
+          <div class="em-num">166</div>
+          <div class="em-label">
+            <span data-lang="el" class="lang-inline active">Ασθενοφόρο</span>
+            <span data-lang="en" class="lang-inline">Ambulance</span>
+            <span data-lang="tr" class="lang-inline">Ambulans</span>
+            <span data-lang="bg" class="lang-inline">Линейка</span>
+            <span data-lang="ro" class="lang-inline">Ambulanță</span>
+          </div>
+        </a>
+        <a class="emergency-item em-fire" href="tel:199">
+          <div class="em-num">199</div>
+          <div class="em-label">
+            <span data-lang="el" class="lang-inline active">Πυροσβεστική</span>
+            <span data-lang="en" class="lang-inline">Fire Dept.</span>
+            <span data-lang="tr" class="lang-inline">İtfaiye</span>
+            <span data-lang="bg" class="lang-inline">Пожарна</span>
+            <span data-lang="ro" class="lang-inline">Pompieri</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="placeholder-note" style="margin-top:16px">✏️
+        <span data-lang="el" class="lang-inline active">Αλλάξτε τον αριθμό τηλεφώνου "+30 690 000 0000" και τα WhatsApp links με τα δικά σας στοιχεία.</span>
+        <span data-lang="en" class="lang-inline">Replace the phone number "+30 690 000 0000" and WhatsApp link with your own details.</span>
+        <span data-lang="tr" class="lang-inline">"+30 690 000 0000" telefon numarasını ve WhatsApp bağlantısını kendinize ait olanlarla değiştirin.</span>
+        <span data-lang="bg" class="lang-inline">Заменете телефонния номер и WhatsApp линка с вашите данни.</span>
+        <span data-lang="ro" class="lang-inline">Înlocuiți numărul de telefon și linkul WhatsApp cu datele dvs.</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <p>
+    <span data-lang="el" class="lang-inline active">Σας ευχόμαστε μια υπέροχη διαμονή 🌿</span>
+    <span data-lang="en" class="lang-inline">Wishing you a wonderful stay 🌿</span>
+    <span data-lang="tr" class="lang-inline">Harika bir konaklama dileriz 🌿</span>
+    <span data-lang="bg" class="lang-inline">Пожелаваме ви прекрасен престой 🌿</span>
+    <span data-lang="ro" class="lang-inline">Vă dorim un sejur minunat 🌿</span>
+  </p>
+  <p style="margin-top:8px; opacity:0.6;">
+    <span data-lang="el" class="lang-inline active">Δημιουργήθηκε δωρεάν με Claude AI</span>
+    <span data-lang="en" class="lang-inline">Created for free with Claude AI</span>
+    <span data-lang="tr" class="lang-inline">Claude AI ile ücretsiz oluşturuldu</span>
+    <span data-lang="bg" class="lang-inline">Създадено безплатно с Claude AI</span>
+    <span data-lang="ro" class="lang-inline">Creat gratuit cu Claude AI</span>
+  </p>
+</div>
+
+<script>
+  let currentLang = 'el';
+
+  function setLang(lang) {
+    currentLang = lang;
+    // Update buttons
+    document.querySelectorAll('.lang-btn').forEach((btn, i) => {
+      const langs = ['el','en','tr','bg','ro'];
+      btn.classList.toggle('active', langs[i] === lang);
+    });
+    // Update block elements
+    document.querySelectorAll('[data-lang]').forEach(el => {
+      el.classList.toggle('active', el.dataset.lang === lang);
+      if (el.classList.contains('lang-inline')) {
+        el.style.display = el.dataset.lang === lang ? 'inline' : 'none';
+      } else {
+        el.style.display = el.dataset.lang === lang ? 'block' : 'none';
+      }
+    });
+  }
+
+  function toggleCard(header) {
+    const card = header.parentElement;
+    card.classList.toggle('open');
+  }
+
+  function copyWifi() {
+    const pass = document.getElementById('wifi-pass').textContent;
+    navigator.clipboard.writeText(pass).then(() => {
+      const btn = document.querySelector('.wifi-copy-btn');
+      const orig = btn.textContent;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => { btn.innerHTML = '📋 <span data-lang="' + currentLang + '" class="lang-inline active">' + (currentLang === 'el' ? 'Αντιγραφή κωδικού' : currentLang === 'tr' ? 'Şifreyi kopyala' : currentLang === 'bg' ? 'Копиране на паролата' : currentLang === 'ro' ? 'Copiați parola' : 'Copy password') + '</span>'; }, 2000);
+    }).catch(() => {
+      prompt('WiFi Password:', pass);
+    });
+  }
+
+  // Init
+  setLang('el');
+  // Ensure first card is open on load
+  document.querySelector('.section-card').classList.add('open');
+</script>
+</body>
+</html>
