@@ -47,7 +47,7 @@ module.exports = async function(req, res) {
       const ticketKey = ticketRes.result.ticket_key;
       const decryptedKey = decryptTicketKey(ticketKey, accessSecret);
       const encryptedPwd = encryptPassword(code, decryptedKey);
-      const pwdBody = JSON.stringify({ name: code + '_' + (guestName || 'Guest'), password: encryptedPwd, password_type: 'ticket', ticket_id: ticketId, effective_time: parseInt(effectiveTime) + 10800, invalid_time: parseInt(invalidTime) + 10800 });
+      const pwdBody = JSON.stringify({ name: code + '_' + (guestName || 'Guest'), password: encryptedPwd, password_type: 'ticket', ticket_id: ticketId, effective_time: parseInt(effectiveTime), invalid_time: parseInt(invalidTime) });
       const result = await tuyaRequest('POST', '/v1.0/devices/' + deviceId + '/door-lock/temp-password', pwdBody, accessId, accessSecret, baseUrl, token);
       return res.json(result);
     }
