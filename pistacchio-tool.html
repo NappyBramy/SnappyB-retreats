@@ -1032,8 +1032,8 @@ async function saveEditBooking() {
   if (status.passwordId && status.passwordId2) {
     const settings = getSettings();
     const baseUrl = getBaseUrl(settings.region||'eu');
-    const effectiveTime = Math.floor(new Date(newCheckin).getTime()/1000) - 10800;
-    const invalidTime = Math.floor(new Date(newCheckout).getTime()/1000) - 10800;
+  const effectiveTime=Math.floor(new Date(checkin).getTime()/1000);
+const invalidTime=Math.floor(new Date(checkout).getTime()/1000);
     try {
       const tokenRes = await getToken(settings.accessId, settings.accessSecret, baseUrl);
       if (tokenRes.success) {
