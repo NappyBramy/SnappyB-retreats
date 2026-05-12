@@ -45,7 +45,7 @@ module.exports = async function(req, res) {
   if (req.method === 'OPTIONS') { return res.status(200).end(); }
 
   try {
-    const { action, accessId, accessSecret, baseUrl, token, deviceId, code, effectiveTime, invalidTime, guestName, passwordId } = req.body;
+    const { action, accessId, accessSecret, baseUrl, token, deviceId, code, effectiveTime, invalidTime, guestName, passwordId, roomName } = req.body;
 
     if (action === 'getToken') {
       const result = await tuyaRequest('GET', '/v1.0/token?grant_type=1', null, accessId, accessSecret, baseUrl, null);
@@ -62,8 +62,9 @@ module.exports = async function(req, res) {
       // Use current time as effective (active immediately) and 1 year as invalid (permanent-like)
       const now = Math.floor(Date.now() / 1000);
       const oneYear = now + (365 * 24 * 60 * 60);
+      const pwdName = (roomName ? roomName + ' ' : '') + code + ' ' + (guestName || 'Guest');
       const pwdBody = JSON.stringify({
-        name: code + '_' + (guestName || 'Guest'),
+        name: pwdName,
         password: encryptedPwd,
         password_type: 'ticket',
         ticket_id: ticketId,
