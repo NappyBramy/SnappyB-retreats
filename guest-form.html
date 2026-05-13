@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnappyB Retreats — Guest Registration</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system,'SF Pro Display','Helvetica Neue',sans-serif; background: #f2f2f7; color: #000; min-height: 100vh; }
+.header { background: white; padding: 14px 16px 12px; border-bottom: 0.5px solid #e5e5ea; position: sticky; top: 0; z-index: 10; }
+.header-logo { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; color: #000; }
+.header-sub { font-size: 0.65rem; color: #8e8e93; margin-top: 1px; }
+.body { padding: 16px; max-width: 540px; margin: 0 auto; padding-bottom: 50px; }
+.lang-bar { display:flex; gap:4px; background:#e5e5ea; border-radius:10px; padding:2px; margin-bottom:20px; }
+.lang-btn { flex:1; text-align:center; padding:6px 2px; font-size:0.65rem; font-weight:500; color:#8e8e93; border-radius:8px; cursor:pointer; border:none; background:transparent; font-family:inherit; transition:all 0.15s; }
+.lang-btn.active { background:white; color:#000; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+.welcome { text-align:center; margin-bottom:20px; }
+.welcome-title { font-size:1.2rem; font-weight:700; color:#000; letter-spacing:-0.01em; margin-bottom:4px; }
+.welcome-sub { font-size:0.78rem; color:#8e8e93; line-height:1.5; }
+.slbl { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#8e8e93; margin-bottom:6px; padding-left:4px; }
+.prop-row { display:flex; gap:8px; margin-bottom:20px; }
+.prop-card { flex:1; padding:14px 8px; background:white; border-radius:12px; text-align:center; font-size:0.78rem; font-weight:500; color:#8e8e93; border:1.5px solid transparent; cursor:pointer; transition:all 0.15s; }
+.prop-card.active { border-color:#007aff; color:#007aff; background:#f0f5ff; font-weight:700; }
+.form-card { background:white; border-radius:12px; overflow:hidden; margin-bottom:20px; }
+.form-section-lbl { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#8e8e93; padding:12px 16px 4px; }
+.form-row { display:flex; align-items:center; padding:12px 16px; border-bottom:0.5px solid #e5e5ea; }
+.form-row:last-child { border-bottom:none; }
+.form-row.invalid { background:#fff5f5; }
+.form-lbl { font-size:0.82rem; color:#3c3c43; font-weight:500; width:100px; flex-shrink:0; }
+.form-input { flex:1; border:none; font-size:0.82rem; color:#000; text-align:right; background:transparent; outline:none; font-family:inherit; }
+.form-input::placeholder { color:#c7c7cc; }
+.date-row { display:flex; align-items:center; padding:12px 16px; border-bottom:0.5px solid #e5e5ea; }
+.date-row:last-child { border-bottom:none; }
+.date-lbl { font-size:0.82rem; color:#3c3c43; font-weight:500; flex:1; }
+.date-input { border:none; font-size:0.82rem; color:#007aff; background:transparent; outline:none; font-family:inherit; font-weight:500; text-align:right; }
+.submit-col { display:flex; flex-direction:column; gap:12px; margin-bottom:14px; }
+.submit-btn { width:100%; padding:16px; border:none; border-radius:14px; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:inherit; text-align:center; transition:opacity 0.15s; }
+.submit-btn:active { opacity:0.8; }
+.submit-btn.wa { background:#25d366; color:white; }
+.submit-btn.bk { background:#003580; color:white; }
+.privacy { font-size:0.65rem; color:#c7c7cc; text-align:center; line-height:1.5; padding:0 10px; }
+.error-msg { font-size:0.78rem; color:#ff3b30; text-align:center; margin-bottom:12px; padding:10px; background:#fff5f5; border-radius:10px; display:none; }
+.error-msg.show { display:block; }
+.success-screen { display:none; text-align:center; padding:60px 20px; }
+.success-screen.show { display:block; }
+.success-icon { font-size:3.5rem; margin-bottom:16px; }
+.success-title { font-size:1.3rem; font-weight:700; color:#000; margin-bottom:8px; }
+.success-text { font-size:0.82rem; color:#8e8e93; line-height:1.6; margin-bottom:20px; }
+.back-btn { padding:12px 24px; background:white; border:1.5px solid #e5e5ea; border-radius:12px; font-size:0.85rem; font-weight:600; cursor:pointer; font-family:inherit; color:#007aff; }
+.copy-modal { display:none; background:#f0f5ff; border-radius:12px; padding:16px; margin-top:12px; border:1px solid #dde9ff; }
+.copy-modal-title { font-size:0.75rem; font-weight:700; color:#0055cc; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.05em; }
+.copy-modal-instruction { font-size:0.78rem; color:#8e8e93; margin-bottom:10px; line-height:1.5; }
+.copy-msg-box { background:white; border:0.5px solid #e5e5ea; border-radius:10px; padding:12px; font-size:0.78rem; line-height:1.6; white-space:pre-wrap; color:#000; margin-bottom:10px; max-height:160px; overflow-y:auto; }
+.copy-btn-full { width:100%; padding:13px; background:#007aff; color:white; border:none; border-radius:10px; font-family:inherit; font-size:0.9rem; font-weight:700; cursor:pointer; transition:opacity 0.15s; }
+.copy-btn-full:active { opacity:0.8; }
+.copy-success { display:none; text-align:center; color:#248a3d; font-size:0.82rem; margin-top:8px; font-weight:600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🌿 SnappyB Retreats</div>
+  <div class="header-sub">Guest Registration</div>
+</div>
+
+<div class="body">
+
+  <div id="welcome-el" class="welcome"><div class="welcome-title">Καλώς ήρθατε</div><div class="welcome-sub">Συμπληρώστε τα στοιχεία σας για να λάβετε τον κωδικό πρόσβασης. Διαρκεί μόνο 1 λεπτό.</div></div>
+  <div id="welcome-en" class="welcome" style="display:none"><div class="welcome-title">Welcome</div><div class="welcome-sub">Please complete the form below to receive your access code. It takes only 1 minute.</div></div>
+  <div id="welcome-tr" class="welcome" style="display:none"><div class="welcome-title">Hoş Geldiniz</div><div class="welcome-sub">Erişim kodunuzu almak için lütfen aşağıdaki formu doldurun. Sadece 1 dakika sürer.</div></div>
+  <div id="welcome-bg" class="welcome" style="display:none"><div class="welcome-title">Добре дошли</div><div class="welcome-sub">Попълнете формуляра, за да получите кода за достъп. Отнема само 1 минута.</div></div>
+  <div id="welcome-ro" class="welcome" style="display:none"><div class="welcome-title">Bun venit</div><div class="welcome-sub">Completați formularul de mai jos pentru a primi codul de acces. Durează doar 1 minut.</div></div>
+
+  <div class="lang-bar">
+    <button class="lang-btn active" onclick="setLang('el')">🇬🇷 ΕΛ</button>
+    <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+    <button class="lang-btn" onclick="setLang('tr')">🇹🇷 TR</button>
+    <button class="lang-btn" onclick="setLang('bg')">🇧🇬 BG</button>
+    <button class="lang-btn" onclick="setLang('ro')">🇷🇴 RO</button>
+  </div>
+
+  <div id="form-card">
+    <div class="slbl" id="lbl-property">ΚΤΗΡΙΟ</div>
+    <div class="prop-row">
+      <div class="prop-card" id="prop-pistacchio" onclick="selectProperty('pistacchio')">🏡 Pistacchio by SnappyB</div>
+      <div class="prop-card" id="prop-living" onclick="selectProperty('living')">🏠 SnappyB Living Spaces</div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-section-lbl" id="lbl-details">ΠΡΟΣΩΠΙΚΑ ΣΤΟΙΧΕΙΑ</div>
+      <div class="form-row">
+        <div class="form-lbl" id="lbl-name">Ονοματεπώνυμο</div>
+        <input class="form-input" id="f-name" placeholder="Γιώργης Παπαδόπουλος" autocomplete="name" autocapitalize="words">
+      </div>
+      <div class="form-row">
+        <div class="form-lbl" id="lbl-city">Πόλη</div>
+        <input class="form-input" id="f-city" placeholder="Αθήνα" autocomplete="address-level2" autocapitalize="words">
+      </div>
+      <div class="form-row">
+        <div class="form-lbl" id="lbl-zip">Τ.Κ.</div>
+        <input class="form-input" id="f-zip" placeholder="10431" type="tel" inputmode="numeric" autocomplete="postal-code">
+      </div>      <div id="field-id-el" class="form-row">
+        <div class="form-lbl">ΑΦΜ</div>
+        <input class="form-input" id="f-id-el" placeholder="123456789" type="tel" inputmode="numeric" maxlength="9">
+      </div>
+      <div id="field-id-en" class="form-row" style="display:none">
+        <div class="form-lbl" id="lbl-id-en">ID/Passport</div>
+        <input class="form-input" id="f-id-en" placeholder="AB123456" autocapitalize="characters">
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-section-lbl" id="lbl-dates">ΗΜΕΡΟΜΗΝΙΕΣ ΔΙΑΜΟΝΗΣ</div>
+      <div class="date-row">
+        <div class="date-lbl" id="lbl-checkin">Ημερομηνία Check-in</div>
+        <input class="date-input" id="f-checkin" type="date" onchange="validateDates()">
+      </div>      <div class="date-row">
+        <div class="date-lbl" id="lbl-checkout">Ημερομηνία Check-out</div>
+        <input class="date-input" id="f-checkout" type="date" onchange="validateDates()">
+      </div>
+    </div>
+
+    <div class="error-msg" id="form-error"></div>
+
+    <div class="submit-col">
+      <button class="submit-btn wa" onclick="submitForm('whatsapp')">💬 WhatsApp</button>
+      <button class="submit-btn bk" onclick="submitForm('booking')">🔵 Booking.com</button>
+    </div>
+
+    <div class="privacy" id="privacy-el">🔒 Τα στοιχεία σας αποστέλλονται με ασφάλεια και χρησιμοποιούνται μόνο για το check-in.</div>
+    <div class="privacy" id="privacy-en" style="display:none">🔒 Your information is sent securely and used only for check-in purposes.</div>
+    <div class="privacy" id="privacy-tr" style="display:none">🔒 Bilgileriniz güvenli şekilde iletilmektedir.</div>
+    <div class="privacy" id="privacy-bg" style="display:none">🔒 Вашите данни се изпращат сигурно.</div>
+    <div class="privacy" id="privacy-ro" style="display:none">🔒 Informațiile dvs. sunt transmise în siguranță.</div>
+
+    <div class="copy-modal" id="copy-modal">
+      <div class="copy-modal-title" id="copy-modal-title"></div>
+      <div class="copy-modal-instruction" id="copy-modal-instruction"></div>
+      <div class="copy-msg-box" id="copy-msg-box"></div>
+      <button class="copy-btn-full" onclick="copyMsg()">📋 <span id="copy-btn-text">Αντιγραφή Μηνύματος</span></button>
+      <div class="copy-success" id="copy-success">✅ Αντιγράφηκε!</div>
+    </div>
+  </div>
+
+  <div class="success-screen" id="success-screen">
+    <div class="success-icon">✅</div>
+    <div class="success-title" id="success-title">Ευχαριστούμε!</div>
+    <div class="success-text" id="success-text">Η εγγραφή σας ολοκληρώθηκε. Θα λάβετε τον κωδικό πρόσβασης σύντομα.</div>
+    <button class="back-btn" onclick="resetForm()">← Νέα Υποβολή</button>
+  </div>
+
+  <!-- Confirmation screen -->
+  <div class="success-screen" id="confirm-screen">
+    <div class="success-icon">📤</div>
+    <div class="success-title" id="confirm-title">Στείλατε τα στοιχεία σας;</div>
+    <div class="success-text" id="confirm-sub">Βεβαιωθείτε ότι το μήνυμα εστάλη πριν συνεχίσετε.</div>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+      <button class="submit-btn wa" onclick="confirmSent()">✅ <span id="confirm-yes">Ναι, έστειλα</span></button>
+      <button class="submit-btn" style="background:#f2f2f7; color:#007aff;" onclick="retrySend()">🔄 <span id="confirm-retry">Όχι, στείλτε ξανά</span></button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const WHATSAPP_NUMBER='306979892930';
+let currentLang='el', selectedProperty='';
+const LABELS={
+  el:{property:'ΚΤΗΡΙΟ',details:'ΠΡΟΣΩΠΙΚΑ ΣΤΟΙΧΕΙΑ',name:'Ονοματεπώνυμο',city:'Πόλη',zip:'Τ.Κ.',dates:'ΗΜΕΡΟΜΗΝΙΕΣ ΔΙΑΜΟΝΗΣ',checkin:'Ημερομηνία Check-in',checkout:'Ημερομηνία Check-out',nameP:'Γιώργης Παπαδόπουλος',cityP:'Αθήνα',zipP:'10431',idP:'123456789',success:'Ευχαριστούμε!',successText:'Η εγγραφή σας ολοκληρώθηκε. Θα λάβετε τον κωδικό πρόσβασης σύντομα.',bookingInstruction:'Αντιγράψτε το μήνυμα, ανοίξτε την εφαρμογή Booking.com, πηγαίνετε στη συνομιλία μαζί μας και επικολλήστε το.'},
+  en:{property:'PROPERTY',details:'PERSONAL DETAILS',name:'Full Name',city:'City',zip:'ZIP / Postal Code',dates:'STAY DATES',checkin:'Check-in Date',checkout:'Check-out Date',nameP:'John Smith',cityP:'London',zipP:'SW1A 1AA',idP:'AB123456',success:'Thank you!',successText:'Your registration is complete. You will receive your access code shortly.',bookingInstruction:'Copy the message, open the Booking.com app, go to your conversation with us and paste it.'},
+  tr:{property:'MULK',details:'KISISEL BILGILER',name:'Ad Soyad',city:'Şehir',zip:'Posta Kodu',dates:'KONAKLAMA TARIHLERI',checkin:'Giriş Tarihi',checkout:'Çıkış Tarihi',nameP:'Ahmet Yılmaz',cityP:'İstanbul',zipP:'34000',idP:'AB123456',success:'Teşekkürler!',successText:'Kaydınız tamamlandı. Erişim kodunuz kısa süre içinde gönderilecektir.',bookingInstruction:'Mesajı kopyalayın, Booking.com uygulamasını açın, bizimle olan konuşmanıza gidin ve yapıştırın.'},
+  bg:{property:'ИМОТ',details:'ЛИЧНИ ДАННИ',name:'Пълно Име',city:'Град',zip:'Пощенски Код',dates:'ДАТИ НА ПРЕСТОЙ',checkin:'Дата на Настаняване',checkout:'Дата на Напускане',nameP:'Иван Иванов',cityP:'София',zipP:'1000',idP:'AB123456',success:'Благодарим!',successText:'Регистрацията ви е завършена. Кодът за достъп ще бъде изпратен скоро.',bookingInstruction:'Копирайте съобщението, отворете приложението Booking.com, отидете в разговора с нас и го поставете.'},
+  ro:{property:'PROPRIETATE',details:'DATE PERSONALE',name:'Nume Complet',city:'Oraș',zip:'Cod Poștal',dates:'DATELE SEJURULUI',checkin:'Data Check-in',checkout:'Data Check-out',nameP:'Ion Popescu',cityP:'București',zipP:'010001',idP:'AB123456',success:'Mulțumim!',successText:'Înregistrarea dvs. este completă. Veți primi codul de acces în curând.',bookingInstruction:'Copiați mesajul, deschideți aplicația Booking.com, mergeți la conversația cu noi și lipiți-l.'}
+};
+
+function setLang(lang){
+  currentLang=lang;
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',['el','en','tr','bg','ro'][i]===lang));
+  ['el','en','tr','bg','ro'].forEach(l=>{
+    ['welcome','privacy'].forEach(id=>{const el=document.getElementById(id+'-'+l);if(el)el.style.display=l===lang?'block':'none';});
+  });
+  const isEl=lang==='el';
+  document.getElementById('field-id-el').style.display=isEl?'flex':'none';
+  document.getElementById('field-id-en').style.display=isEl?'none':'flex';
+  const L=LABELS[lang]||LABELS['en'];
+  document.getElementById('lbl-property').textContent=L.property;
+  document.getElementById('lbl-details').textContent=L.details;
+  document.getElementById('lbl-name').textContent=L.name;
+  document.getElementById('lbl-city').textContent=L.city;
+  document.getElementById('lbl-zip').textContent=L.zip;
+  document.getElementById('lbl-dates').textContent=L.dates;
+  document.getElementById('lbl-checkin').textContent=L.checkin;
+  document.getElementById('lbl-checkout').textContent=L.checkout;
+  document.getElementById('f-name').placeholder=L.nameP;
+  document.getElementById('f-city').placeholder=L.cityP;
+  document.getElementById('f-zip').placeholder=L.zipP;
+  // ZIP: numeric only for Greek, text for others (UK/CA have letters)
+  const zipField=document.getElementById('f-zip');
+  if(isEl){
+    zipField.type='tel';
+    zipField.inputMode='numeric';
+  } else {
+    zipField.type='text';
+    zipField.inputMode='text';
+  }
+  if(!isEl){document.getElementById('lbl-id-en').textContent=L.id||'ID/Passport';document.getElementById('f-id-en').placeholder=L.idP;}
+  document.getElementById('success-title').textContent=L.success;
+  document.getElementById('success-text').textContent=L.successText;
+}
+
+function selectProperty(prop){
+  selectedProperty=prop;
+  document.getElementById('prop-pistacchio').classList.toggle('active',prop==='pistacchio');
+  document.getElementById('prop-living').classList.toggle('active',prop==='living');
+}
+
+function validateDates(){
+  const today=new Date().toISOString().slice(0,10);
+  const ci=document.getElementById('f-checkin').value;
+  const co=document.getElementById('f-checkout').value;
+  const err=document.getElementById('form-error');
+  // Force reset if past date selected (mobile bypass)
+  if(ci && ci<today){
+    document.getElementById('f-checkin').value=today;
+    return false;
+  }
+  // Set min checkout = day after checkin
+  if(ci){
+    const nextDay=new Date(ci);
+    nextDay.setDate(nextDay.getDate()+1);
+    document.getElementById('f-checkout').min=nextDay.toISOString().slice(0,10);
+    // Reset checkout if it's before or equal to checkin
+    if(co && co<=ci){
+      document.getElementById('f-checkout').value='';
+    }
+  }
+  if(ci&&co&&co<=ci){
+    err.classList.add('show');
+    const msgs={el:'Η ημερομηνία check-out πρέπει να είναι μετά το check-in.',en:'Check-out must be after check-in.',tr:'Çıkış tarihi girişten sonra olmalıdır.',bg:'Датата на напускане трябва да е след настаняването.',ro:'Check-out trebuie să fie după check-in.'};
+    err.textContent=msgs[currentLang]||msgs['en'];
+    return false;
+  }
+  err.classList.remove('show');
+  return true;
+}
+
+function submitForm(platform){
+  const name=document.getElementById('f-name').value.trim();
+  const city=document.getElementById('f-city').value.trim();
+  const zip=document.getElementById('f-zip').value.trim();
+  const checkin=document.getElementById('f-checkin').value;
+  const checkout=document.getElementById('f-checkout').value;
+  const isEl=currentLang==='el';
+  const idVal=isEl?document.getElementById('f-id-el').value.trim():document.getElementById('f-id-en').value.trim();
+  const errEl=document.getElementById('form-error');
+
+  // Validation
+  if(!selectedProperty||!name||!city||!zip||!idVal||!checkin||!checkout){
+    errEl.classList.add('show');
+    const msgs={el:'Παρακαλούμε συμπληρώστε όλα τα πεδία και επιλέξτε κτήριο.',en:'Please fill in all fields and select your property.',tr:'Lütfen tüm alanları doldurun.',bg:'Моля попълнете всички полета.',ro:'Vă rugăm să completați toate câmpurile.'};
+    errEl.textContent=msgs[currentLang]||msgs['en'];
+    return;
+  }
+  if(!validateDates()) return;
+  if(isEl&&!/^\d{9}$/.test(idVal)){
+    errEl.classList.add('show');
+    errEl.textContent='Το ΑΦΜ πρέπει να αποτελείται από ακριβώς 9 ψηφία.';
+    return;
+  }
+  // Check-in not in past (allow today)
+  const today=new Date().toISOString().slice(0,10);
+  if(checkin<today){
+    errEl.classList.add('show');
+    const msgs={el:'Η ημερομηνία check-in δεν μπορεί να είναι στο παρελθόν.',en:'Check-in date cannot be in the past.',tr:'Giriş tarihi geçmişte olamaz.',bg:'Датата на настаняване не може да е в миналото.',ro:'Data check-in nu poate fi în trecut.'};
+    errEl.textContent=msgs[currentLang]||msgs['en'];
+    return;
+  }
+
+  errEl.classList.remove('show');
+  const propName=selectedProperty==='pistacchio'?'Pistacchio by SnappyB':'SnappyB Living Spaces';
+  const idLabel=isEl?'ΑΦΜ':'ID/Passport';
+  const msg=`${propName}\n\nName: ${name}\nCity: ${city}\nZIP: ${zip}\n${idLabel}: ${idVal}\nCheck-in: ${checkin}\nCheck-out: ${checkout}`;
+
+  if(platform==='whatsapp'){
+    window._lastPlatform = 'whatsapp';
+    window._lastMsg = msg;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
+    showConfirmation();
+  } else if(platform==='booking'){
+    const L=LABELS[currentLang]||LABELS['en'];
+    const modalTitles={el:'🔵 ΑΠΟΣΤΟΛΗ ΜΕΣΩ BOOKING.COM',en:'🔵 SEND VIA BOOKING.COM',tr:'🔵 BOOKING.COM ILE GONDER',bg:'🔵 ИЗПРАТИ ЧРЕЗ BOOKING.COM',ro:'🔵 TRIMITE PRIN BOOKING.COM'};
+    const copyBtnLabels={el:'Αντιγραφή Μηνύματος',en:'Copy Message',tr:'Mesajı Kopyala',bg:'Копирай Съобщението',ro:'Copiați Mesajul'};
+    document.getElementById('copy-modal').style.display='block';
+    document.getElementById('copy-modal-title').textContent=modalTitles[currentLang]||modalTitles['en'];
+    document.getElementById('copy-modal-instruction').textContent=L.bookingInstruction;
+    document.getElementById('copy-msg-box').textContent=msg;
+    document.getElementById('copy-btn-text').textContent=copyBtnLabels[currentLang]||copyBtnLabels['en'];
+    window._msgToCopy=msg;
+    window._lastPlatform = 'booking';
+    window._lastMsg = msg;
+    setTimeout(()=>document.getElementById('copy-modal').scrollIntoView({behavior:'smooth',block:'center'}),100);
+  }
+}
+
+function showConfirmation(){
+  document.getElementById('form-card').style.display='none';
+  document.getElementById('success-screen').classList.remove('show');
+  document.getElementById('confirm-screen').classList.add('show');
+  // Multilingual confirmation
+  const titles={el:'Στείλατε τα στοιχεία σας;',en:'Did you send your details?',tr:'Bilgilerinizi gönderdiniz mi?',bg:'Изпратихте ли данните си?',ro:'Ați trimis datele dvs.?'};
+  const subs={el:'Βεβαιωθείτε ότι το μήνυμα εστάλη πριν συνεχίσετε.',en:'Please make sure the message was sent before continuing.',tr:'Devam etmeden önce mesajın gönderildiğinden emin olun.',bg:'Моля проверете дали съобщението е изпратено.',ro:'Asigurați-vă că mesajul a fost trimis înainte de a continua.'};
+  const yesLabels={el:'Ναι, έστειλα',en:'Yes, I sent it',tr:'Evet, gönderdim',bg:'Да, изпратих',ro:'Da, am trimis'};
+  const retryLabels={el:'Όχι, στείλτε ξανά',en:'No, send again',tr:'Hayır, tekrar gönder',bg:'Не, изпрати отново',ro:'Nu, trimite din nou'};
+  document.getElementById('confirm-title').textContent=titles[currentLang]||titles['en'];
+  document.getElementById('confirm-sub').textContent=subs[currentLang]||subs['en'];
+  document.getElementById('confirm-yes').textContent=yesLabels[currentLang]||yesLabels['en'];
+  document.getElementById('confirm-retry').textContent=retryLabels[currentLang]||retryLabels['en'];
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function confirmSent(){
+  document.getElementById('confirm-screen').classList.remove('show');
+  document.getElementById('success-screen').classList.add('show');
+}
+
+function retrySend(){
+  document.getElementById('confirm-screen').classList.remove('show');
+  document.getElementById('form-card').style.display='block';
+  if(window._lastPlatform==='whatsapp'){
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(window._lastMsg)}`,'_blank');
+    showConfirmation();
+  } else if(window._lastPlatform==='booking'){
+    window._msgToCopy = window._lastMsg;
+    document.getElementById('copy-modal').style.display='block';
+    setTimeout(()=>document.getElementById('copy-modal').scrollIntoView({behavior:'smooth',block:'center'}),100);
+  }
+}
+  navigator.clipboard.writeText(window._msgToCopy||'').then(()=>{
+    const s=document.getElementById('copy-success');
+    const btn=document.querySelector('.copy-btn-full');
+    s.style.display='block';
+    btn.textContent='✅ Copied!';
+    setTimeout(()=>{s.style.display='none';btn.innerHTML='📋 <span id="copy-btn-text">'+document.getElementById('copy-btn-text').textContent+'</span>';},2500);
+  });
+}
+
+function resetForm(){
+  selectedProperty='';
+  document.getElementById('prop-pistacchio').classList.remove('active');
+  document.getElementById('prop-living').classList.remove('active');
+  document.getElementById('f-name').value='';
+  document.getElementById('f-city').value='';
+  document.getElementById('f-zip').value='';
+  document.getElementById('f-id-el').value='';
+  document.getElementById('f-id-en').value='';
+  document.getElementById('f-checkin').value='';
+  document.getElementById('f-checkout').value='';
+  document.getElementById('form-error').classList.remove('show');
+  document.getElementById('confirm-screen').classList.remove('show');
+  document.getElementById('form-card').style.display='block';
+  document.getElementById('success-screen').classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Set min date to today — no past dates
+const _today = new Date().toISOString().slice(0,10);
+document.getElementById('f-checkin').min = _today;
+document.getElementById('f-checkin').addEventListener('change', function(){
+  if(this.value < _today){
+    this.value = _today;
+  }
+  validateDates();
+});
+
+setLang('el');
+</script>
+</body>
+</html>
