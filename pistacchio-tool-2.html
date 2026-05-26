@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnappyB Retreats — Hotel Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#007aff;--green:#34c759;--red:#ff3b30;--gray:#8e8e93;--separator:rgba(60,60,67,0.12);--bg:#f2f2f7;--card:#fff;--dark:#000;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;}
+header{background:var(--card);border-bottom:.5px solid var(--separator);padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:1.05rem;font-weight:700;}
+.subtitle{font-size:.7rem;color:var(--gray);margin-top:1px;}
+.tabs{background:var(--card);border-bottom:.5px solid var(--separator);display:flex;padding:0 16px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:10px 16px;font-size:.82rem;font-weight:500;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600;}
+.panel{display:none;}.panel.active{display:block;}
+.container{max-width:540px;margin:0 auto;padding:16px 16px 60px;}
+.section-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--gray);margin-bottom:6px;padding-left:4px;}
+.card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 .5px var(--separator);}
+.card h3{font-size:.88rem;font-weight:600;margin-bottom:10px;}
+label{display:block;font-size:.8rem;font-weight:500;color:#3c3c43;margin-bottom:5px;margin-top:12px;}
+label:first-of-type{margin-top:0;}
+input[type=text],input[type=date],input[type=time]{width:100%;padding:11px 14px;border:.5px solid var(--separator);border-radius:10px;font-family:inherit;font-size:.9rem;color:var(--dark);background:var(--bg);}
+input:focus{outline:none;border-color:var(--blue);background:white;}
+textarea{width:100%;padding:11px 14px;border:.5px solid var(--separator);border-radius:10px;font-family:inherit;font-size:.85rem;color:var(--dark);background:var(--bg);resize:vertical;min-height:70px;}
+textarea:focus{outline:none;border-color:var(--blue);background:white;}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;background:var(--blue);color:white;border:none;border-radius:12px;padding:14px 20px;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer;width:100%;margin-top:16px;transition:opacity .15s;}
+.btn:active{opacity:.75;}
+.btn.green{background:var(--green);}
+.btn.red{background:var(--red);}
+.btn.secondary{background:#e8e8ed;color:var(--blue);}
+/* Rooms grid */
+.rooms-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.room-card{background:var(--card);border-radius:12px;padding:12px;cursor:pointer;transition:all .15s;position:relative;box-shadow:0 1px 3px rgba(0,0,0,.06),0 0 0 .5px var(--separator);border:2px solid transparent;}
+.room-card.selected{border-color:var(--blue);background:#f0f6ff;}
+.room-card.selected::after{content:"✓";position:absolute;top:8px;right:10px;font-size:.85rem;color:var(--blue);font-weight:700;}
+.room-card.occupied{background:#fff0f0;border:.5px solid #ffd0cc;}
+.room-card-name{font-size:.88rem;font-weight:600;margin-bottom:4px;}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;}
+.status-dot.free{background:var(--green);}
+.status-dot.occupied{background:var(--red);}
+.status-text{font-size:.72rem;font-weight:600;}
+.status-text.free{color:var(--green);}
+.status-text.occupied{color:var(--red);}
+.room-guest-info{margin-top:6px;font-size:.72rem;color:#3c3c43;line-height:1.8;}
+.room-guest-row{display:flex;align-items:center;gap:4px;}
+/* Platform btns */
+.plat-row{display:flex;gap:8px;margin-top:6px;}
+.platform-btn{flex:1;padding:8px 4px;border:1.5px solid var(--separator);border-radius:10px;background:var(--bg);font-family:inherit;font-size:.78rem;font-weight:500;color:var(--gray);cursor:pointer;transition:all .15s;}
+.platform-btn.active{font-weight:700;}
+.platform-btn.booking.active{border-color:#003580;background:#dde9ff;color:#003580;}
+.platform-btn.airbnb.active{border-color:#ff5a5f;background:#ffedee;color:#ff5a5f;}
+.platform-btn.direct.active{border-color:var(--green);background:#d1f5d3;color:#248a3d;}
+/* Comm btns */
+.comm-row{display:flex;gap:8px;margin-top:6px;}
+.comm-btn{flex:1;padding:8px;border:1.5px solid var(--separator);border-radius:10px;background:var(--bg);font-family:inherit;font-size:.78rem;font-weight:500;color:var(--gray);cursor:pointer;}
+.comm-btn.wa.active{border-color:#25d366;background:#d1f5d3;color:#1a7a1a;font-weight:700;}
+.comm-btn.bk.active{border-color:#003580;background:#dde9ff;color:#003580;font-weight:700;}
+/* Date row */
+.date-row{display:flex;gap:8px;}
+.date-row>div{flex:1;}
+/* Result */
+.result-box{background:var(--card);border-radius:12px;padding:16px;margin-top:16px;display:none;box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 .5px var(--separator);}
+.result-box.show{display:block;}
+.code-display{font-size:2.4rem;font-weight:700;color:var(--blue);letter-spacing:.1em;text-align:center;margin:8px 0 16px;}
+.msg-preview{background:var(--bg);border-radius:10px;padding:14px;font-size:.82rem;line-height:1.7;white-space:pre-wrap;color:var(--dark);margin-top:10px;max-height:260px;overflow-y:auto;}
+.copy-btn{background:#e8e8ed;color:var(--blue);border:none;border-radius:10px;padding:10px 16px;font-family:inherit;font-size:.85rem;font-weight:600;cursor:pointer;width:100%;margin-top:8px;}
+.api-badge{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;padding:4px 10px;border-radius:20px;font-weight:500;margin-bottom:10px;}
+.api-badge.ok{background:#d1f5d3;color:#248a3d;}
+.api-badge.err{background:#ffd6d4;color:#c00;}
+.api-badge.loading{background:#dde9ff;color:#004fcc;}
+/* Stats */
+.stats-bar{background:var(--card);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;gap:16px;box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 .5px var(--separator);}
+.stat-item{flex:1;text-align:center;}
+.stat-num{font-size:1.4rem;font-weight:700;}
+.stat-num.green{color:var(--green);}
+.stat-num.red{color:var(--red);}
+.stat-num.blue{color:var(--blue);}
+.stat-lbl{font-size:.62rem;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+/* Log */
+.log-item{padding:12px 0;border-bottom:.5px solid var(--separator);font-size:.82rem;}
+.log-item:last-child{border-bottom:none;}
+.log-room{font-weight:600;margin-bottom:2px;}
+.log-meta{color:var(--gray);font-size:.72rem;line-height:1.8;}
+/* Spinner */
+.lang-toggle{display:flex;gap:6px;margin-bottom:10px;}
+.lang-toggle button{flex:1;padding:8px;border:1.5px solid var(--separator);border-radius:10px;background:var(--bg);font-family:inherit;font-size:.82rem;font-weight:500;color:var(--gray);cursor:pointer;}
+.lang-toggle button.active{border-color:var(--blue);background:#f0f6ff;color:var(--blue);font-weight:700;}
+.spinner{width:14px;height:14px;border:2px solid #b0c8ff;border-top-color:#004fcc;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* Edit modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:540px;}
+.modal-title{font-size:1rem;font-weight:700;margin-bottom:4px;}
+.modal-sub{font-size:.8rem;color:var(--gray);margin-bottom:16px;}
+/* Platform badge */
+.plat-badge{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:6px;display:inline-block;}
+.plat-badge.booking{background:#dde9ff;color:#003580;}
+.plat-badge.airbnb{background:#ffedee;color:#ff5a5f;}
+.plat-badge.direct{background:#d1f5d3;color:#248a3d;}
+</style>
+</head>
+<body>
+
+<header>
+  <div><div class="logo">🌿 SnappyB Retreats</div><div class="subtitle">Pistacchio Hotel Tool</div></div>
+  <div style="font-size:.72rem;color:var(--gray);text-align:right;">TTLock API<br><span style="color:var(--green);font-weight:600;">● Connected</span></div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('pistacchio',this)">🏡 Pistacchio</div>
+  <div class="tab" onclick="showTab('living',this)">🏠 Living Spaces</div>
+  <div class="tab" onclick="showTab('log',this)">📋 Log</div>
+</div>
+
+<!-- ===== PISTACCHIO TAB ===== -->
+<div class="panel active" id="tab-pistacchio">
+<div class="container">
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num green" id="p-stat-arr">0</div><div class="stat-lbl">Αφίξεις</div></div>
+    <div class="stat-item"><div class="stat-num blue" id="p-stat-stay">0</div><div class="stat-lbl">Σε διαμονή</div></div>
+    <div class="stat-item"><div class="stat-num red" id="p-stat-dep">0</div><div class="stat-lbl">Αναχωρήσεις</div></div>
+  </div>
+
+  <div class="section-label">ΕΠΙΛΟΓΗ ΔΩΜΑΤΙΟΥ</div>
+  <div class="rooms-grid" id="rooms-grid-p"></div>
+
+  <div class="card">
+    <h3>📋 Paste από Guest Form</h3>
+    <textarea id="paste-p" placeholder="Επικόλλησε εδώ το μήνυμα από το guest form..." oninput="autoFillP(this.value)"></textarea>
+    <div id="autofill-p" style="font-size:.75rem;margin-top:4px;color:var(--green);"></div>
+  </div>
+
+  <div class="card">
+    <h3>👤 Στοιχεία</h3>
+    <label>Ονοματεπώνυμο</label>
+    <input type="text" id="name-p" placeholder="Γιώργης Παπαδόπουλος" autocomplete="name">
+    <label>Πλατφόρμα</label>
+    <div class="plat-row">
+      <button class="platform-btn booking" onclick="setPlat('p','booking',this)">🔵 Booking</button>
+      <button class="platform-btn airbnb" onclick="setPlat('p','airbnb',this)">🔴 Airbnb</button>
+      <button class="platform-btn direct" onclick="setPlat('p','direct',this)">✅ Direct</button>
+    </div>
+    <label>Αποστολή μέσω</label>
+    <div class="comm-row">
+      <button class="comm-btn bk" onclick="setComm('p','booking',this)">🔵 Booking.com</button>
+      <button class="comm-btn wa" onclick="setComm('p','whatsapp',this)">💬 WhatsApp</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📅 Ημερομηνίες</h3>
+    <label>Check-in</label>
+    <div class="date-row">
+      <div><input type="date" id="ci-date-p"></div>
+      <div><input type="time" id="ci-time-p" value="13:30"></div>
+    </div>
+    <label>Check-out</label>
+    <div class="date-row">
+      <div><input type="date" id="co-date-p"></div>
+      <div><input type="time" id="co-time-p" value="12:00"></div>
+    </div>
+  </div>
+
+  <div id="api-status-p"></div>
+  <button class="btn" onclick="generateP()" id="gen-btn-p">🔑 Generate & Αποστολή</button>
+  <button class="btn secondary" onclick="resetP()" style="margin-top:8px;">🔄 Επαναφορά</button>
+
+  <div class="result-box" id="result-p">
+    <div class="lang-toggle">
+      <button class="active" id="lang-p-el" onclick="switchLangP('el')">🇬🇷 Ελληνικά</button>
+      <button id="lang-p-en" onclick="switchLangP('en')">🇬🇧 English</button>
+    </div>
+    <div class="code-display" id="code-p"></div>
+    <div class="msg-preview" id="msg-p"></div>
+    <button class="copy-btn" onclick="copyMsg('p')">📋 Αντιγραφή Μηνύματος</button>
+    <div id="wa-btn-p" style="margin-top:8px;"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== LIVING SPACES TAB ===== -->
+<div class="panel" id="tab-living">
+<div class="container">
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num green" id="l-stat-arr">0</div><div class="stat-lbl">Αφίξεις</div></div>
+    <div class="stat-item"><div class="stat-num blue" id="l-stat-stay">0</div><div class="stat-lbl">Σε διαμονή</div></div>
+    <div class="stat-item"><div class="stat-num red" id="l-stat-dep">0</div><div class="stat-lbl">Αναχωρήσεις</div></div>
+  </div>
+
+  <div class="section-label">ΕΠΙΛΟΓΗ ΔΩΜΑΤΙΟΥ</div>
+  <div class="rooms-grid" id="rooms-grid-l"></div>
+
+  <div class="card">
+    <h3>📋 Paste από Guest Form</h3>
+    <textarea id="paste-l" placeholder="Επικόλλησε εδώ το μήνυμα από το guest form..." oninput="autoFillL(this.value)"></textarea>
+    <div id="autofill-l" style="font-size:.75rem;margin-top:4px;color:var(--green);"></div>
+  </div>
+
+  <div class="card">
+    <h3>👤 Στοιχεία</h3>
+    <label>Ονοματεπώνυμο</label>
+    <input type="text" id="name-l" placeholder="Γιώργης Παπαδόπουλος" autocomplete="name">
+    <label>Πλατφόρμα</label>
+    <div class="plat-row">
+      <button class="platform-btn booking" onclick="setPlat('l','booking',this)">🔵 Booking</button>
+      <button class="platform-btn airbnb" onclick="setPlat('l','airbnb',this)">🔴 Airbnb</button>
+      <button class="platform-btn direct" onclick="setPlat('l','direct',this)">✅ Direct</button>
+    </div>
+    <label>Αποστολή μέσω</label>
+    <div class="comm-row">
+      <button class="comm-btn bk" onclick="setComm('l','booking',this)">🔵 Booking.com</button>
+      <button class="comm-btn wa" onclick="setComm('l','whatsapp',this)">💬 WhatsApp</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📅 Ημερομηνίες</h3>
+    <label>Check-in</label>
+    <div class="date-row">
+      <div><input type="date" id="ci-date-l"></div>
+      <div><input type="time" id="ci-time-l" value="13:30"></div>
+    </div>
+    <label>Check-out</label>
+    <div class="date-row">
+      <div><input type="date" id="co-date-l"></div>
+      <div><input type="time" id="co-time-l" value="12:00"></div>
+    </div>
+  </div>
+
+  <button class="btn" onclick="generateL()" id="gen-btn-l">🔑 Generate Κωδικός</button>
+  <button class="btn secondary" onclick="resetL()" style="margin-top:8px;">🔄 Επαναφορά</button>
+
+  <div class="result-box" id="result-l">
+    <div class="lang-toggle">
+      <button class="active" id="lang-l-el" onclick="switchLangL('el')">🇬🇷 Ελληνικά</button>
+      <button id="lang-l-en" onclick="switchLangL('en')">🇬🇧 English</button>
+    </div>
+    <div class="code-display" id="code-l"></div>
+    <div class="msg-preview" id="msg-l"></div>
+    <button class="copy-btn" onclick="copyMsg('l')">📋 Αντιγραφή Μηνύματος</button>
+    <div id="wa-btn-l" style="margin-top:8px;"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== LOG TAB ===== -->
+<div class="panel" id="tab-log">
+<div class="container">
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num green" id="log-success">0</div><div class="stat-lbl">Επιτυχίες</div></div>
+    <div class="stat-item"><div class="stat-num red" id="log-fail">0</div><div class="stat-lbl">Αποτυχίες</div></div>
+    <div class="stat-item"><div class="stat-num blue" id="log-total">0</div><div class="stat-lbl">Σύνολο</div></div>
+  </div>
+
+  <div class="section-label" style="display:flex;justify-content:space-between;align-items:center;padding-right:4px;">
+    ΙΣΤΟΡΙΚΟ ΚΡΑΤΗΣΕΩΝ
+    <button onclick="clearLog()" style="background:none;border:none;color:var(--red);font-size:.75rem;cursor:pointer;font-family:inherit;">Εκκαθάριση</button>
+  </div>
+  <div class="card" style="padding:0;">
+    <div id="log-list" style="padding:0 16px;">
+      <div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;">Δεν υπάρχουν καταχωρήσεις ακόμα.</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-room-name"></div>
+    <div class="modal-sub" id="modal-guest-name"></div>
+    <label>Check-in</label>
+    <div class="date-row" style="margin-bottom:10px;">
+      <div><input type="date" id="modal-ci-date"></div>
+      <div><input type="time" id="modal-ci-time"></div>
+    </div>
+    <label>Check-out</label>
+    <div class="date-row" style="margin-bottom:16px;">
+      <div><input type="date" id="modal-co-date"></div>
+      <div><input type="time" id="modal-co-time"></div>
+    </div>
+    <button class="btn green" onclick="saveEdit()">💾 Αποθήκευση</button>
+    <button class="btn red" onclick="deleteBooking()" style="margin-top:8px;">🚪 Check-out</button>
+    <button class="btn secondary" onclick="closeModal()" style="margin-top:8px;">Ακύρωση</button>
+  </div>
+</div>
+
+<script>
+// ===== TTLock Config =====
+const PROXY = 'https://script.google.com/macros/s/AKfycbz24YxkIV4XJImGySmzfg5BQ-Z8C3dlS8vQaUkUa5o2fVDhPUBYhepl8GbDppVFSZsa/exec';
+const TZ = 3 * 60 * 60 * 1000; // Greece UTC+3
+const ENTRANCE_LOCK = 23341511; // Pistacchio main entrance k3
+
+// ===== Room Config =====
+// Lock IDs will be added after installation
+const ROOMS_P = {
+  blossom: { name:'Blossom', lockId:12546977, floor:'3rd floor', side:'right', wifi:'Blossom Pistacchio', wifiPass:'WelcomeHome' },
+  forest:  { name:'Forest',  lockId:null,     floor:'3rd floor', side:'left',  wifi:'Forest Pistacchio',  wifiPass:'WelcomeHome' },
+  funky:   { name:'Funky',   lockId:null,     floor:'2nd floor', side:'right', wifi:'Funky Pistacchio',   wifiPass:'WelcomeHome' },
+  candy:   { name:'Candy',   lockId:null,     floor:'2nd floor', side:'left',  wifi:'Candy Pistacchio',   wifiPass:'WelcomeHome' },
+  green:   { name:'Green',   lockId:null,     floor:'1st floor', side:'right', wifi:'Green Pistacchio',   wifiPass:'WelcomeHome' },
+  pink:    { name:'Pink',    lockId:null,     floor:'1st floor', side:'left',  wifi:'Pink Pistacchio',    wifiPass:'WelcomeHome' }
+};
+
+const ROOMS_L = {
+  primopiano:  { name:'Primopiano',  floor:'1st floor', side:'right', lockbox:'1108', wifi:'Primopiano',  wifiPass:'WelcomeHome' },
+  terracotta:  { name:'Terracotta',  floor:'1st floor', side:'left',  lockbox:'4646', wifi:'Terracotta',  wifiPass:'WelcomeHome' },
+  reef:        { name:'Reef',        floor:'2nd floor', side:'left',  lockbox:'1700', wifi:'Reef',        wifiPass:'WelcomeHome' },
+  minimalo:    { name:'Minimalo',    floor:'2nd floor', side:'right', lockbox:'2104', wifi:'Minimalo',    wifiPass:'WelcomeHome' },
+  colours:     { name:'Colours',     floor:'3rd floor', side:'right', lockbox:'1302', wifi:'Colours',     wifiPass:'WelcomeHome' },
+  nappybramy:  { name:'NappyBramy',  floor:'3rd floor', side:'left',  lockbox:null,   wifi:'NappyBramy',  wifiPass:'WelcomeHome', private:true }
+};
+
+// ===== State =====
+let state = {
+  p: { room:null, plat:'', comm:'' },
+  l: { rooms:[], plat:'', comm:'' }
+};
+let roomStatuses = JSON.parse(localStorage.getItem('snappyb_statuses') || '{}');
+let actLog = JSON.parse(localStorage.getItem('snappyb_log') || '[]');
+let editKey = null;
+
+// ===== TABS =====
+function showTab(tab, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  el.classList.add('active');
+  if(tab === 'log') renderLog();
+  if(tab === 'pistacchio') { renderGridP(); renderStats(); }
+  if(tab === 'living') { renderGridL(); renderStats(); }
+}
+
+// ===== PLATFORM & COMM =====
+function setPlat(prop, p, btn) {
+  state[prop].plat = p;
+  btn.closest('.plat-row').querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setComm(prop, c, btn) {
+  state[prop].comm = c;
+  btn.closest('.comm-row').querySelectorAll('.comm-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== AUTOFILL =====
+function autoFillP(txt) {
+  const nm = txt.match(/Name:\s*([^\n\r]+)/i);
+  const ci = txt.match(/Check-in:\s*([^\n\r]+)/i);
+  const co = txt.match(/Check-out:\s*([^\n\r]+)/i);
+  let n = 0;
+  if(nm) { document.getElementById('name-p').value = nm[1].trim(); n++; }
+  if(ci) { const d = parseDate(ci[1].trim()); if(d) { document.getElementById('ci-date-p').value = d; n++; } }
+  if(co) { const d = parseDate(co[1].trim()); if(d) { document.getElementById('co-date-p').value = d; n++; } }
+  document.getElementById('autofill-p').textContent = n ? `✅ ${n} πεδία συμπληρώθηκαν` : '';
+}
+function autoFillL(txt) {
+  const nm = txt.match(/Name:\s*([^\n\r]+)/i);
+  const ci = txt.match(/Check-in:\s*([^\n\r]+)/i);
+  const co = txt.match(/Check-out:\s*([^\n\r]+)/i);
+  let n = 0;
+  if(nm) { document.getElementById('name-l').value = nm[1].trim(); n++; }
+  if(ci) { const d = parseDate(ci[1].trim()); if(d) { document.getElementById('ci-date-l').value = d; n++; } }
+  if(co) { const d = parseDate(co[1].trim()); if(d) { document.getElementById('co-date-l').value = d; n++; } }
+  document.getElementById('autofill-l').textContent = n ? `✅ ${n} πεδία συμπληρώθηκαν` : '';
+}
+function parseDate(s) {
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  return null;
+}
+
+// ===== TTLock API =====
+async function sendToLock(lockId, code, name, startMs, endMs) {
+  const url = `${PROXY}?action=addPasscode&lockId=${lockId}&passcode=${code}&passcodeName=${encodeURIComponent(name)}&startDate=${startMs}&endDate=${endMs}`;
+  const r = await fetch(url);
+  const d = await r.json();
+  if(d.success && d.result && d.result.keyboardPwdId) return d.result.keyboardPwdId;
+  throw new Error(JSON.stringify(d.result || d));
+}
+async function deleteFromLock(lockId, pwdId) {
+  const url = `${PROXY}?action=deletePasscode&lockId=${lockId}&keyboardPwdId=${pwdId}`;
+  await fetch(url);
+}
+
+// ===== GENERATE PISTACCHIO =====
+async function generateP() {
+  const room = state.p.room;
+  const name = document.getElementById('name-p').value.trim();
+  const ciDate = document.getElementById('ci-date-p').value;
+  const ciTime = document.getElementById('ci-time-p').value || '13:30';
+  const coDate = document.getElementById('co-date-p').value;
+  const coTime = document.getElementById('co-time-p').value || '12:00';
+  if(!room) { alert('Επίλεξε δωμάτιο!'); return; }
+  if(!name) { alert('Συμπλήρωσε ονοματεπώνυμο!'); return; }
+  if(!ciDate || !coDate) { alert('Συμπλήρωσε ημερομηνίες!'); return; }
+  if(!state.p.plat) { alert('Επίλεξε πλατφόρμα!'); return; }
+
+  const r = ROOMS_P[room];
+  const code = Math.floor(1000 + Math.random() * 9000).toString();
+  const startMs = new Date(`${ciDate}T${ciTime}:00`).getTime() - TZ;
+  const endMs = new Date(`${coDate}T${coTime}:00`).getTime() - TZ;
+  const passcodeName = `${r.name} - ${name}`;
+
+  const btn = document.getElementById('gen-btn-p');
+  btn.innerHTML = '<div class="spinner"></div> Αποστολή...';
+  btn.disabled = true;
+  document.getElementById('api-status-p').innerHTML = '<span class="api-badge loading"><div class="spinner"></div> Σύνδεση με κλειδαριές...</span>';
+
+  let roomPwdId = null, entrancePwdId = null;
+  let success = false;
+
+  try {
+    if(r.lockId) {
+      roomPwdId = await sendToLock(r.lockId, code, passcodeName, startMs, endMs);
+      document.getElementById('api-status-p').innerHTML = '<span class="api-badge loading"><div class="spinner"></div> Δωμάτιο ✅ — Κεντρική...</span>';
+      await new Promise(res => setTimeout(res, 2000));
+    }
+    entrancePwdId = await sendToLock(ENTRANCE_LOCK, code, passcodeName, startMs, endMs);
+    success = true;
+    document.getElementById('api-status-p').innerHTML = '<span class="api-badge ok">✅ Κωδικός στάλθηκε και στις 2 κλειδαριές!</span>';
+  } catch(e) {
+    document.getElementById('api-status-p').innerHTML = `<span class="api-badge err">❌ ${e.message}</span>`;
+    if(!r.lockId) {
+      success = true; // Lock ID not set yet — save booking anyway
+      document.getElementById('api-status-p').innerHTML = '<span class="api-badge ok">✅ Κωδικός δημιουργήθηκε (κλειδαριά δωματίου δεν έχει οριστεί ακόμα)</span>';
+    }
+  }
+
+  if(success) {
+    roomStatuses['p_' + room] = { guest:name, code, plat:state.p.plat, comm:state.p.comm, checkin:`${ciDate}T${ciTime}`, checkout:`${coDate}T${coTime}`, roomPwdId, entrancePwdId, lockId:r.lockId, entranceLockId:ENTRANCE_LOCK };
+    saveStatuses();
+    addLog({ prop:'Pistacchio', room:r.name, guest:name, code, plat:state.p.plat, checkin:ciDate, checkout:coDate, success:true, ts:now() });
+  } else {
+    addLog({ prop:'Pistacchio', room:r.name, guest:name, code, plat:state.p.plat, checkin:ciDate, checkout:coDate, success:false, ts:now() });
+  }
+
+  _lastMsgDataP = [r,name,code,ciDate,ciTime,coDate,coTime];
+  const msg = buildMsgPEl(r, name, code, ciDate, ciTime, coDate, coTime);
+  document.getElementById('code-p').textContent = code + '#';
+  document.getElementById('msg-p').textContent = msg;
+  window._msgP = msg;
+  document.getElementById('lang-p-el').classList.add('active');
+  document.getElementById('lang-p-en').classList.remove('active');
+  document.getElementById('result-p').classList.add('show');
+
+  if(state.p.comm === 'whatsapp') {
+    document.getElementById('wa-btn-p').innerHTML = `<a href="whatsapp://send?phone=306979892930&text=${encodeURIComponent(msg)}" class="btn green" style="text-decoration:none;display:flex;margin-top:0;">💬 Άνοιγμα WhatsApp</a>`;
+  } else {
+    document.getElementById('wa-btn-p').innerHTML = '';
+  }
+
+  btn.innerHTML = '🔑 Generate & Αποστολή';
+  btn.disabled = false;
+  renderGridP();
+}
+
+function buildMsgP(r, name, code, ciDate, ciTime, coDate, coTime) {
+  return `Pistacchio by SnappyB 🌿
+
+😊 Καλώς ήρθατε, ${name}!
+
+🔐 Κωδικός κεντρικής εισόδου & δωματίου: ${code}#
+
+🏠 ${r.name} — ${r.floor}, ${r.side === 'right' ? 'δεξιά' : 'αριστερά'}
+
+🛜 Wi-Fi: ${r.wifi}
+🔑 Password: ${r.wifiPass}
+
+📅 Check-in: ${ciDate} ${ciTime}
+📅 Check-out: ${coDate} ${coTime}
+
+🚭 Απαγορεύεται το κάπνισμα.
+
+📖 Οδηγός φιλοξενουμένων:
+👉 https://nappybramy.github.io/SnappyB-retreats/guide-pistacchio.html
+
+ℹ️ Επιβεβαιώστε άφιξη: "φτάσαμε"
+
+Napoleon 🙏🏼`;
+}
+
+// ===== GENERATE LIVING =====
+async function generateL() {
+  const rooms = state.l.rooms;
+  const name = document.getElementById('name-l').value.trim();
+  const ciDate = document.getElementById('ci-date-l').value;
+  const ciTime = document.getElementById('ci-time-l').value || '13:30';
+  const coDate = document.getElementById('co-date-l').value;
+  const coTime = document.getElementById('co-time-l').value || '12:00';
+  if(!rooms.length) { alert('Επίλεξε δωμάτιο!'); return; }
+  if(!name) { alert('Συμπλήρωσε ονοματεπώνυμο!'); return; }
+  if(!ciDate || !coDate) { alert('Συμπλήρωσε ημερομηνίες!'); return; }
+
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Living uses Tuya for entrance (no TTLock yet) — just generate code
+  rooms.forEach(rk => {
+    roomStatuses['l_' + rk] = { guest:name, code, plat:state.l.plat, comm:state.l.comm, checkin:`${ciDate}T${ciTime}`, checkout:`${coDate}T${coTime}` };
+    addLog({ prop:'Living Spaces', room:ROOMS_L[rk].name, guest:name, code, plat:state.l.plat, checkin:ciDate, checkout:coDate, success:true, ts:now() });
+  });
+  saveStatuses();
+
+  const r = ROOMS_L[rooms[0]];
+  _lastMsgDataL = [r,name,code,ciDate,ciTime,coDate,coTime];
+  const msg = buildMsgLEl(r, name, code, ciDate, ciTime, coDate, coTime);
+  document.getElementById('code-l').textContent = code + '#';
+  document.getElementById('msg-l').textContent = msg;
+  window._msgL = msg;
+  document.getElementById('lang-l-el').classList.add('active');
+  document.getElementById('lang-l-en').classList.remove('active');
+  document.getElementById('result-l').classList.add('show');
+
+  if(state.l.comm === 'whatsapp') {
+    document.getElementById('wa-btn-l').innerHTML = `<a href="whatsapp://send?phone=306979892930&text=${encodeURIComponent(msg)}" class="btn green" style="text-decoration:none;display:flex;margin-top:0;">💬 Άνοιγμα WhatsApp</a>`;
+  } else {
+    document.getElementById('wa-btn-l').innerHTML = '';
+  }
+
+  renderGridL();
+}
+
+function buildMsgL(r, name, code, ciDate, ciTime, coDate, coTime) {
+  return `SnappyB Living Spaces 🌿
+
+😊 Καλώς ήρθατε, ${name}!
+
+🔐 Κωδικός κεντρικής εισόδου: ${code}#
+
+📫 Πρόσβαση διαμερίσματος — Lockbox "${r.name}"
+🔑 Κωδικός lockbox: ${r.lockbox}
+Τραβήξτε το μαύρο κουμπί προς τα κάτω.
+
+🏠 ${r.floor}, ${r.side === 'right' ? 'δεξιά' : 'αριστερά'} από το ασανσέρ
+
+🛜 Wi-Fi: SnappyB - ${r.name}
+🔑 Password: ${r.wifiPass}
+
+📅 Check-in: ${ciDate} ${ciTime}
+📅 Check-out: ${coDate} ${coTime}
+
+🚭 Απαγορεύεται το κάπνισμα.
+
+📖 Οδηγός φιλοξενουμένων:
+👉 https://nappybramy.github.io/SnappyB-retreats/guide-living.html
+
+ℹ️ Επιβεβαιώστε άφιξη: "φτάσαμε"
+
+Napoleon 🙏🏼`;
+}
+
+// ===== COPY =====
+function copyMsg(prop) {
+  const txt = prop === 'p' ? window._msgP : window._msgL;
+  if(!txt) return;
+  if(navigator.clipboard) navigator.clipboard.writeText(txt);
+  else { const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
+  alert('✅ Αντιγράφηκε!');
+}
+
+// ===== ROOMS GRID =====
+const ORDER_P = ['blossom','forest','funky','candy','green','pink'];
+const ORDER_L = ['primopiano','terracotta','reef','minimalo','colours','nappybramy'];
+
+function renderGridP() {
+  const grid = document.getElementById('rooms-grid-p');
+  grid.innerHTML = '';
+  ORDER_P.forEach(key => {
+    const r = ROOMS_P[key];
+    const st = roomStatuses['p_' + key];
+    const occ = !!st;
+    const sel = state.p.room === key;
+    const div = document.createElement('div');
+    div.className = 'room-card' + (occ ? ' occupied' : '') + (sel && !occ ? ' selected' : '');
+    div.innerHTML = `
+      <div class="room-card-name">${r.name}</div>
+      <div class="room-card-status" style="display:flex;align-items:center;">
+        <div class="status-dot ${occ ? 'occupied' : 'free'}"></div>
+        <span class="status-text ${occ ? 'occupied' : 'free'}">${occ ? 'ΚΑΤΕΙΛΗΜΜΕΝΟ' : 'ΕΛΕΥΘΕΡΟ'}</span>
+      </div>
+      ${occ ? `<div class="room-guest-info">
+        <div class="room-guest-row">👤 ${st.guest}</div>
+        <div class="room-guest-row">🔐 ${st.code}#</div>
+        <div class="room-guest-row" style="font-size:.68rem;">${st.checkin.slice(0,10)} → ${st.checkout.slice(0,10)}</div>
+      </div>` : ''}
+    `;
+    div.onclick = () => occ ? openModal('p', key) : selectRoomP(key);
+    grid.appendChild(div);
+  });
+  renderStats();
+}
+
+function selectRoomP(key) {
+  state.p.room = state.p.room === key ? null : key;
+  renderGridP();
+}
+
+function renderGridL() {
+  const grid = document.getElementById('rooms-grid-l');
+  grid.innerHTML = '';
+  ORDER_L.forEach(key => {
+    const r = ROOMS_L[key];
+    const st = roomStatuses['l_' + key];
+    const occ = !!st || r.private;
+    const sel = state.l.rooms.includes(key);
+    const div = document.createElement('div');
+    div.className = 'room-card' + (occ ? ' occupied' : '') + (sel && !occ ? ' selected' : '');
+    if(r.private) div.style.cssText = 'opacity:.6;cursor:not-allowed;';
+    div.innerHTML = `
+      <div class="room-card-name">${r.name}</div>
+      <div class="room-card-status" style="display:flex;align-items:center;">
+        <div class="status-dot ${occ ? 'occupied' : 'free'}"></div>
+        <span class="status-text ${occ ? 'occupied' : 'free'}">${r.private ? 'ΙΔΙΟΚΤΗΤΗΣ' : occ ? 'ΚΑΤΕΙΛΗΜΜΕΝΟ' : 'ΕΛΕΥΘΕΡΟ'}</span>
+      </div>
+      ${occ && !r.private ? `<div class="room-guest-info">
+        <div class="room-guest-row">👤 ${st.guest}</div>
+        <div class="room-guest-row">🔐 ${st.code}#</div>
+        <div class="room-guest-row" style="font-size:.68rem;">${st.checkin.slice(0,10)} → ${st.checkout.slice(0,10)}</div>
+      </div>` : ''}
+    `;
+    if(!occ) div.onclick = () => { const i = state.l.rooms.indexOf(key); if(i > -1) state.l.rooms.splice(i,1); else state.l.rooms.push(key); renderGridL(); };
+    else if(!r.private) div.onclick = () => openModal('l', key);
+    grid.appendChild(div);
+  });
+  renderStats();
+}
+
+// ===== STATS =====
+function renderStats() {
+  const today = new Date().toISOString().slice(0,10);
+  const pArr = ORDER_P.filter(k => roomStatuses['p_'+k]?.checkin?.slice(0,10) === today).length;
+  const pStay = ORDER_P.filter(k => { const s = roomStatuses['p_'+k]; return s && s.checkin.slice(0,10) < today && s.checkout.slice(0,10) > today; }).length;
+  const pDep = ORDER_P.filter(k => roomStatuses['p_'+k]?.checkout?.slice(0,10) === today).length;
+  const lArr = ORDER_L.filter(k => roomStatuses['l_'+k]?.checkin?.slice(0,10) === today).length;
+  const lStay = ORDER_L.filter(k => { const s = roomStatuses['l_'+k]; return s && s.checkin.slice(0,10) < today && s.checkout.slice(0,10) > today; }).length;
+  const lDep = ORDER_L.filter(k => roomStatuses['l_'+k]?.checkout?.slice(0,10) === today).length;
+  const se = id => { const e = document.getElementById(id); if(e) e.textContent = arguments[1]; };
+  document.getElementById('p-stat-arr').textContent = pArr;
+  document.getElementById('p-stat-stay').textContent = pStay;
+  document.getElementById('p-stat-dep').textContent = pDep;
+  document.getElementById('l-stat-arr').textContent = lArr;
+  document.getElementById('l-stat-stay').textContent = lStay;
+  document.getElementById('l-stat-dep').textContent = lDep;
+}
+
+// ===== MODAL =====
+function openModal(prop, key) {
+  editKey = { prop, key };
+  const st = roomStatuses[(prop === 'p' ? 'p_' : 'l_') + key];
+  const rooms = prop === 'p' ? ROOMS_P : ROOMS_L;
+  document.getElementById('modal-room-name').textContent = '✏️ ' + rooms[key].name;
+  document.getElementById('modal-guest-name').textContent = `👤 ${st.guest} · 🔐 ${st.code}#`;
+  const ci = st.checkin.split('T'), co = st.checkout.split('T');
+  document.getElementById('modal-ci-date').value = ci[0];
+  document.getElementById('modal-ci-time').value = ci[1] || '13:30';
+  document.getElementById('modal-co-date').value = co[0];
+  document.getElementById('modal-co-time').value = co[1] || '12:00';
+  document.getElementById('edit-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('edit-modal').classList.remove('open'); editKey = null; }
+function saveEdit() {
+  if(!editKey) return;
+  const k = (editKey.prop === 'p' ? 'p_' : 'l_') + editKey.key;
+  roomStatuses[k].checkin = document.getElementById('modal-ci-date').value + 'T' + document.getElementById('modal-ci-time').value;
+  roomStatuses[k].checkout = document.getElementById('modal-co-date').value + 'T' + document.getElementById('modal-co-time').value;
+  saveStatuses(); closeModal();
+  if(editKey.prop === 'p') renderGridP(); else renderGridL();
+}
+async function deleteBooking() {
+  if(!editKey) return;
+  const k = (editKey.prop === 'p' ? 'p_' : 'l_') + editKey.key;
+  const st = roomStatuses[k];
+  addLog({ prop: editKey.prop === 'p' ? 'Pistacchio' : 'Living Spaces', room:(editKey.prop === 'p' ? ROOMS_P : ROOMS_L)[editKey.key].name, guest:st.guest, code:st.code, plat:st.plat, checkin:st.checkin.slice(0,10), checkout:st.checkout.slice(0,10), success:true, isCheckout:true, ts:now() });
+  // Delete from TTLock
+  if(st.roomPwdId && st.lockId) { try { await deleteFromLock(st.lockId, st.roomPwdId); await new Promise(r=>setTimeout(r,2000)); } catch(e){} }
+  if(st.entrancePwdId && st.entranceLockId) { try { await deleteFromLock(st.entranceLockId, st.entrancePwdId); } catch(e){} }
+  delete roomStatuses[k];
+  saveStatuses(); closeModal();
+  if(editKey.prop === 'p') renderGridP(); else renderGridL();
+}
+
+// ===== LOG =====
+function addLog(e) {
+  actLog.unshift(e);
+  if(actLog.length > 200) actLog.splice(200);
+  localStorage.setItem('snappyb_log', JSON.stringify(actLog));
+}
+function renderLog() {
+  const succ = actLog.filter(e => e.success && !e.isCheckout).length;
+  const fail = actLog.filter(e => !e.success).length;
+  document.getElementById('log-success').textContent = succ;
+  document.getElementById('log-fail').textContent = fail;
+  document.getElementById('log-total').textContent = actLog.length;
+  const list = document.getElementById('log-list');
+  if(!actLog.length) { list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;">Δεν υπάρχουν καταχωρήσεις ακόμα.</div>'; return; }
+  const platLabel = p => p === 'booking' ? '🔵 Booking' : p === 'airbnb' ? '🔴 Airbnb' : p === 'direct' ? '✅ Direct' : '—';
+  list.innerHTML = actLog.map(e => `
+    <div class="log-item">
+      <div class="log-room">${e.isCheckout ? '🔵 CHECK-OUT' : e.success ? '🟢 CHECK-IN' : '🔴 ΑΠΟΤΥΧΙΑ'} — ${e.prop} · ${e.room}</div>
+      <div class="log-meta">
+        👤 ${e.guest} · ${platLabel(e.plat)} · 🔐 ${e.code}<br>
+        📅 ${e.checkin} → ${e.checkout}<br>
+        🕐 ${e.ts}
+      </div>
+    </div>
+  `).join('');
+}
+function clearLog() {
+  if(!confirm('Εκκαθάριση ιστορικού;')) return;
+  actLog = [];
+  localStorage.removeItem('snappyb_log');
+  renderLog();
+}
+
+// ===== RESET =====
+function resetP() {
+  state.p = { room:null, plat:'', comm:'' };
+  document.getElementById('paste-p').value = '';
+  document.getElementById('name-p').value = '';
+  document.getElementById('ci-date-p').value = '';
+  document.getElementById('co-date-p').value = '';
+  document.getElementById('ci-time-p').value = '13:30';
+  document.getElementById('co-time-p').value = '12:00';
+  document.getElementById('autofill-p').textContent = '';
+  document.getElementById('result-p').classList.remove('show');
+  document.getElementById('api-status-p').innerHTML = '';
+  document.querySelectorAll('.plat-row .platform-btn, .comm-row .comm-btn').forEach(b => b.classList.remove('active'));
+  renderGridP();
+}
+function resetL() {
+  state.l = { rooms:[], plat:'', comm:'' };
+  document.getElementById('paste-l').value = '';
+  document.getElementById('name-l').value = '';
+  document.getElementById('ci-date-l').value = '';
+  document.getElementById('co-date-l').value = '';
+  document.getElementById('autofill-l').textContent = '';
+  document.getElementById('result-l').classList.remove('show');
+  renderGridL();
+}
+
+
+// ===== BILINGUAL MESSAGES =====
+let _lastMsgDataP = null;
+let _lastMsgDataL = null;
+
+function buildMsgPEl(r, name, code, ciDate, ciTime, coDate, coTime) {
+  return `Pistacchio by SnappyB 🌿
+
+😊 Καλώς ήρθατε, ${name}!
+
+🔐 Κωδικός κεντρικής εισόδου & δωματίου: ${code}#
+
+🏠 ${r.name} — ${r.floor === '1st floor' ? '1ος όροφος' : r.floor === '2nd floor' ? '2ος όροφος' : '3ος όροφος'}, ${r.side === 'right' ? 'δεξιά' : 'αριστερά'}
+
+🛜 Wi-Fi: ${r.wifi}
+🔑 Password: ${r.wifiPass}
+
+📅 Check-in: ${ciDate} ${ciTime}
+📅 Check-out: ${coDate} ${coTime}
+
+🚭 Απαγορεύεται το κάπνισμα.
+
+📖 Οδηγός φιλοξενουμένων:
+👉 https://nappybramy.github.io/SnappyB-retreats/guide-pistacchio.html
+
+ℹ️ Επιβεβαιώστε άφιξη: "φτάσαμε"
+
+Napoleon 🙏🏼`;
+}
+
+function buildMsgPEn(r, name, code, ciDate, ciTime, coDate, coTime) {
+  return `Pistacchio by SnappyB 🌿
+
+😊 Welcome, ${name}!
+
+🔐 Building entrance & room code: ${code}#
+
+🏠 ${r.name} — ${r.floor}, ${r.side} side
+
+🛜 Wi-Fi: ${r.wifi}
+🔑 Password: ${r.wifiPass}
+
+📅 Check-in: ${ciDate} ${ciTime}
+📅 Check-out: ${coDate} ${coTime}
+
+🚭 No smoking inside the apartment.
+
+📖 Guest Guide:
+👉 https://nappybramy.github.io/SnappyB-retreats/guide-pistacchio.html
+
+ℹ️ Please confirm arrival: "we are home"
+
+Napoleon 🙏🏼`;
+}
+
+function buildMsgLEl(r, name, code, ciDate, ciTime, coDate, coTime) {
+  return `SnappyB Living Spaces 🌿
+
+😊 Καλώς ήρθατε, ${name}!
+
+🔐 Κωδικός κεντρικής εισόδου: ${code}#
+
+📫 Πρόσβαση διαμερίσματος — Lockbox "${r.name}"
+🔑 Κωδικός lockbox: ${r.lockbox}
+Τραβήξτε το μαύρο κουμπί προς τα κάτω.
+
+🏠 ${r.floor === '1st floor' ? '1ος όροφος' : r.floor === '2nd floor' ? '2ος όροφος' : '3ος όροφος'}, ${r.side === 'right' ? 'δεξιά' : 'αριστερά'} από το ασανσέρ
+
+🛜 Wi-Fi: SnappyB - ${r.name}
+🔑 Password: ${r.wifiPass}
+
+📅 Check-in: ${ciDate} ${ciTime}
+📅 Check-out: ${coDate} ${coTime}
+
+🚭 Απαγορεύεται το κάπνισμα.
+
+📖 Οδηγός φιλοξενουμένων:
+👉 https://nappybramy.github.io/SnappyB-retreats/guide-living.html
+
+ℹ️ Επιβεβαιώστε άφιξη: "φτάσαμε"
+
+Napoleon 🙏🏼`;
+}
+
+function buildMsgLEn(r, name, code, ciDate, ciTime, coDate, coTime) {
+  return `SnappyB Living Spaces 🌿
+
+😊 Welcome, ${name}!
+
+🔐 Building entrance code: ${code}#
+
+📫 Apartment access — Lockbox labeled "${r.name}"
+🔑 Lockbox code: ${r.lockbox}
+Pull down the black button to retrieve the keys.
+
+🏠 ${r.floor}, ${r.side} side of the elevator
+
+🛜 Wi-Fi: SnappyB - ${r.name}
+🔑 Password: ${r.wifiPass}
+
+📅 Check-in: ${ciDate} ${ciTime}
+📅 Check-out: ${coDate} ${coTime}
+
+🚭 No smoking inside the apartment.
+
+📖 Guest Guide:
+👉 https://nappybramy.github.io/SnappyB-retreats/guide-living.html
+
+ℹ️ Please confirm arrival: "we are home"
+
+Napoleon 🙏🏼`;
+}
+
+function switchLangP(lang) {
+  if(!_lastMsgDataP) return;
+  const [r,name,code,ciDate,ciTime,coDate,coTime] = _lastMsgDataP;
+  const msg = lang === 'el' ? buildMsgPEl(r,name,code,ciDate,ciTime,coDate,coTime) : buildMsgPEn(r,name,code,ciDate,ciTime,coDate,coTime);
+  document.getElementById('msg-p').textContent = msg;
+  window._msgP = msg;
+  document.getElementById('lang-p-el').classList.toggle('active', lang==='el');
+  document.getElementById('lang-p-en').classList.toggle('active', lang==='en');
+  if(state.p.comm === 'whatsapp') {
+    document.getElementById('wa-btn-p').innerHTML = `<a href="whatsapp://send?phone=306979892930&text=${encodeURIComponent(msg)}" class="btn green" style="text-decoration:none;display:flex;margin-top:0;">💬 Άνοιγμα WhatsApp</a>`;
+  }
+}
+
+function switchLangL(lang) {
+  if(!_lastMsgDataL) return;
+  const [r,name,code,ciDate,ciTime,coDate,coTime] = _lastMsgDataL;
+  const msg = lang === 'el' ? buildMsgLEl(r,name,code,ciDate,ciTime,coDate,coTime) : buildMsgLEn(r,name,code,ciDate,ciTime,coDate,coTime);
+  document.getElementById('msg-l').textContent = msg;
+  window._msgL = msg;
+  document.getElementById('lang-l-el').classList.toggle('active', lang==='el');
+  document.getElementById('lang-l-en').classList.toggle('active', lang==='en');
+  if(state.l.comm === 'whatsapp') {
+    document.getElementById('wa-btn-l').innerHTML = `<a href="whatsapp://send?phone=306979892930&text=${encodeURIComponent(msg)}" class="btn green" style="text-decoration:none;display:flex;margin-top:0;">💬 Άνοιγμα WhatsApp</a>`;
+  }
+}
+
+// ===== UTILS =====
+function saveStatuses() { localStorage.setItem('snappyb_statuses', JSON.stringify(roomStatuses)); }
+function now() { return new Date().toLocaleDateString('el-GR',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + new Date().toLocaleTimeString('el-GR',{hour:'2-digit',minute:'2-digit'}); }
+
+// ===== INIT =====
+renderGridP();
+renderStats();
+</script>
+</body>
+</html>
