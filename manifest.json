@@ -1,0 +1,22 @@
+{
+  "name": "SnappyB Retreats",
+  "short_name": "SnappyB",
+  "description": "Hotel Management Tool",
+  "start_url": "/SnappyB-retreats/pistacchio-tool.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5c1527",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/SnappyB-retreats/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/SnappyB-retreats/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
