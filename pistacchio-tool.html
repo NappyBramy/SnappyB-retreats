@@ -1159,7 +1159,11 @@ async function loadLockEvents() {
         .replace(/T/,' ')
         .replace(/\.000Z/,'')
         .replace(/\.\d+Z/,'')
-        .replace(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}).*/, '$3/$2 $4:$5')
+        .replace(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}).*/, function(_, y, mo, d, h, m) {
+  const dt = new Date(y+'-'+mo+'-'+d+'T'+h+':'+m+':00Z');
+  return String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+})
+
         : '—';
       // Find guest name by code
       const code = e.code && e.code !== '—' ? e.code : '';
