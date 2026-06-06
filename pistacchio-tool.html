@@ -356,8 +356,10 @@ let _msgsP={},_msgsL={};
 const g=id=>document.getElementById(id);
 function fd(d){
   if(!d) return '';
-  const s=d.toString().split('T')[0];
-  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const[y,m,day]=s.split('-');return`${day}/${m}/${y}`;}
+  const s=d.toString().trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){const[,m,day]=s.split('-');return`${day}/${m}`;}
+  if(/^\d{4}-\d{2}-\d{2}T/.test(s)){const[,m,day]=s.split('T')[0].split('-');return`${day}/${m}`;}
+  try{const dt=new Date(s);if(!isNaN(dt))return`${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;}catch(e){}
   return s;
 }
 // Ασφαλής μετατροπή YYYY-MM-DD → Date χωρίς UTC offset
@@ -493,7 +495,7 @@ Sincerely, Napoleon 🙏🏼`;
 
 😊 Καλώς ήρθατε στο SnappyB, ${name}!
 
-🔐 Η κλειδοθήκη με το όνομα "${roomName}" και κωδικό ${lockbox||'—'}. Πιέστε προς τα κάτω το μαύρο κουμπί και παραλάβετε τα κλειδιά.
+🔐 Η κλειδοθήκη με το όνομα "${roomName}" και κωδικό ${lockbox||'—'}. Τραβήξτε προς τα κάτω το πορτάκι και παραλάβετε τα κλειδιά.
 
 Μετά την είσοδο στο κτήριο, η πόρτα του διαμερίσματος βρίσκεται στον ${floorEmoji} ${floorEL} όροφο στα ${sideEL} καθώς βγαίνετε από το ασανσέρ, καθώς το αναγράφει και το κουδούνι της πόρτας.
 
@@ -518,7 +520,7 @@ Sincerely, Napoleon 🙏🏼`;
 
 📫 The lockbox is labeled "${roomName}"
 
-🔐 Lockbox Code: ${lockbox||'—'}. Pull down the black button to retrieve the keys.
+🔐 Lockbox Code: ${lockbox||'—'}. Pull it down to retrieve the keys.
 
 🏠 After entering, take the elevator to the ${floorEmoji} ${floorEN} floor. The apartment is on the ${sideEN} as you exit the elevator, as indicated on the door bell.
 
