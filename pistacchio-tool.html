@@ -623,7 +623,7 @@ async function genP(){
   const r=RP[selP];
   const code=Math.floor(1000+Math.random()*9000).toString();
   const startMs=new Date(`${ci}T${cit}:00`).getTime()-TZ;
-  const endMs=new Date(`${co}T${cot}:00`).getTime()-TZ;
+  const endMs=new Date(`${co}T${cot}:00`).getTime();
   const pname=r.n+' - '+name;
   g('api-p').innerHTML='<div style="font-size:.75rem;color:var(--blue);margin-bottom:8px;"><div class="spinner"></div> Αποστολή...</div>';
   let roomPwdId=null,entPwdId=null;
