@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>SnappyB Retreats</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:#f2f2f7;min-height:100vh}
+.hdr{background:white;padding:14px 16px;border-bottom:.5px solid #e5e5ea;position:sticky;top:0;z-index:10}
+.hdr-logo{font-size:1rem;font-weight:700}
+.hdr-sub{font-size:.65rem;color:#8e8e93;margin-top:2px}
+.prog{background:white;padding:16px 16px 12px;border-bottom:.5px solid #e5e5ea}
+.prog-steps{display:flex;align-items:flex-start}
+.prog-item{display:flex;flex-direction:column;align-items:center;flex:1}
+.prog-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;transition:all .3s}
+.pc-done{background:#34c759;color:white}
+.pc-active{background:#007aff;color:white}
+.pc-pending{background:#e5e5ea;color:#8e8e93}
+.prog-lbl{font-size:.6rem;font-weight:500;color:#8e8e93;margin-top:4px;text-align:center;display:block}
+.pl-done{color:#34c759;font-weight:600}
+.pl-active{color:#007aff;font-weight:700}
+.prog-line{flex:1;height:2px;background:#e5e5ea;margin:13px 3px 0;transition:background .3s}
+.pl-line-done{background:#34c759}
+.body{padding:16px;max-width:520px;margin:0 auto;padding-bottom:60px}
+.panel{display:none}
+.panel.active{display:block}
+.lang-bar{display:flex;gap:4px;background:#e5e5ea;border-radius:10px;padding:3px;margin-bottom:20px}
+.lang-btn{flex:1;padding:8px 2px;font-size:.68rem;font-weight:500;color:#8e8e93;border-radius:8px;border:none;background:transparent;font-family:inherit;cursor:pointer;min-height:36px}
+.lang-btn.on{background:white;color:#000;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.welcome{text-align:center;margin-bottom:20px}
+.wel-title{font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.wel-sub{font-size:.78rem;color:#8e8e93;line-height:1.5}
+.sec-lbl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8e8e93;margin-bottom:6px;padding-left:4px}
+.prop-row{display:flex;gap:10px;margin-bottom:20px}
+.prop-card{flex:1;padding:16px 10px;background:white;border-radius:14px;text-align:center;font-size:.8rem;font-weight:500;color:#8e8e93;border:2.5px solid #e5e5ea;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;user-select:none}
+.prop-card.on{border-color:#007aff;color:#007aff;background:#f0f5ff;font-weight:700}
+.prop-icon{font-size:1.8rem;margin-bottom:6px}
+.fcard{background:white;border-radius:14px;overflow:hidden;margin-bottom:20px}
+.fcard-sec{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8e8e93;padding:12px 16px 4px}
+.frow{display:flex;align-items:center;padding:8px 16px;border-bottom:.5px solid #f2f2f7;gap:10px}
+.frow:last-child{border-bottom:none}
+.flbl{font-size:.82rem;color:#3c3c43;font-weight:500;width:108px;flex-shrink:0}
+.finput{flex:1;border:1.5px solid #d1d1d6;border-radius:9px;font-size:.82rem;color:#000;background:#f9f9f9;padding:9px 11px;font-family:inherit;outline:none;min-width:0}
+.finput:focus{border-color:#007aff;background:white}
+.finput::placeholder{color:#c7c7cc}
+.drow{padding:12px 16px;border-bottom:.5px solid #f2f2f7}
+.drow:last-child{border-bottom:none}
+.dlbl{font-size:.82rem;color:#3c3c43;font-weight:500;margin-bottom:8px}
+.dselects{display:flex;gap:7px}
+.dsel{flex:1;padding:10px 4px;border:1.5px solid #d1d1d6;border-radius:9px;font-size:.82rem;color:#007aff;background:#f9f9f9;font-family:inherit;font-weight:600;text-align:center;-webkit-appearance:none;cursor:pointer;min-width:0}
+.navrow{display:flex;gap:10px;margin-top:8px}
+.btn-back{flex:1;padding:14px;border:1.5px solid #e5e5ea;border-radius:12px;background:white;font-size:.9rem;font-weight:600;color:#8e8e93;cursor:pointer;font-family:inherit}
+.btn-next{flex:2;padding:14px;border:none;border-radius:12px;background:#007aff;font-size:.92rem;font-weight:700;color:white;cursor:pointer;font-family:inherit}
+.btn-full{width:100%;padding:15px;border:none;border-radius:12px;background:#007aff;font-size:.92rem;font-weight:700;color:white;cursor:pointer;font-family:inherit}
+.sumrow{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:.5px solid #f2f2f7;font-size:.83rem}
+.sumrow:last-child{border-bottom:none}
+.sum-k{color:#8e8e93}
+.sum-v{color:#000;font-weight:500;text-align:right;max-width:60%}
+.sub-col{display:flex;flex-direction:column;gap:12px;margin-top:16px;margin-bottom:14px}
+.sbtn{width:100%;padding:16px;border:none;border-radius:14px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;display:block;line-height:1.4}
+.sbtn-wa{background:#25d366;color:white}
+.sbtn-bk{background:#003580;color:white}
+.priv{font-size:.75rem;color:#c7c7cc;text-align:center;line-height:1.5;padding:0 10px}
+.verify-warn{background:#fff3cd;border:1.5px solid #ff9500;border-radius:12px;padding:12px 16px;margin-top:16px;text-align:center;font-size:.82rem;font-weight:600;color:#7d4e00;line-height:1.5;}
+.err{font-size:.78rem;color:#ff3b30;background:#fff5f5;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:none}
+.err.show{display:block}
+.copy-box{display:none;background:#f0f5ff;border-radius:12px;padding:16px;margin-top:12px;border:1px solid #c7d9ff}
+.copy-ttl{font-size:.72rem;font-weight:700;color:#0055cc;text-transform:uppercase;margin-bottom:8px}
+.copy-instr{font-size:.82rem;color:#000;white-space:pre-wrap;line-height:1.8;background:#fff8e6;border-left:3px solid #ff9500;border-radius:8px;padding:10px;margin-bottom:10px}
+.copy-msg{background:white;border:.5px solid #e5e5ea;border-radius:10px;padding:12px;font-size:.78rem;line-height:1.6;white-space:pre-wrap;max-height:160px;overflow-y:auto;margin-bottom:10px}
+.copy-btn{width:100%;padding:13px;background:#007aff;color:white;border:none;border-radius:10px;font-family:inherit;font-size:.88rem;font-weight:700;cursor:pointer}
+.copy-ok{display:none;text-align:center;color:#248a3d;font-size:.82rem;font-weight:600;margin-top:8px}
+.sent-btn{display:none;width:100%;padding:13px;background:#34c759;color:white;border:none;border-radius:10px;font-family:inherit;font-size:.88rem;font-weight:700;cursor:pointer;margin-top:8px}
+.screen{display:none;text-align:center;padding:50px 16px}
+.screen.show{display:block}
+.suc-logo{width:140px;height:140px;object-fit:cover;border-radius:16px;margin:0 auto 10px;display:block}
+.suc-prop{font-size:.7rem;font-weight:700;color:#8e8e93;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
+.maps-btn{display:block;padding:13px;background:#f2f2f7;color:#000;border-radius:10px;font-size:.85rem;font-weight:600;text-decoration:none;text-align:center;margin:12px 0}
+.new-btn{padding:12px 24px;background:white;border:1.5px solid #e5e5ea;border-radius:12px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;color:#007aff;margin-top:8px}
+.scr-btns{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.btn-yes{padding:15px;background:#34c759;color:white;border:none;border-radius:12px;font-size:.92rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-no{padding:15px;background:#f2f2f7;color:#007aff;border:none;border-radius:12px;font-size:.92rem;font-weight:600;cursor:pointer;font-family:inherit}
+select option:disabled{color:#c7c7cc}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-logo">🌿 SnappyB Retreats</div>
+  <div class="hdr-sub">Guest Registration</div>
+</div>
+<div class="prog" id="prog">
+  <div class="prog-steps">
+    <div class="prog-item"><div class="prog-circle pc-active" id="pc1">1</div><div class="prog-lbl pl-active" id="pl1">Κτήριο</div></div>
+    <div class="prog-line" id="ln1"></div>
+    <div class="prog-item"><div class="prog-circle pc-pending" id="pc2">2</div><div class="prog-lbl" id="pl2">Στοιχεία</div></div>
+    <div class="prog-line" id="ln2"></div>
+    <div class="prog-item"><div class="prog-circle pc-pending" id="pc3">3</div><div class="prog-lbl" id="pl3">Ημερομηνίες</div></div>
+    <div class="prog-line" id="ln3"></div>
+    <div class="prog-item"><div class="prog-circle pc-pending" id="pc4">4</div><div class="prog-lbl" id="pl4">Αποστολή</div></div>
+  </div>
+</div>
+<div class="body">
+<div class="panel active" id="s1">
+  <div class="lang-bar">
+    <button class="lang-btn on" onclick="setLang('el')">&#x1F1EC;&#x1F1F7; ΕΛ</button>
+    <button class="lang-btn" onclick="setLang('en')">&#x1F1EC;&#x1F1E7; EN</button>
+    <button class="lang-btn" onclick="setLang('tr')">&#x1F1F9;&#x1F1F7; TR</button>
+    <button class="lang-btn" onclick="setLang('bg')">&#x1F1E7;&#x1F1EC; BG</button>
+    <button class="lang-btn" onclick="setLang('ro')">&#x1F1F7;&#x1F1F4; RO</button>
+  </div>
+  <div class="welcome"><div class="wel-title" id="wt"></div><div class="wel-sub" id="ws"></div></div>
+  <div class="sec-lbl" id="lp"></div>
+  <div class="prop-row">
+    <div class="prop-card" id="pp" onclick="selProp('p')"><div class="prop-icon">&#x1F3E1;</div><div>Pistacchio by SnappyB</div></div>
+    <div class="prop-card" id="pl" onclick="selProp('l')"><div class="prop-icon">&#x1F3E0;</div><div>SnappyB Living Spaces</div></div>
+  </div>
+  <div class="err" id="e1"></div>
+  <button class="btn-full" id="n1" onclick="go(2)"></button>
+</div>
+<div class="panel" id="s2">
+  <div class="fcard">
+    <div class="fcard-sec" id="ld"></div>
+    <div class="frow"><div class="flbl" id="ln-nm"></div><input class="finput" id="f-nm" type="text" autocomplete="name" autocapitalize="words"></div>
+    <div class="frow"><div class="flbl" id="ln-ct"></div><input class="finput" id="f-ct" type="text" autocomplete="address-level2" autocapitalize="words"></div>
+    <div class="frow"><div class="flbl" id="ln-zp"></div><input class="finput" id="f-zp" type="text" autocomplete="postal-code"></div>
+    <div class="frow" id="row-el"><div class="flbl" style="font-size:.75rem;">ΑΦΜ / Αρ. Ταυτότητας</div><input class="finput" id="f-el" type="text" autocomplete="off" autocapitalize="characters"></div>
+    <div class="frow" id="row-en" style="display:none"><div class="flbl" id="ln-id"></div><input class="finput" id="f-en" type="text" autocapitalize="characters"></div>
+  </div>
+  <div class="err" id="e2"></div>
+  <div class="navrow">
+    <button class="btn-back" onclick="go(1)">&#8592; <span id="bk2"></span></button>
+    <button class="btn-next" onclick="go(3)"><span id="nx2"></span> &#8594;</button>
+  </div>
+</div>
+<div class="panel" id="s3">
+  <div class="fcard">
+    <div class="fcard-sec" id="ldt"></div>
+    <div class="drow"><div class="dlbl" id="lci"></div>
+      <div class="dselects">
+        <select class="dsel" id="ci-d" onchange="bd('ci')"><option value="">ΗΗ</option></select>
+        <select class="dsel" id="ci-m" onchange="bd('ci')"><option value="">ΜΜ</option></select>
+        <select class="dsel" id="ci-y" onchange="bd('ci')"><option value="">ΕΕΕΕ</option></select>
+      </div>
+    </div>
+    <div class="drow"><div class="dlbl" id="lco"></div>
+      <div class="dselects">
+        <select class="dsel" id="co-d" onchange="bd('co')"><option value="">ΗΗ</option></select>
+        <select class="dsel" id="co-m" onchange="bd('co')"><option value="">ΜΜ</option></select>
+        <select class="dsel" id="co-y" onchange="bd('co')"></select>
+      </div>
+    </div>
+  </div>
+  <div class="err" id="e3"></div>
+  <div class="navrow">
+    <button class="btn-back" onclick="go(2)">&#8592; <span id="bk3"></span></button>
+    <button class="btn-next" onclick="go(4)"><span id="nx3"></span> &#8594;</button>
+  </div>
+</div>
+<div class="panel" id="s4">
+  <div class="verify-warn" id="prv"></div>
+  <div class="fcard"><div class="fcard-sec" id="ls"></div><div id="sr"></div></div>
+  <div class="copy-box" id="cbox">
+    <div class="copy-ttl" id="cttl"></div>
+    <div class="copy-instr" id="cinstr"></div>
+    <div class="copy-msg" id="cmsg"></div>
+    <button class="copy-btn" onclick="doCopy()">&#x1F4CB; <span id="cbtn"></span></button>
+    <div class="copy-ok" id="cok"></div>
+    <button class="sent-btn" id="sntbtn" onclick="showConf()">&#x2705; <span id="sntlbl"></span></button>
+  </div>
+  <div class="err" id="e4"></div>
+  <div class="sub-col" id="subcol">
+    <a id="wabtn" href="#" onclick="return doWA()" class="sbtn sbtn-wa">&#x1F4AC; WhatsApp</a>
+    <button class="sbtn sbtn-bk" onclick="doBK()">&#x1F535; Booking.com</button>
+  </div>
+  <div style="text-align:center;margin-top:14px;margin-bottom:4px;">
+    <a id="privacy-link" href="https://nappybramy.github.io/SnappyB-retreats/privacy-policy.html" target="_blank" style="font-size:.72rem;color:#8e8e93;text-decoration:none;border-bottom:1px solid #d1d1d6;padding-bottom:1px;">🔒 <span id="privacy-lbl-text">Πολιτική Απορρήτου</span></a>
+  </div>
+  <div class="navrow" style="margin-top:14px">
+    <button class="btn-back" onclick="go(3)">&#8592; <span id="bk4"></span></button>
+  </div>
+</div>
+<div class="screen" id="scnf">
+  <div style="font-size:3rem;margin-bottom:16px">&#x1F4E4;</div>
+  <div style="font-size:1.2rem;font-weight:700;margin-bottom:8px" id="ct"></div>
+  <div style="font-size:.82rem;color:#8e8e93;margin-bottom:4px" id="cs"></div>
+  <div class="scr-btns">
+    <button class="btn-yes" onclick="confSent()">&#x2705; <span id="cy"></span></button>
+    <button class="btn-no" onclick="confRetry()">&#x1F504; <span id="cn"></span></button>
+  </div>
+</div>
+<div class="screen" id="ssuc">
+  <img id="lgp" class="suc-logo" src="" style="display:none">
+  <img id="lgl" class="suc-logo" src="" style="display:none">
+  <div class="suc-prop" id="sprop"></div>
+  <div style="font-size:3.5rem">&#x2705;</div>
+  <div style="font-size:1.3rem;font-weight:700;margin:12px 0 8px" id="stt"></div>
+  <div style="font-size:.82rem;color:#8e8e93;line-height:1.6;margin-bottom:20px" id="stb"></div>
+  <div style="font-size:.78rem;color:#8e8e93;margin-bottom:8px" id="smp"></div>
+  <a id="smb" href="#" target="_blank" class="maps-btn"></a>
+  <button class="new-btn" onclick="resetAll()">&#8592; <span id="snw"></span></button>
+</div>
+</div>
+<script>
+const WAN='306979892937';
+let lang='el',prop='',ci='',co='',lastMsg='',lastPlat='';
+const MN={el:['Ιαν','Φεβ','Μαρ','Απρ','Μαϊ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],tr:['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'],bg:['Яну','Фев','Мар','Апр','Май','Юни','Юли','Авг','Сеп','Окт','Ное','Дек'],ro:['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec']};
+const TX={
+el:{wt:'Καλώς ήρθατε',ws:'Συμπληρώστε τα στοιχεία σας για να λάβετε τον κωδικό πρόσβασης. Διαρκεί μόνο 1 λεπτό.',prop:'ΚΤΗΡΙΟ',det:'ΠΡΟΣΩΠΙΚΑ ΣΤΟΙΧΕΙΑ',nm:'Ονοματεπώνυμο',ct:'Πόλη',zp:'Τ.Κ.',id:'ΑΦΜ',dt:'ΗΜΕΡΟΜΗΝΙΕΣ ΔΙΑΜΟΝΗΣ',ci:'Ημερομηνία Check-in',co:'Ημερομηνία Check-out',sm:'ΕΠΙΒΕΒΑΙΩΣΗ ΣΤΟΙΧΕΙΩΝ',nx:'Επόμενο',bk:'Πίσω',prv:'📋 Παρακαλούμε βεβαιωθείτε ότι τα στοιχεία σας είναι σωστά. Ενδέχεται να ζητηθεί επαλήθευση κατά την άφιξη.',st:['Κτήριο','Στοιχεία','Ημερομηνίες','Αποστολή'],suc:'Ευχαριστούμε!',suct:'Η εγγραφή σας ολοκληρώθηκε. Θα λάβετε τον κωδικό πρόσβασης σύντομα.',mp:'📍 Βρείτε μας στους χάρτες!',gm:'🗺️ Google Maps',ns:'Νέα Υποβολή',cft:'Στείλατε τα στοιχεία σας;',cfs:'Βεβαιωθείτε ότι το μήνυμα εστάλη πριν συνεχίσετε.',yes:'Ναι, έστειλα',no:'Όχι, στείλτε ξανά',cpy:'Αντιγραφή Μηνύματος',snt:'Έστειλα το μήνυμα',cpyok:'✅ Αντιγράφηκε!',bkt:'🔵 ΑΠΟΣΤΟΛΗ ΜΕΣΩ BOOKING.COM',bki:'⚠️ Το μήνυμα ΔΕΝ στέλνεται αυτόματα!\n\nΠρέπει να:\n1️⃣ Αντιγράψετε το μήνυμα\n2️⃣ Ανοίξετε την εφαρμογή Booking.com\n3️⃣ Βρείτε τη συνομιλία μαζί μας\n4️⃣ Επικολλήστε και στείλτε το',ph:{nm:'Γιώργης Παπαδόπουλος',ct:'Αθήνα',zp:'10431',id:'123456789 ή ΑΒ123456'},err:{prop:'Παρακαλούμε επιλέξτε κτήριο.',all:'Παρακαλούμε συμπληρώστε όλα τα πεδία.',afm:'Το ΑΦΜ πρέπει να αποτελείται από ακριβώς 9 ψηφία.',past:'Η ημερομηνία check-in δεν μπορεί να είναι στο παρελθόν.',dates:'Η ημερομηνία check-out πρέπει να είναι μετά το check-in.'}},
+en:{wt:'Welcome',ws:'Please complete the form to receive your access code. It only takes 1 minute.',prop:'PROPERTY',det:'PERSONAL DETAILS',nm:'Full Name',ct:'City',zp:'ZIP / Postal Code',id:'ID / Passport',dt:'STAY DATES',ci:'Check-in Date',co:'Check-out Date',sm:'CONFIRM DETAILS',nx:'Next',bk:'Back',prv:'📋 Please make sure your details are correct. Verification may be requested upon arrival.',st:['Property','Details','Dates','Send'],suc:'Thank you!',suct:'Your registration is complete. You will receive your access code shortly.',mp:'📍 Find us on maps!',gm:'🗺️ Google Maps',ns:'New Submission',cft:'Did you send your details?',cfs:'Please make sure the message was sent before continuing.',yes:'Yes, I sent it',no:'No, send again',cpy:'Copy Message',snt:'I sent the message',cpyok:'✅ Copied!',bkt:'🔵 SEND VIA BOOKING.COM',bki:'⚠️ The message is NOT sent automatically!\n\nYou must:\n1️⃣ Copy the message\n2️⃣ Open the Booking.com app\n3️⃣ Find the conversation with us\n4️⃣ Paste and send it',ph:{nm:'John Smith',ct:'London',zp:'SW1A 1AA',id:'AB123456'},err:{prop:'Please select a property.',all:'Please fill in all fields.',afm:'ID/Passport is required.',past:'Check-in date cannot be in the past.',dates:'Check-out must be after check-in.'}},
+tr:{wt:'Hoş Geldiniz',ws:'Erişim kodunuzu almak için lütfen formu doldurun. Sadece 1 dakika sürer.',prop:'MÜLK',det:'KİŞİSEL BİLGİLER',nm:'Ad Soyad',ct:'Şehir',zp:'Posta Kodu',id:'TC Kimlik / Pasaport',dt:'KONAKLAMA TARİHLERİ',ci:'Giriş Tarihi',co:'Çıkış Tarihi',sm:'BİLGİLERİ ONAYLA',nx:'İleri',bk:'Geri',prv:'📋 Lütfen bilgilerinizin doğru olduğundan emin olun. Varışta doğrulama istenebilir.',st:['Mülk','Bilgiler','Tarihler','Gönder'],suc:'Teşekkürler!',suct:'Kaydınız tamamlandı. Erişim kodunuz kısa süre içinde gönderilecektir.',mp:'📍 Bizi haritalarda bulun!',gm:'🗺️ Google Maps',ns:'Yeni Gönderi',cft:'Bilgilerinizi gönderdiniz mi?',cfs:'Devam etmeden önce mesajın gönderildiğinden emin olun.',yes:'Evet, gönderdim',no:'Hayır, tekrar gönder',cpy:'Mesajı Kopyala',snt:'Mesajı gönderdim',cpyok:'✅ Kopyalandı!',bkt:'🔵 BOOKING.COM İLE GÖNDER',bki:'⚠️ Mesaj otomatik gönderilmez!\n\nYapmanız gerekenler:\n1️⃣ Mesajı kopyalayın\n2️⃣ Booking.com uygulamasını açın\n3️⃣ Bizimle konuşmayı bulun\n4️⃣ Yapıştırın ve gönderin',ph:{nm:'Mehmet Yılmaz',ct:'İstanbul',zp:'34000',id:'12345678901'},err:{prop:'Lütfen bir mülk seçin.',all:'Lütfen tüm alanları doldurun.',afm:'TC Kimlik / Pasaport gereklidir.',past:'Giriş tarihi geçmişte olamaz.',dates:'Çıkış tarihi girişten sonra olmalıdır.'}},
+bg:{wt:'Добре дошли',ws:'Попълнете формуляра, за да получите кода за достъп. Отнема само 1 минута.',prop:'ИМОТ',det:'ЛИЧНИ ДАННИ',nm:'Пълно Име',ct:'Град',zp:'Пощенски Код',id:'ЕГН / Паспорт',dt:'ДАТИ НА ПРЕСТОЙ',ci:'Дата на Настаняване',co:'Дата на Напускане',sm:'ПОТВЪРЖДЕНИЕ',nx:'Напред',bk:'Назад',prv:'📋 Моля уверете се, че данните ви са верни. При пристигане може да бъде поискана проверка.',st:['Имот','Данни','Дати','Изпрати'],suc:'Благодарим!',suct:'Регистрацията ви е завършена. Кодът за достъп ще бъде изпратен скоро.',mp:'📍 Намерете ни на картите!',gm:'🗺️ Google Maps',ns:'Ново изпращане',cft:'Изпратихте ли данните си?',cfs:'Моля проверете дали съобщението е изпратено.',yes:'Да, изпратих',no:'Не, изпрати отново',cpy:'Копирай Съобщението',snt:'Изпратих съобщението',cpyok:'✅ Копирано!',bkt:'🔵 ИЗПРАТИ ЧРЕЗ BOOKING.COM',bki:'⚠️ Съобщението НЕ се изпраща автоматично!\n\nТрябва да:\n1️⃣ Копирате съобщението\n2️⃣ Отворите Booking.com\n3️⃣ Намерите разговора с нас\n4️⃣ Поставите и изпратете',ph:{nm:'Иван Иванов',ct:'София',zp:'1000',id:'7501010010'},err:{prop:'Моля изберете имот.',all:'Моля попълнете всички полета.',afm:'ЕГН / Паспортът е задължителен.',past:'Датата на настаняване не може да е в миналото.',dates:'Датата на напускане трябва да е след настаняването.'}},
+ro:{wt:'Bun venit',ws:'Completați formularul pentru a primi codul de acces. Durează doar 1 minut.',prop:'PROPRIETATE',det:'DATE PERSONALE',nm:'Nume Complet',ct:'Oraș',zp:'Cod Poștal',id:'CI / Pașaport',dt:'DATELE SEJURULUI',ci:'Data Check-in',co:'Data Check-out',sm:'CONFIRMARE',nx:'Următor',bk:'Înapoi',prv:'📋 Vă rugăm să verificați că datele dvs. sunt corecte. La sosire poate fi solicitată verificarea.',st:['Proprietate','Date','Date','Trimite'],suc:'Mulțumim!',suct:'Înregistrarea dvs. este completă. Veți primi codul de acces în curând.',mp:'📍 Găsiți-ne pe hărți!',gm:'🗺️ Google Maps',ns:'Trimitere nouă',cft:'Ați trimis datele dvs.?',cfs:'Asigurați-vă că mesajul a fost trimis înainte de a continua.',yes:'Da, am trimis',no:'Nu, trimite din nou',cpy:'Copiați Mesajul',snt:'Am trimis mesajul',cpyok:'✅ Copiat!',bkt:'🔵 TRIMITE PRIN BOOKING.COM',bki:'⚠️ Mesajul NU se trimite automat!\n\nTrebuie să:\n1️⃣ Copiați mesajul\n2️⃣ Deschideți Booking.com\n3️⃣ Găsiți conversația cu noi\n4️⃣ Lipiți și trimiteți',ph:{nm:'Ion Popescu',ct:'București',zp:'010011',id:'AB123456'},err:{prop:'Vă rugăm să selectați o proprietate.',all:'Vă rugăm să completați toate câmpurile.',afm:'CI / Pașaportul este obligatoriu.',past:'Data check-in nu poate fi în trecut.',dates:'Check-out trebuie să fie după check-in.'}}
+};
+const g=id=>document.getElementById(id);
+const t=(id,v)=>{const e=g(id);if(e)e.textContent=v;};
+let curStep=1;
+
+function setLang(l){
+  lang=l;sessionStorage.setItem('sl',l);
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('on',['el','en','tr','bg','ro'][i]===l));
+  const T=TX[l]||TX.el;
+  t('wt',T.wt);t('ws',T.ws);t('lp',T.prop);t('ld',T.det);
+  t('ln-nm',T.nm);t('ln-ct',T.ct);t('ln-zp',T.zp);t('ln-id',T.id);
+  t('ldt',T.dt);t('lci',T.ci);t('lco',T.co);t('ls',T.sm);
+  t('n1',T.nx+' →');
+  ['bk2','bk3','bk4'].forEach(id=>t(id,T.bk));
+  ['nx2','nx3'].forEach(id=>t(id,T.nx));
+  t('prv',T.prv);t('stt',T.suc);t('stb',T.suct);
+  const privLabels={el:'Πολιτική Απορρήτου',en:'Privacy Policy',tr:'Gizlilik Politikası',bg:'Политика за поверителност',ro:'Politică de Confidențialitate'};
+  t('privacy-lbl-text', privLabels[l]||privLabels.en);
+  t('smp',T.mp);t('smb',T.gm);t('snw',T.ns);
+  t('ct',T.cft);t('cs',T.cfs);t('cy',T.yes);t('cn',T.no);
+  t('cbtn',T.cpy);t('sntlbl',T.snt);
+  g('f-nm').placeholder=T.ph.nm;g('f-ct').placeholder=T.ph.ct;
+  g('f-zp').placeholder=T.ph.zp;g('f-el').placeholder=T.ph.id;g('f-en').placeholder=T.ph.id;
+  const isEl=l==='el';
+  g('row-el').style.display=isEl?'flex':'none';
+  g('row-en').style.display=isEl?'none':'flex';
+  g('f-zp').inputMode=isEl?'numeric':'text';
+  updProg(curStep);updMonths();
+}
+
+function selProp(p){
+  prop=p;
+  g('pp').classList.toggle('on',p==='p');
+  g('pl').classList.toggle('on',p==='l');
+}
+
+function updProg(s){
+  curStep=s;
+  const T=TX[lang]||TX.el;
+  [1,2,3,4].forEach(i=>{
+    const c=g('pc'+i),lb=g('pl'+i);
+    c.className='prog-circle '+(i<s?'pc-done':i===s?'pc-active':'pc-pending');
+    c.textContent=i<s?'✓':String(i);
+    lb.className='prog-lbl '+(i<s?'pl-done':i===s?'pl-active':'');
+    lb.textContent=T.st[i-1];
+  });
+  [1,2,3].forEach(i=>g('ln'+i).className='prog-line'+(i<s?' pl-line-done':''));
+}
+
+function go(n){
+  const T=TX[lang]||TX.el;
+  if(curStep===1&&n>1){
+    if(!prop){showErr('e1',T.err.prop);return;}
+    hideErr('e1');
+  }
+  if(curStep===2&&n>2){
+    const nm=g('f-nm').value.trim(),ct=g('f-ct').value.trim(),zp=g('f-zp').value.trim();
+    const isEl=lang==='el',idV=isEl?g('f-el').value.trim():g('f-en').value.trim();
+    if(!nm||!ct||!zp||!idV){showErr('e2',T.err.all);return;}
+    hideErr('e2');
+  }
+  if(curStep===3&&n>3){
+    const today=new Date().toISOString().slice(0,10);
+    if(!ci||!co){showErr('e3',T.err.all);return;}
+    if(ci<today){showErr('e3',T.err.past);['ci-d','ci-m','ci-y'].forEach(id=>g(id).selectedIndex=0);ci='';return;}
+    if(co<=ci){showErr('e3',T.err.dates);return;}
+    hideErr('e3');buildSum();
+  }
+  [1,2,3,4].forEach(i=>g('s'+i).classList.toggle('active',i===n));
+  g('scnf').classList.remove('show');g('ssuc').classList.remove('show');
+  g('cbox').style.display='none';g('subcol').style.display='flex';
+  g('prog').style.display='block';
+  updProg(n);window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showErr(id,msg){const e=g(id);e.textContent=msg;e.classList.add('show');}
+function hideErr(id){g(id).classList.remove('show');}
+
+function buildSum(){
+  const T=TX[lang]||TX.el,isEl=lang==='el';
+  const idV=isEl?g('f-el').value.trim():g('f-en').value.trim();
+  const pn=prop==='p'?'Pistacchio by SnappyB':'SnappyB Living Spaces';
+  const rows=[[T.prop,pn],[T.nm,g('f-nm').value.trim()],[T.ct,g('f-ct').value.trim()],[T.zp,g('f-zp').value.trim()],[isEl?'ΑΦΜ':T.id,idV],['Check-in',ci],['Check-out',co]];
+  g('sr').innerHTML=rows.map(([k,v])=>`<div class="sumrow"><span class="sum-k">${k}</span><span class="sum-v">${v}</span></div>`).join('');
+}
+
+const PROXY='https://script.google.com/macros/s/AKfycbz24YxkIV4XJImGySmzfg5BQ-Z8C3dlS8vQaUkUa5o2fVDhPUBYhepl8GbDppVFSZsa/exec';
+
+function saveToSheet(){
+  const isEl=lang==='el';
+  const idV=isEl?g('f-el').value.trim():g('f-en').value.trim();
+  const pn=prop==='p'?'Pistacchio by SnappyB':'SnappyB Living Spaces';
+  const url=`${PROXY}?action=saveGuest&property=${encodeURIComponent(pn)}&name=${encodeURIComponent(g('f-nm').value.trim())}&city=${encodeURIComponent(g('f-ct').value.trim())}&zip=${encodeURIComponent(g('f-zp').value.trim())}&id=${encodeURIComponent(idV)}&checkin=${encodeURIComponent(ci)}&checkout=${encodeURIComponent(co)}`;
+  fetch(url).catch(()=>{});
+}
+
+function buildMsg(){
+  const T=TX[lang]||TX.el,isEl=lang==='el';
+  const idV=isEl?g('f-el').value.trim():g('f-en').value.trim();
+  const pn=prop==='p'?'Pistacchio by SnappyB':'SnappyB Living Spaces';
+  return `${pn}\n\nName: ${g('f-nm').value.trim()}\nCity: ${g('f-ct').value.trim()}\nZIP: ${g('f-zp').value.trim()}\n${isEl?'ΑΦΜ':'ID/Passport'}: ${idV}\nCheck-in: ${ci}\nCheck-out: ${co}`;
+}
+
+function doWA(){
+  const msg=buildMsg();lastMsg=msg;lastPlat='wa';
+  g('wabtn').href=`whatsapp://send?phone=${WAN}&text=${encodeURIComponent(msg)}`;
+  saveToSheet();
+  showConf();return true;
+}
+
+function doBK(){
+  const msg=buildMsg();lastMsg=msg;lastPlat='bk';
+  saveToSheet();
+  window._ctxt=msg;const T=TX[lang]||TX.el;
+  t('cttl',T.bkt);g('cinstr').textContent=T.bki;
+  g('cmsg').textContent=msg;t('cbtn',T.cpy);t('sntlbl',T.snt);
+  g('sntbtn').style.display='none';g('cok').style.display='none';
+  g('cbox').style.display='block';g('subcol').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function doCopy(){
+  const txt=window._ctxt||'';
+  const T=TX[lang]||TX.el;
+  const ok=()=>{
+    g('cok').textContent=T.cpyok;g('cok').style.display='block';
+    g('sntbtn').style.display='block';t('sntlbl',T.snt);
+    setTimeout(()=>g('cok').style.display='none',2500);
+  };
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(ok).catch(()=>{fb(txt);ok();});}
+  else{fb(txt);ok();}
+}
+function fb(tx){const a=document.createElement('textarea');a.value=tx;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);}
+
+function showConf(){
+  [1,2,3,4].forEach(i=>g('s'+i).classList.remove('active'));
+  g('cbox').style.display='none';g('prog').style.display='none';
+  g('scnf').classList.add('show');window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function confSent(){
+  g('scnf').classList.remove('show');
+  const isP=prop==='p';
+  g('lgp').style.display=isP?'block':'none';g('lgl').style.display=isP?'none':'block';
+  g('sprop').textContent=isP?'PISTACCHIO BY SNAPPYB':'SNAPPYB LIVING SPACES';
+  const T=TX[lang]||TX.el;
+  t('stt',T.suc);t('stb',T.suct);t('smp',T.mp);t('smb',T.gm);t('snw',T.ns);
+  g('smb').href=isP?'https://maps.app.goo.gl/9vXwUTiGjju6QWne6':'https://maps.app.goo.gl/BCgYSBm2Wi6stVvD9';
+  g('ssuc').classList.add('show');window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function confRetry(){
+  g('scnf').classList.remove('show');g('prog').style.display='block';go(4);
+  if(lastPlat==='bk'){window._ctxt=lastMsg;g('cbox').style.display='block';g('subcol').style.display='none';}
+}
+
+function resetAll(){
+  prop='';ci='';co='';lastMsg='';lastPlat='';
+  g('pp').classList.remove('on');g('pl').classList.remove('on');
+  ['f-nm','f-ct','f-zp','f-el','f-en'].forEach(id=>g(id).value='');
+  ['ci-d','ci-m','ci-y','co-d','co-m'].forEach(id=>g(id).selectedIndex=0);
+  ['e1','e2','e3','e4'].forEach(hideErr);
+  g('cbox').style.display='none';g('subcol').style.display='flex';
+  g('ssuc').classList.remove('show');g('scnf').classList.remove('show');
+  g('prog').style.display='block';initDates();go(1);
+}
+
+function initDates(){
+  const now=new Date(),y=now.getFullYear(),m=now.getMonth()+1,d=now.getDate();
+  ['ci-d','co-d'].forEach(id=>{
+    const s=g(id);s.innerHTML='<option value="">ΗΗ</option>';
+    for(let i=1;i<=31;i++)s.innerHTML+=`<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
+  });
+  const ciy=g('ci-y');ciy.innerHTML='<option value="">ΕΕΕΕ</option>';
+  for(let i=y;i<=y+1;i++)ciy.innerHTML+=`<option value="${i}">${i}</option>`;
+  const coy=g('co-y');coy.innerHTML=`<option value="${y}">${y}</option>`;
+  coy.value=String(y);
+  updMonths();
+  // Default = σήμερα
+  g('ci-d').value=String(d).padStart(2,'0');
+  g('ci-m').value=String(m).padStart(2,'0');
+  g('ci-y').value=String(y);
+  ci=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  // Φιλτράρισμα παρελθοντικών επιλογών
+  updCiSelects();
+}
+
+// ✅ FIX: Απενεργοποίηση παρελθοντικών μηνών/ημερών στο check-in
+function updCiSelects(){
+  const now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
+  const selY=g('ci-y').value,selM=g('ci-m').value;
+  const curY=selY?parseInt(selY):ty;
+  const curM=selM?parseInt(selM):tm;
+  // Απενεργοποίηση παρελθοντικών μηνών αν είναι τρέχον έτος
+  Array.from(g('ci-m').options).forEach(opt=>{
+    if(!opt.value) return;
+    const mo=parseInt(opt.value);
+    opt.disabled=(curY===ty && mo<tm);
+    if(opt.disabled && g('ci-m').value===opt.value){g('ci-m').value='';ci='';}
+  });
+  // Απενεργοποίηση παρελθοντικών ημερών αν είναι τρέχον έτος+μήνας
+  Array.from(g('ci-d').options).forEach(opt=>{
+    if(!opt.value) return;
+    const dy=parseInt(opt.value);
+    opt.disabled=(curY===ty && curM===tm && dy<td);
+    if(opt.disabled && g('ci-d').value===opt.value){g('ci-d').value='';ci='';}
+  });
+}
+
+function updMonths(){
+  const months=MN[lang]||MN.en;
+  ['ci-m','co-m'].forEach(id=>{
+    const s=g(id);const cur=s.value;
+    s.innerHTML='<option value="">ΜΜ</option>';
+    months.forEach((nm,i)=>{const v=String(i+1).padStart(2,'0');s.innerHTML+=`<option value="${v}">${nm}</option>`;});
+    if(cur)s.value=cur;
+  });
+}
+
+// ✅ FIX: Ενημέρωση φίλτρου όταν αλλάζει επιλογή check-in
+function bd(pre){
+  const d=g(pre+'-d').value,m=g(pre+'-m').value,y=g(pre+'-y').value;
+  const v=d&&m&&y?`${y}-${m}-${d}`:'';
+  if(pre==='ci'){ci=v;updCiSelects();}else co=v;
+}
+
+lang=sessionStorage.getItem('sl')||'el';
+initDates();setLang(lang);go(1);
+</script>
+</body>
+</html>
