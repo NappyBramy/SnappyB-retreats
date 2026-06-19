@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnappyB Retreats — Hotel Tool</title>
+<style>
+:root{--blue:#007aff;--green:#34c759;--red:#ff3b30;--orange:#ff9500;--gray:#8e8e93;--sep:rgba(60,60,67,0.12);--bg:#f2f2f7;--card:#fff;--text:#000;}
+body.dark{--bg:#1c1c1e;--card:#2c2c2e;--sep:rgba(255,255,255,0.12);--gray:#8e8e93;--text:#fff;}
+body.dark input,body.dark textarea{background:#3a3a3c;color:#fff;border-color:var(--sep);}
+body.dark input:focus,body.dark textarea:focus{background:#3a3a3c;border-color:var(--blue);}
+body.dark .room-card{background:var(--card);}
+body.dark .room-card.occ{background:#3a2020;border-color:#7a3030;}
+body.dark .card.occupied{background:#3a2020;border-color:#7a3030;}
+body.dark .card.green{background:#1a3020;border-color:#2a6040;}
+body.dark .card.orange{background:#3a2a10;border-color:#6a4a20;}
+body.dark .modal-box{background:var(--card);}
+body.dark #modal-guest-info{background:var(--bg);}
+body.dark .chat-bubble.other{background:var(--card);color:var(--text);}
+body.dark .log-item{background:var(--card);}
+body{font-family:-apple-system,'Helvetica Neue',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);transition:background .3s,color .3s;}
+header{background:var(--card);border-bottom:.5px solid var(--sep);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
+.logo{font-size:1rem;font-weight:700;}.logo-sub{font-size:.65rem;color:var(--gray);margin-top:1px;}
+.tabs{background:var(--card);border-bottom:.5px solid var(--sep);display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:10px 16px;font-size:.82rem;font-weight:500;color:var(--gray);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .15s;}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:700;}
+.panel{display:none;}.panel.active{display:block;}
+.cnt{max-width:540px;margin:0 auto;padding:14px 14px 60px;}
+.sl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin-bottom:6px;padding-left:4px;display:flex;justify-content:space-between;align-items:center;}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:10px;border:1.5px solid var(--sep);transition:all .3s;}
+.card.orange{border-color:var(--orange);background:#fffaf5;}
+.card.green{border-color:var(--green);background:#f0fff4;}
+.card.occupied{border-color:#ffd0cc;background:#fff0f0;}
+.stats{display:flex;gap:12px;background:var(--card);border-radius:14px;padding:14px;margin-bottom:14px;border:1.5px solid var(--sep);}
+.stat{flex:1;text-align:center;}
+.stat-n{font-size:1.4rem;font-weight:700;}
+.stat-l{font-size:.6rem;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+.badge{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:8px;display:inline-block;}
+.badge.pending{background:#e8e8ed;color:var(--gray);}
+.badge.orange{background:#fff3e0;color:#c05000;}
+.badge.green{background:#d1f5d3;color:#248a3d;}
+.name{font-size:.88rem;font-weight:700;}
+.meta{font-size:.75rem;color:#3c3c43;line-height:1.9;margin:8px 0;}
+label{display:block;font-size:.8rem;font-weight:500;color:#3c3c43;margin-bottom:5px;margin-top:12px;}
+label:first-of-type{margin-top:0;}
+input[type=text],textarea{width:100%;padding:11px 14px;border:.5px solid var(--sep);border-radius:10px;font-family:inherit;font-size:.88rem;background:var(--bg);color:#000;outline:none;}
+input[type=date],input[type=time]{width:100%;padding:10px 8px;border:.5px solid var(--sep);border-radius:10px;font-family:inherit;font-size:.8rem;background:var(--bg);color:#000;outline:none;}
+input:focus,textarea:focus{border-color:var(--blue);background:white;}
+textarea{resize:none;min-height:60px;max-height:90px;overflow-y:auto;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.room-card{background:var(--card);border-radius:12px;padding:12px;cursor:pointer;border:2.5px solid var(--sep);transition:all .15s;position:relative;}
+.room-card.sel{border-color:var(--blue);background:#f0f6ff;}
+.room-card.sel::after{content:"✓";position:absolute;top:8px;right:10px;font-size:.82rem;color:var(--blue);font-weight:700;}
+.room-card.occ{background:#fff0f0;border-color:#ffd0cc;}
+.room-card.s-checkin{background:#e8f5e9;border-color:#2e7d32;}
+.room-card.s-staying{background:#fff8e1;border-color:#f57f17;}
+.room-card.s-checkout{background:#ffebee;border-color:#c62828;}
+.room-card.s-dirty{background:#e8e8ed;border-color:#8e8e93;opacity:.85;}
+.room-name.s-dirty{color:#3c3c43;}
+.room-status.s-dirty{color:#636366;}
+.room-name{font-size:.85rem;font-weight:700;margin-bottom:4px;}
+.room-name.s-checkin{color:#1b5e20;}
+.room-name.s-staying{color:#e65100;}
+.room-name.s-checkout{color:#b71c1c;}
+.room-status{font-size:.7rem;font-weight:700;}
+.room-status.s-checkin{color:#2e7d32;}
+.room-status.s-staying{color:#f57f17;}
+.room-status.s-checkout{color:#c62828;}
+.room-info{font-size:.7rem;color:#3c3c43;margin-top:4px;line-height:1.8;}
+body.dark .room-card.s-checkin{background:#1a3020;border-color:#4caf50;}
+body.dark .room-card.s-staying{background:#2d2000;border-color:#ffb300;}
+body.dark .room-card.s-checkout{background:#2d0a0a;border-color:#ef5350;}
+body.dark .room-card.s-dirty{background:#2c2c2e;border-color:#636366;opacity:.85;}
+body.dark .room-name.s-dirty{color:#aeaeb2;}
+body.dark .room-status.s-dirty{color:#8e8e93;}
+body.dark .room-name.s-checkin{color:#a5d6a7;}
+body.dark .room-name.s-staying{color:#ffe082;}
+body.dark .room-name.s-checkout{color:#ef9a9a;}
+body.dark .room-status.s-checkin{color:#66bb6a;}
+body.dark .room-status.s-staying{color:#ffca28;}
+body.dark .room-status.s-checkout{color:#ef5350;}
+body.dark .room-info{color:#aaa;}
+.plat-row,.comm-row{display:flex;gap:7px;margin-top:6px;}
+.pb{flex:1;padding:8px 4px;border:1.5px solid var(--sep);border-radius:10px;background:var(--bg);font-family:inherit;font-size:.76rem;font-weight:500;color:var(--gray);cursor:pointer;transition:all .15s;}
+.pb.bk.active{border-color:#003580;background:#dde9ff;color:#003580;font-weight:700;}
+.pb.ab.active{border-color:#ff5a5f;background:#ffedee;color:#ff5a5f;font-weight:700;}
+.pb.di.active{border-color:var(--green);background:#d1f5d3;color:#248a3d;font-weight:700;}
+.pb.wa.active{border-color:#25d366;background:#d1f5d3;color:#1a7a1a;font-weight:700;}
+.pb.bo.active{border-color:#003580;background:#dde9ff;color:#003580;font-weight:700;}
+.dr{display:flex;gap:8px;}
+.dr>div{flex:1;}
+.btn{width:100%;padding:13px;border:none;border-radius:11px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:8px;}
+.btn.blue{background:var(--blue);color:white;}
+.btn.green{background:var(--green);color:white;}
+.btn.gray{background:#e8e8ed;color:var(--blue);}
+.btn.red-o{background:#fff0f0;color:var(--red);border:1.5px solid #ffd0cc;}
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+.code-big{font-size:1.4rem;font-weight:700;color:var(--blue);letter-spacing:.08em;}
+.lang-row{display:flex;gap:6px;margin-top:8px;}
+.lb{flex:1;padding:7px;border:1.5px solid var(--sep);border-radius:8px;background:var(--bg);font-family:inherit;font-size:.75rem;cursor:pointer;color:var(--gray);}
+.lb.active{border-color:var(--blue);background:#f0f6ff;color:var(--blue);font-weight:700;}
+.msg-box{background:white;border:.5px solid #e5e5ea;border-radius:10px;padding:12px;font-size:.78rem;line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto;margin-top:6px;}
+.log-item{padding:11px 0;border-bottom:.5px solid var(--sep);}
+.log-item:last-child{border-bottom:none;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:540px;}
+.date-header{font-size:.78rem;font-weight:800;border-radius:10px;padding:8px 14px;margin:16px 0 8px;display:flex;justify-content:space-between;align-items:center;}
+.date-header:first-child{margin-top:0;}
+.date-header.today{color:#248a3d;background:#d1f5d3;}
+.date-header.future{color:#c62828;background:#ffebee;}
+.date-count{font-size:.62rem;font-weight:700;color:white;border-radius:8px;padding:2px 8px;}
+.date-header.today .date-count{background:#248a3d;}
+.date-header.future .date-count{background:#c62828;}
+body.dark .date-header{background:#1a2a3a;}
+.date-edit{display:flex;gap:8px;margin:10px 0;}
+.de-col{flex:1;}
+.de-col label{font-size:.62rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;display:block;}
+.de-col input{width:100%;padding:8px;border:1.5px solid var(--sep);border-radius:8px;font-family:inherit;font-size:.8rem;background:var(--bg);color:var(--text);}
+.de-col input.changed{border-color:var(--orange);}
+.swipe-wrap{position:relative;overflow:hidden;border-radius:14px;margin-bottom:10px;}
+.swipe-inner{transition:transform .2s ease;background:var(--card);position:relative;z-index:1;border-radius:14px;}
+.swipe-delete-bg{position:absolute;right:-80px;top:0;bottom:0;width:80px;background:var(--red);display:flex;align-items:center;justify-content:center;color:white;font-size:1.2rem;z-index:0;transition:right .2s ease;}
+.chat-bubble{padding:10px 13px;border-radius:14px;margin-bottom:8px;max-width:85%;font-size:.82rem;line-height:1.5;}
+.chat-bubble.me{color:white;margin-left:auto;border-bottom-right-radius:4px;}
+.chat-bubble.other{background:var(--card);border:1.5px solid var(--sep);margin-right:auto;border-bottom-left-radius:4px;}
+.chat-meta{font-size:.65rem;margin-top:4px;opacity:.75;}
+.auth-active{font-weight:800!important;box-shadow:0 0 0 2.5px currentColor;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--sep);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="logo">🌿 SnappyB Retreats</div><div class="logo-sub">Hotel Management</div></div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button onclick="toggleDark()" id="dark-btn" style="background:none;border:none;font-size:1.2rem;cursor:pointer;padding:4px;">🌙</button>
+    <div style="font-size:.68rem;color:var(--gray);text-align:right;">
+      TTLock API<br><span style="color:var(--green);font-weight:600;" id="ttlock-status">● Live</span> <span id="ping-badge" style="font-size:.6rem;font-weight:700;padding:1px 5px;border-radius:6px;background:#e8e8ed;color:#3c3c43;vertical-align:middle;"></span>
+      <span id="pending-badge" style="display:none;background:var(--orange);color:white;font-size:.6rem;padding:1px 6px;border-radius:10px;margin-left:4px;font-weight:700;cursor:pointer;" onclick="showPendingPanel()">⏳</span>
+    </div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('subs',this)">🔔 Υποβολές<span id="sub-badge" style="display:none;background:var(--red);color:white;font-size:.6rem;padding:1px 6px;border-radius:10px;margin-left:3px;font-weight:700;"></span></div>
+  <div class="tab" onclick="showTab('dash',this)">📊 Dashboard</div>
+  <div class="tab" onclick="showTab('pistacchio',this)">🏡 Pistacchio</div>
+  <div class="tab" onclick="showTab('living',this)">🏠 Living</div>
+  <div class="tab" onclick="showTab('log',this)">📋 Log</div>
+  <div class="tab" onclick="showTab('chat',this)">💬 Σχόλια</div>
+</div>
+
+<!-- SUBMISSIONS TAB -->
+<div class="panel active" id="tab-subs">
+<div class="cnt">
+  <div class="sl">ΥΠΟΒΟΛΕΣ GUEST FORM
+    <button onclick="loadSubs()" style="background:none;border:none;color:var(--blue);font-size:.75rem;cursor:pointer;font-family:inherit;">🔄 Ανανέωση</button>
+  </div>
+  <div id="subs-list"><div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;"><div class="spinner"></div></div></div>
+</div>
+</div>
+
+<!-- DASHBOARD TAB -->
+<div class="panel" id="tab-dash">
+<div class="cnt">
+
+  <!-- Segment -->
+  <div style="display:flex;background:#e8e8ed;border-radius:10px;padding:3px;margin-bottom:14px;gap:3px;">
+    <button class="dash-seg active" id="ds-both" onclick="setDashView('both',this)" style="flex:1;padding:8px 2px;border:none;background:white;border-radius:8px;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.1);">🏠 Και τα 2</button>
+    <button class="dash-seg" id="ds-p" onclick="setDashView('p',this)" style="flex:1;padding:8px 2px;border:none;background:transparent;border-radius:8px;font-family:inherit;font-size:.75rem;font-weight:500;cursor:pointer;color:var(--gray);">🏡 Pistacchio</button>
+    <button class="dash-seg" id="ds-l" onclick="setDashView('l',this)" style="flex:1;padding:8px 2px;border:none;background:transparent;border-radius:8px;font-family:inherit;font-size:.75rem;font-weight:500;cursor:pointer;color:var(--gray);">🏠 Living</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="sl" id="dash-date-label">ΣΗΜΕΡΑ</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+    <div class="card" style="padding:12px 8px;text-align:center;margin-bottom:0;">
+      <div style="font-size:1.7rem;font-weight:800;color:#2e7d32;" id="d-arr">0</div>
+      <div style="font-size:.58rem;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;">Arrivals</div>
+    </div>
+    <div class="card" style="padding:12px 8px;text-align:center;margin-bottom:0;">
+      <div style="font-size:1.7rem;font-weight:800;color:#c62828;" id="d-dep">0</div>
+      <div style="font-size:.58rem;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;">Departures</div>
+    </div>
+    <div class="card" style="padding:12px 8px;text-align:center;margin-bottom:0;">
+      <div style="font-size:1.7rem;font-weight:800;color:#e65100;" id="d-house">0</div>
+      <div style="font-size:.58rem;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin-top:2px;">In House</div>
+    </div>
+  </div>
+
+  <!-- Occupancy -->
+  <div class="sl">ΠΛΗΡΟΤΗΤΑ</div>
+  <div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+    <div style="position:relative;width:72px;height:72px;flex-shrink:0;">
+      <svg width="72" height="72" viewBox="0 0 72 72" style="transform:rotate(-90deg);">
+        <circle cx="36" cy="36" r="28" fill="none" stroke="var(--sep)" stroke-width="8"/>
+        <circle id="occ-arc" cx="36" cy="36" r="28" fill="none" stroke="#2e7d32" stroke-width="8"
+          stroke-dasharray="175.9" stroke-dashoffset="176" stroke-linecap="round"
+          style="transition:stroke-dashoffset .5s ease;"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:800;" id="d-pct">0%</div>
+    </div>
+    <div style="flex:1;">
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:5px;"><span style="color:var(--gray);">Κατειλημμένα</span><span style="font-weight:700;" id="d-occ">0</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:5px;"><span style="color:var(--gray);">Ελεύθερα</span><span style="font-weight:700;color:#2e7d32;" id="d-free">0</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:5px;" id="d-p-row"><span style="color:var(--gray);">🏡 Pistacchio</span><span style="font-weight:700;" id="d-p-occ">—</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;" id="d-l-row"><span style="color:var(--gray);">🏠 Living</span><span style="font-weight:700;" id="d-l-occ">—</span></div>
+    </div>
+  </div>
+
+  <!-- Payments (Direct only) -->
+  <div class="sl">ΠΛΗΡΩΜΕΣ <span style="font-size:.6rem;color:var(--gray);font-weight:400;text-transform:none;letter-spacing:0;">— μόνο Direct</span></div>
+  <div class="card" style="padding:0 14px;" id="d-payments">
+    <div style="text-align:center;padding:1.5rem;color:var(--gray);font-size:.82rem;">Δεν υπάρχουν Direct κρατήσεις</div>
+  </div>
+
+</div>
+</div>
+
+<!-- PISTACCHIO TAB -->
+<div class="panel" id="tab-pistacchio">
+<div class="cnt">
+  <div class="sl">ΔΩΜΑΤΙΑ</div>
+  <div class="grid2" id="grid-p"></div>
+  <div class="card">
+    <div style="font-size:.8rem;font-weight:600;margin-bottom:8px;">📋 Paste από Guest Form</div>
+    <textarea id="paste-p" placeholder="Επικόλλησε εδώ το μήνυμα του πελάτη..." oninput="autofill('p')"></textarea>
+    <div id="fill-p" style="font-size:.72rem;color:var(--green);margin-top:4px;"></div>
+  </div>
+  <div class="card">
+    <label>Ονοματεπώνυμο</label>
+    <input type="text" id="name-p" placeholder="Γιώργης Παπαδόπουλος">
+    <label>Πλατφόρμα</label>
+    <div class="plat-row">
+      <button class="pb bk" onclick="setPlat('p','bk',this)">🔵 Booking</button>
+      <button class="pb ab" onclick="setPlat('p','ab',this)">🔴 Airbnb</button>
+      <button class="pb di" onclick="setPlat('p','di',this)">✅ Direct</button>
+    </div>
+    <label>Αποστολή</label>
+    <div class="comm-row">
+      <button class="pb bo" onclick="setComm('p','bo',this)">🔵 Booking.com</button>
+      <button class="pb wa" onclick="setComm('p','wa',this)">💬 WhatsApp</button>
+    </div>
+  </div>
+  <div class="card">
+    <label>Check-in</label>
+    <div class="dr"><div><input type="date" id="ci-p"></div><div><input type="time" id="cit-p" value="13:30"></div></div>
+    <label>Check-out</label>
+    <div class="dr"><div><input type="date" id="co-p"></div><div><input type="time" id="cot-p" value="12:00"></div></div>
+  </div>
+  <div id="api-p"></div>
+  <button class="btn blue" onclick="genP()">🔑 Generate & Αποστολή</button>
+  <button class="btn gray" onclick="resetP()" style="margin-top:6px;">🔄 Επαναφορά</button>
+  <div id="res-p" style="display:none;margin-top:10px;" class="card">
+    <div id="code-p" class="code-big" style="text-align:center;display:block;margin-bottom:10px;"></div>
+    <div class="lang-row">
+      <button class="lb active" onclick="setLangP('el',this)">🇬🇷 ΕΛ</button>
+      <button class="lb" onclick="setLangP('en',this)">🇬🇧 EN</button>
+      <button class="lb" onclick="setLangP('tr',this)">🇹🇷 TR</button>
+      <button class="lb" onclick="setLangP('bg',this)">🇧🇬 БГ</button>
+      <button class="lb" onclick="setLangP('ro',this)">🇷🇴 RO</button>
+    </div>
+    <div class="msg-box" id="msg-p"></div>
+    <button class="btn gray" onclick="copyP()" style="margin-top:8px;">📋 Αντιγραφή</button>
+  </div>
+</div>
+</div>
+
+<!-- LIVING TAB -->
+<div class="panel" id="tab-living">
+<div class="cnt">
+  <div class="sl">ΔΩΜΑΤΙΑ</div>
+  <div class="grid2" id="grid-l"></div>
+  <div class="card">
+    <div style="font-size:.8rem;font-weight:600;margin-bottom:8px;">📋 Paste από Guest Form</div>
+    <textarea id="paste-l" placeholder="Επικόλλησε εδώ το μήνυμα του πελάτη..." oninput="autofill('l')"></textarea>
+    <div id="fill-l" style="font-size:.72rem;color:var(--green);margin-top:4px;"></div>
+  </div>
+  <div class="card">
+    <label>Ονοματεπώνυμο</label>
+    <input type="text" id="name-l" placeholder="Γιώργης Παπαδόπουλος">
+    <label>Πλατφόρμα</label>
+    <div class="plat-row">
+      <button class="pb bk" onclick="setPlat('l','bk',this)">🔵 Booking</button>
+      <button class="pb ab" onclick="setPlat('l','ab',this)">🔴 Airbnb</button>
+      <button class="pb di" onclick="setPlat('l','di',this)">✅ Direct</button>
+    </div>
+    <label>Αποστολή</label>
+    <div class="comm-row">
+      <button class="pb bo" onclick="setComm('l','bo',this)">🔵 Booking.com</button>
+      <button class="pb wa" onclick="setComm('l','wa',this)">💬 WhatsApp</button>
+    </div>
+  </div>
+  <div class="card">
+    <label>Check-in</label>
+    <div class="dr"><div><input type="date" id="ci-l"></div><div><input type="time" id="cit-l" value="13:30"></div></div>
+    <label>Check-out</label>
+    <div class="dr"><div><input type="date" id="co-l"></div><div><input type="time" id="cot-l" value="12:00"></div></div>
+  </div>
+  <button class="btn blue" onclick="genL()">📋 Αποστολή Μηνύματος</button>
+  <button class="btn gray" onclick="resetL()" style="margin-top:6px;">🔄 Επαναφορά</button>
+  <div id="res-l" style="display:none;margin-top:10px;" class="card">
+    <div id="code-l" class="code-big" style="text-align:center;display:block;margin-bottom:10px;"></div>
+    <div class="lang-row">
+      <button class="lb active" onclick="setLangL('el',this)">🇬🇷 ΕΛ</button>
+      <button class="lb" onclick="setLangL('en',this)">🇬🇧 EN</button>
+      <button class="lb" onclick="setLangL('tr',this)">🇹🇷 TR</button>
+      <button class="lb" onclick="setLangL('bg',this)">🇧🇬 БГ</button>
+      <button class="lb" onclick="setLangL('ro',this)">🇷🇴 RO</button>
+    </div>
+    <div class="msg-box" id="msg-l"></div>
+    <button class="btn gray" onclick="copyL()" style="margin-top:8px;">📋 Αντιγραφή</button>
+  </div>
+</div>
+</div>
+
+<!-- LOG TAB -->
+<div class="panel" id="tab-log">
+<div class="cnt">
+  <div id="log-locks">
+    <div class="sl">EVENTS ΚΛΕΙΔΑΡΙΩΝ — LIVE
+      <div style="display:flex;gap:8px;">
+        <button onclick="loadLockEvents()" style="background:none;border:none;color:var(--blue);font-size:.75rem;cursor:pointer;font-family:inherit;">🔄 Ανανέωση</button>
+        <button onclick="clearLockEvents()" style="background:none;border:none;color:var(--red);font-size:.75rem;cursor:pointer;font-family:inherit;">🗑️ Εκκαθάριση</button>
+      </div>
+    </div>
+    <div class="card" style="padding:0 14px;" id="lock-events-list">
+      <div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;"><div class="spinner"></div> Φόρτωση...</div>
+    </div>
+  </div>
+  <div id="log-manual" style="display:none;">
+    <div class="sl">ΙΣΤΟΡΙΚΟ ΚΡΑΤΗΣΕΩΝ
+      <button onclick="clearLog()" style="background:none;border:none;color:var(--red);font-size:.72rem;cursor:pointer;font-family:inherit;">Εκκαθάριση</button>
+    </div>
+    <div class="card" style="padding:0 14px;" id="log-list"><div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;">Κανένα log ακόμα.</div></div>
+  </div>
+</div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div style="font-size:1rem;font-weight:700;margin-bottom:2px;" id="modal-title"></div>
+    <div id="modal-guest-info" style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:14px;margin-top:8px;font-size:.78rem;line-height:2;"></div>
+    <label>Check-in</label>
+    <div class="dr" style="margin-bottom:10px;">
+      <div><input type="date" id="m-ci" style="font-size:.85rem;"></div>
+      <div><input type="time" id="m-cit" style="font-size:.85rem;"></div>
+    </div>
+    <label>Check-out</label>
+    <div class="dr" style="margin-bottom:14px;">
+      <div><input type="date" id="m-co" style="font-size:.85rem;"></div>
+      <div><input type="time" id="m-cot" style="font-size:.85rem;"></div>
+    </div>
+    <div id="modal-date-preview" style="font-size:.75rem;color:var(--gray);text-align:center;margin:-8px 0 10px;"></div>
+    <button class="btn green" onclick="saveModal()">💾 Αποθήκευση</button>
+    <div style="display:flex;gap:8px;margin-top:6px;align-items:center;">
+      <input type="number" id="m-extend-days" min="1" max="30" value="1" style="width:70px;text-align:center;font-size:.9rem;padding:8px;border:1.5px solid var(--sep);border-radius:10px;font-family:inherit;">
+      <button class="btn" style="background:var(--orange);color:white;flex:1;" onclick="extendModal()">📅 Παράταση ημερών</button>
+    </div>
+    <button class="btn" id="modal-checkout-btn" style="background:var(--red);color:white;margin-top:6px;" onclick="checkoutModal()">🚪 Check-out & Διαγραφή κωδικού</button>
+    <button class="btn gray" onclick="closeModal()" style="margin-top:6px;">Ακύρωση</button>
+    <div style="margin-top:14px;border-top:1.5px solid var(--sep);padding-top:12px;">
+      <div class="sl" style="margin-bottom:6px;">📝 ΣΗΜΕΙΩΣΕΙΣ</div>
+      <textarea id="m-notes" rows="3" placeholder="π.χ. Άφιξη αργά, ζήτησε extra πετσέτες..." style="width:100%;padding:10px;border:1.5px solid var(--sep);border-radius:10px;font-family:inherit;font-size:.82rem;background:var(--bg);color:var(--text);resize:none;" oninput="this.style.borderColor=this.value?'var(--orange)':'var(--sep)'"></textarea>
+      <button class="btn" onclick="saveNote()" style="margin-top:6px;background:var(--orange);color:white;">💾 Αποθήκευση σημείωσης</button>
+      <div id="note-saved" style="text-align:center;font-size:.7rem;color:#248a3d;font-weight:700;display:none;margin-top:4px;">✅ Αποθηκεύτηκε</div>
+    </div>
+    <div style="margin-top:16px;border-top:1.5px solid var(--sep);padding-top:12px;">
+      <div class="sl" style="margin-bottom:6px;">ΜΗΝΥΜΑ ΕΠΙΣΚΕΠΤΗ</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button class="btn" id="msg-btn-el" onclick="showModalMsg('el')" style="flex:1;font-size:.75rem;padding:7px 4px;background:var(--blue);color:white;">🇬🇷 ΕΛ</button>
+        <button class="btn" id="msg-btn-en" onclick="showModalMsg('en')" style="flex:1;font-size:.75rem;padding:7px 4px;background:var(--sep);color:var(--text);">🇬🇧 EN</button>
+        <button class="btn" id="msg-btn-tr" onclick="showModalMsg('tr')" style="flex:1;font-size:.75rem;padding:7px 4px;background:var(--sep);color:var(--text);">🇹🇷 TR</button>
+        <button class="btn" id="msg-btn-bg" onclick="showModalMsg('bg')" style="flex:1;font-size:.75rem;padding:7px 4px;background:var(--sep);color:var(--text);">🇧🇬 БГ</button>
+        <button class="btn" id="msg-btn-ro" onclick="showModalMsg('ro')" style="flex:1;font-size:.75rem;padding:7px 4px;background:var(--sep);color:var(--text);">🇷🇴 RO</button>
+      </div>
+      <div id="modal-msg-box" style="background:var(--bg);border-radius:10px;padding:10px 12px;font-size:.72rem;line-height:1.6;white-space:pre-wrap;max-height:180px;overflow-y:auto;color:var(--text);"></div>
+      <button class="btn" style="margin-top:6px;background:var(--sep);color:var(--text);font-size:.78rem;" onclick="copyModalMsg()">📋 Αντιγραφή</button>
+    </div>
+  </div>
+</div>
+
+<!-- PENDING PANEL -->
+<div class="modal-overlay" id="pending-modal" onclick="if(event.target===this)g('pending-modal').classList.remove('open')">
+  <div class="modal-box">
+    <div style="font-size:1rem;font-weight:700;margin-bottom:12px;">⏳ Εκκρεμείς Αποστολές</div>
+    <div id="pending-list"></div>
+    <button class="btn blue" onclick="retryAllPending()" style="margin-top:8px;">🔄 Αποστολή Όλων</button>
+    <button class="btn gray" onclick="g('pending-modal').classList.remove('open')" style="margin-top:6px;">Κλείσιμο</button>
+  </div>
+</div>
+
+<!-- CHAT TAB -->
+<div class="panel" id="tab-chat">
+<div class="cnt">
+  <div style="display:flex;background:#e8e8ed;border-radius:10px;padding:3px;margin-bottom:12px;gap:3px;">
+    <button class="chat-tab active" id="ct-clean" onclick="setChatTab('clean',this)" style="flex:1;padding:8px 2px;border:none;background:white;border-radius:8px;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.1);">🧹 Καθαριότητα</button>
+    <button class="chat-tab" id="ct-wash" onclick="setChatTab('wash',this)" style="flex:1;padding:8px 2px;border:none;background:transparent;border-radius:8px;font-family:inherit;font-size:.75rem;font-weight:500;cursor:pointer;color:var(--gray);">👕 Πλυντήριο</button>
+  </div>
+  <div class="card" style="margin-bottom:10px;">
+    <div class="sl" style="margin-bottom:8px;">ΕΙΜΑΙ Ο/Η</div>
+    <div style="display:flex;gap:8px;" id="chat-authors">
+      <button class="pb" id="auth-nap" onclick="setAuthor('ΝΑΠΟΛΕΩΝ',this)" style="flex:1;padding:10px 4px;font-size:.78rem;">👤 ΝΑΠΟΛΕΩΝ</button>
+      <button class="pb" id="auth-eir" onclick="setAuthor('ΕΙΡΗΝΗ',this)" style="flex:1;padding:10px 4px;font-size:.78rem;">👤 ΕΙΡΗΝΗ</button>
+      <button class="pb" id="auth-sou" onclick="setAuthor('ΣΟΥΛΑ',this)" style="flex:1;padding:10px 4px;font-size:.78rem;">👤 ΣΟΥΛΑ</button>
+      <button class="pb" id="auth-gia" onclick="setAuthor('ΓΙΑΝΝΗΣ',this)" style="flex:1;padding:10px 4px;font-size:.78rem;display:none;">👤 ΓΙΑΝΝΗΣ</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:10px;">
+    <textarea id="chat-input" placeholder="Γράψε ένα σχόλιο..." style="min-height:75px;margin-bottom:8px;"></textarea>
+    <button class="btn blue" onclick="sendComment()" id="chat-send">✉️ Αποστολή</button>
+  </div>
+  <div class="sl" id="chat-feed-title">ΜΗΝΥΜΑΤΑ — ΚΑΘΑΡΙΟΤΗΤΑ
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button onclick="loadComments()" style="background:none;border:none;color:var(--blue);font-size:.75rem;cursor:pointer;font-family:inherit;">🔄 Ανανέωση</button>
+      <button onclick="clearComments()" style="background:none;border:none;color:var(--red);font-size:.75rem;cursor:pointer;font-family:inherit;">🗑️ Εκκαθάριση</button>
+    </div>
+  </div>
+  <div id="chat-list"><div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;"><div class="spinner"></div> Φόρτωση...</div></div>
+</div>
+</div>
+
+<script>
+const PROXY='https://script.google.com/macros/s/AKfycbz24YxkIV4XJImGySmzfg5BQ-Z8C3dlS8vQaUkUa5o2fVDhPUBYhepl8GbDppVFSZsa/exec';
+const TZ=3*60*60*1000;
+// ===== ΣΤΑΘΕΡΗ ΩΡΑ ΕΛΛΑΔΑΣ (UTC+3) - ανεξάρτητο από timezone συσκευής =====
+function greeceToday(){
+  return new Date(Date.now()+TZ).toISOString().slice(0,10);
+}
+function greeceDateTimeToMs(dateStr,timeStr){
+  const[y,m,d]=dateStr.split('-').map(Number);
+  const[h,mi]=timeStr.split(':').map(Number);
+  return Date.UTC(y,m-1,d,h,mi,0)-TZ;
+}
+const ENTRANCE=23341511;
+
+const RP={
+  pink:   {n:'Pink',   lockId:22109259, floor:'1ο'},
+  green:  {n:'Green',  lockId:22112067, floor:'1ο'},
+  candy:  {n:'Candy',  lockId:22106895, floor:'2ο'},
+  funky:  {n:'Funky',  lockId:22105673, floor:'2ο'},
+  forest: {n:'Forest', lockId:23343961, floor:'3ο'},
+  blossom:{n:'Blossom',lockId:23106539, floor:'3ο'}
+};
+const RL={
+  primopiano: {n:'Primopiano', lb:'1952', floor:'1ο', floorEN:'1st', side:'δεξιά',    sideEN:'right'},
+  terracotta: {n:'Terracotta', lb:'9626', floor:'1ο', floorEN:'1st', side:'αριστερά', sideEN:'left'},
+  reef:       {n:'Reef',       lb:'5827', floor:'2ο', floorEN:'2nd', side:'αριστερά', sideEN:'left'},
+  minimalo:   {n:'Minimalo',   lb:'8948', floor:'2ο', floorEN:'2nd', side:'δεξιά',    sideEN:'right'},
+  colours:    {n:'Colours',    lb:'9380', floor:'3ο', floorEN:'3rd', side:'δεξιά',    sideEN:'right'}
+};
+const ORDER_P=['pink','green','candy','funky','forest','blossom'];
+const ORDER_L=['primopiano','terracotta','reef','minimalo','colours'];
+const ROOMS_P_NAMES={pink:'Pink',green:'Green',candy:'Candy',funky:'Funky',forest:'Forest',blossom:'Blossom'};
+const ROOMS_L_NAMES={primopiano:'Primopiano',terracotta:'Terracotta',reef:'Reef',minimalo:'Minimalo',colours:'Colours'};
+const FLOORS_EN={pink:'1st',green:'1st',candy:'2nd',funky:'2nd',forest:'3rd',blossom:'3rd'};
+const FLOOR_EMOJI={pink:'1️⃣',green:'1️⃣',candy:'2️⃣',funky:'2️⃣',forest:'3️⃣',blossom:'3️⃣'};
+
+let selP=[],selL=[],platP='',platL='',commP='',commL='';
+let cleanSt=JSON.parse(localStorage.getItem('snb_clean')||'{}');
+let notesSt=JSON.parse(localStorage.getItem('snb_notes')||'{}');
+function saveNotes(){localStorage.setItem('snb_notes',JSON.stringify(notesSt));}
+function saveClean(){localStorage.setItem('snb_clean',JSON.stringify(cleanSt));}
+// Πληρωμές — ξεχωριστό storage, δεν σβήνεται από το sync
+let paidSt=JSON.parse(localStorage.getItem('snb_paid')||'{}');
+function savePaidSt(){localStorage.setItem('snb_paid',JSON.stringify(paidSt));}
+function toggleClean(prop,k){
+  const key=prop+'_'+k;
+  const rName=prop==='p'?RP[k].n:RL[k].n;
+  if(cleanSt[key]==='dirty'){
+    if(confirm(`✅ Το ${rName} καθαρίστηκε;`)){
+      delete cleanSt[key];saveClean();
+    }
+  } else {
+    cleanSt[key]='dirty';saveClean();
+  }
+  if(prop==='p'){renderGridP();}else{renderGridL();}
+}
+let roomSt=JSON.parse(localStorage.getItem('snb_rooms')||'{}');
+let actLog=JSON.parse(localStorage.getItem('snb_log')||'[]');
+let subStates=JSON.parse(localStorage.getItem('snb_subs')||'{}');
+let pendingProps={},pendingRooms={};
+let editKey=null;
+let _msgsP={},_msgsL={};
+
+// ===== UTILS =====
+const g=id=>document.getElementById(id);
+
+// ✅ FIX 1: fd() χειρίζεται πλέον και "Sat Jun 06 2026 00:00:00 GMT..." μορφή
+function fd(d){
+  if(!d) return '';
+  const s=d.toString().trim();
+  // YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){
+    const[,m,day]=s.split('-');
+    return`${day}/${m}`;
+  }
+  // ISO string 2026-06-05T00:00:00.000Z
+  if(/^\d{4}-\d{2}-\d{2}T/.test(s)){
+    const[,m,day]=s.split('T')[0].split('-');
+    return`${day}/${m}`;
+  }
+  // "Sat Jun 06 2026..." ή οτιδήποτε άλλο — parse με normDate πρώτα
+  const norm=normDate(s);
+  if(/^\d{4}-\d{2}-\d{2}$/.test(norm)){
+    const[,m,day]=norm.split('-');
+    return`${day}/${m}`;
+  }
+  return s;
+}
+
+// Μετατρέπει οποιαδήποτε μορφή σε YYYY-MM-DD (χωρίς UTC shift)
+function normDate(v){
+  if(!v) return '';
+  const s=v.toString().trim();
+  // Ήδη YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // ISO 2026-06-07T...
+  if(/^\d{4}-\d{2}-\d{2}T/.test(s)){
+    const d=new Date(s);
+    const local=new Date(d.getTime()+TZ);
+    return local.toISOString().slice(0,10);
+  }
+  // DD/MM/YYYY
+  const mDMY=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if(mDMY){const y=mDMY[3].length===2?'20'+mDMY[3]:mDMY[3];return`${y}-${mDMY[2].padStart(2,'0')}-${mDMY[1].padStart(2,'0')}`;}
+  // "Sun Jun 07 2026..." ή "Sat Jun 06 2026 00:00:00 GM..." — regex απευθείας, χωρίς new Date()
+  const MONTHS={Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+  const mStr=s.match(/[A-Za-z]{3}\s+([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/);
+  if(mStr&&MONTHS[mStr[1]]){
+    return`${mStr[3]}-${MONTHS[mStr[1]]}-${mStr[2].padStart(2,'0')}`;
+  }
+  return s;
+}
+
+function parseLocalDate(s){
+  if(!s) return null;
+  const str=normDate(s.toString());
+  const[y,m,d]=str.split('-');
+  return new Date(parseInt(y),parseInt(m)-1,parseInt(d));
+}
+function save(){
+  localStorage.setItem('snb_rooms',JSON.stringify(roomSt));
+  // Sync paidSt with current roomSt paid fields
+  for(const k in roomSt){
+    const s=roomSt[k];
+    if(s&&s.paid&&s.paid!=='0'){
+      paidSt[k]={paid:s.paid,paidBy:s.paidBy||'',paidOn:s.paidOn||''};
+    }
+  }
+  savePaidSt();
+}
+function saveAndSync(key){
+  save();
+  const s=roomSt[key];
+  if(s) pushRoomState(key,{guest:s.guest,code:s.code,ci:s.ci,co:s.co,cit:s.cit||'',cot:s.cot||'',plat:s.plat||'',comm:s.comm||'',roomPwdId:s.roomPwdId||'',entPwdId:s.entPwdId||'',lockId:s.lockId||''});
+}
+function saveLog(){localStorage.setItem('snb_log',JSON.stringify(actLog));}
+function saveSubs(){localStorage.setItem('snb_subs',JSON.stringify(subStates));}
+function addLog(e){actLog.unshift(e);if(actLog.length>300)actLog.splice(300);saveLog();}
+function now(){return new Date().toLocaleDateString('el-GR',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+new Date().toLocaleTimeString('el-GR',{hour:'2-digit',minute:'2-digit'});}
+function getRoomKey(roomName){return Object.keys(ROOMS_P_NAMES).find(k=>ROOMS_P_NAMES[k]===roomName)||null;}
+
+// ===== TABS =====
+let _chatTimer=null;
+function showTab(t,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  g('tab-'+t).classList.add('active');
+  el.classList.add('active');
+  if(_chatTimer){clearInterval(_chatTimer);_chatTimer=null;}
+  if(t==='subs') loadSubs();
+  if(t==='dash'){renderDashboard();}
+  if(t==='pistacchio'){renderGridP();renderStatsP();}
+  if(t==='living'){renderGridL();renderStatsL();}
+  if(t==='log'){renderLog();loadLockEvents();}
+  if(t==='chat'){loadComments();_chatTimer=setInterval(()=>loadComments(true),30000);}
+}
+
+// ===== TTLOCK =====
+// errcode -3007 = κωδικός υπάρχει ήδη στην κλειδαριά
+const ERRCODE_DUPLICATE=-3007;
+
+// Καθαρό, απλό addCode — χωρίς auto-retry που προκαλεί διπλούς κωδικούς
+async function addCodeWithResult(lockId,code,name,s,e){
+  if(!navigator.onLine) throw new Error('Offline');
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),20000);
+  try{
+    const url=`${PROXY}?action=addPasscode&lockId=${lockId}&passcode=${code}&passcodeName=${encodeURIComponent(name)}&startDate=${s}&endDate=${e}`;
+    const res=await fetch(url,{signal:controller.signal});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const d=await res.json();
+    const errcode=d?.result?.errcode;
+    const pwdId=d?.result?.keyboardPwdId;
+    // Επιτυχία: pwdId υπάρχει ή errcode=0
+    if(pwdId) return{pwdId,finalCode:code};
+    if(errcode===0) return{pwdId:null,finalCode:code};
+    // Duplicate: αλλαγή κωδικού (μόνο 1 φορά, χωρίς loop)
+    if(errcode===ERRCODE_DUPLICATE){
+      const newCode=Math.floor(1000+Math.random()*9000).toString();
+      const url2=`${PROXY}?action=addPasscode&lockId=${lockId}&passcode=${newCode}&passcodeName=${encodeURIComponent(name)}&startDate=${s}&endDate=${e}`;
+      const res2=await fetch(url2,{signal:controller.signal});
+      const d2=await res2.json();
+      const pwdId2=d2?.result?.keyboardPwdId;
+      if(pwdId2) return{pwdId:pwdId2,finalCode:newCode};
+      throw new Error(d2?.result?.errmsg||'Duplicate — νέος κωδικός απέτυχε επίσης');
+    }
+    throw new Error(d?.result?.errmsg||`errcode ${errcode}`);
+  }catch(e){
+    if(e.name==='AbortError') throw new Error('Timeout (20s) — κακό σήμα');
+    throw e;
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+// Pending queue — αποθηκεύει αποτυχημένες αποστολές για retry
+let pendingQueue=JSON.parse(localStorage.getItem('snb_pending')||'[]');
+function savePending(){localStorage.setItem('snb_pending',JSON.stringify(pendingQueue));}
+function addToPending(item){pendingQueue.push({...item,ts:now()});savePending();renderPendingBadge();}
+function removeFromPending(idx){pendingQueue.splice(idx,1);savePending();renderPendingBadge();}
+function renderPendingBadge(){
+  const badge=g('pending-badge');
+  if(!badge) return;
+  badge.textContent=pendingQueue.length;
+  badge.style.display=pendingQueue.length?'inline':'none';
+}
+async function delCode(lockId,pwdId){
+  if(!navigator.onLine) throw new Error('Offline');
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),20000);
+  try{
+    const res=await fetch(`${PROXY}?action=deletePasscode&lockId=${lockId}&keyboardPwdId=${pwdId}`,{signal:controller.signal});
+    const data=await res.json();
+    const inner=data?.result;
+    // errcode 0 = επιτυχία, -3 = δεν υπάρχει (ήδη διαγράφηκε = OK)
+    if(inner?.errcode!==0&&inner?.errcode!==-3) throw new Error(`TTLock: ${inner?.errmsg||`errcode ${inner?.errcode}`}`);
+    return true;
+  }catch(e){
+    if(e.name==='AbortError') throw new Error('Timeout (20s) — κακό σήμα');
+    throw e;
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+// ===== MESSAGES =====
+function buildMsgs(prop,roomName,name,code,ci,co,cit,cot,lockbox,roomKey){
+  const guide=prop==='p'
+    ?'https://nappybramy.github.io/SnappyB-retreats/guide-pistacchio.html'
+    :'https://nappybramy.github.io/SnappyB-retreats/guide-living.html';
+
+  if(prop==='p'){
+    const rk=roomKey||getRoomKey(roomName);
+    const floorEmoji=rk?FLOOR_EMOJI[rk]:'🏠';
+    const floorEL=rk?RP[rk]?.floor||'':'';
+    const floorEN=rk?FLOORS_EN[rk]||'':'';
+    const floorTR=({'1ο':'1.','2ο':'2.','3ο':'3.'})[floorEL]||floorEL;
+    const floorBG=({'1ο':'1-ви','2ο':'2-ри','3ο':'3-ти'})[floorEL]||floorEL;
+    const floorRO=({'1ο':'întâi','2ο':'al doilea','3ο':'al treilea'})[floorEL]||floorEL;
+    const wifi=`${roomName} Pistacchio`;
+    const el=`${roomName} Pistacchio\n\n😊 Καλώς ήρθατε στο Pistacchio by SnappyB\n\nΕισέλθετε στο κτίριο και στο διαμέρισμα χρησιμοποιώντας τον κωδικό εισόδου: ${code}#\n\nΤο διαμέρισμα βρίσκεται στο ${floorEmoji} ${floorEL} όροφο.\n\nΌνομα δωματίου: ${roomName.toUpperCase()}\n\n🛜 Wi-Fi:\n  • Όνομα: ${wifi}\n  • Κωδικός πρόσβασης: WelcomeHome\n\n🔔Για να χρησιμοποιήσετε το κουδούνι, πατήστε πρώτα το αριστερό κουμπί με το εικονίδιο του ηχείου🔊 για να μιλήσετε και μετά το δεξί κουμπί με το εικονίδιο του κλειδιού🔑για να ανοίξετε την πόρτα.\n\n🚭 Απαγορεύεται αυστηρά το κάπνισμα μέσα στο διαμέρισμα.\nΓια την ασφάλειά σας, το διαμέρισμα είναι εξοπλισμένο με ανιχνευτές καπνού.\n\n📖 Οδηγός Φιλοξενίας — τοπικές μας προτάσεις:\n👉 ${guide}\n\nℹ️ Επιβεβαιώστε την άφιξη σας.\n\nΜε εκτίμηση, Ναπολέων 🙏🏼`;
+    const en=`${roomName} Pistacchio\n\nEnter the building and the apartment by using the keyless entry code: ${code}#\n\nAfter entering the main door, the apartment is on the ${floorEmoji} ${floorEN} floor.\n\nDoor name: ${roomName.toUpperCase()}\n\n🛜 Wi-Fi Information:\n  • Name: ${wifi}\n  • Password: WelcomeHome\n\n🔔To use the doorbell, first press the left button🔊 with the speaker icon to talk, then press the right button🔑with the key icon to unlock the door.\n\n🚭 Smoking is strictly not permitted inside the apartment.\nFor your safety, the apartment is equipped with smoke alarms.\n\n📖 Guest Guide — our local recommendations:\n👉 ${guide}\n\nℹ️ Please validate your arrival by writing "we are home".\n\nSincerely, Napoleon 🙏🏼`;
+    const tr=`${roomName} Pistacchio\n\n😊 Pistacchio by SnappyB'ye hoş geldiniz!\n\nBinaya ve daireye giriş kodunu kullanarak girin: ${code}#\n\nAna kapıdan girdikten sonra daire ${floorEmoji} ${floorTR} kattadır.\n\nDaire adı: ${roomName.toUpperCase()}\n\n🛜 Wi-Fi:\n  • Ad: ${wifi}\n  • Şifre: WelcomeHome\n\n🔔Kapı zilini kullanmak için önce sol taraftaki hoparlör simgeli🔊 düğmeye basın, ardından kapıyı açmak için sağ taraftaki anahtar simgeli🔑 düğmeye basın.\n\n🚭 Daire içinde sigara içmek kesinlikle yasaktır.\nGüvenliğiniz için daire, duman dedektörleriyle donatılmıştır.\n\n📖 Misafir Rehberi — yerel öneriler:\n👉 ${guide}\n\nℹ️ Lütfen "geldik" yazarak varışınızı onaylayın.\n\nSaygılarımla, Napoleon 🙏🏼`;
+    const bg=`${roomName} Pistacchio\n\n😊 Добре дошли в Pistacchio by SnappyB!\n\nВлезте в сградата и апартамента, използвайки кода за вход: ${code}#\n\nСлед като влезете през главната врата, апартаментът се намира на ${floorEmoji} ${floorBG} етаж.\n\nИме на стаята: ${roomName.toUpperCase()}\n\n🛜 Wi-Fi:\n  • Име: ${wifi}\n  • Парола: WelcomeHome\n\n🔔За да използвате звънеца, първо натиснете левия бутон с иконата на високоговорител🔊 за разговор, след това натиснете десния бутон с иконата на ключ🔑 за отключване.\n\n🚭 Пушенето в апартамента е строго забранено.\nЗа вашата безопасност апартаментът е оборудван с детектори за дим.\n\n📖 Наръчник за гости — местни препоръки:\n👉 ${guide}\n\nℹ️ Потвърдете пристигането си, като напишете "пристигнахме".\n\nС уважение, Napoleon 🙏🏼`;
+    const ro=`${roomName} Pistacchio\n\n😊 Bun venit la Pistacchio by SnappyB!\n\nIntrați în clădire și în apartament folosind codul de acces: ${code}#\n\nDupă ce intrați pe ușa principală, apartamentul se află la etajul ${floorEmoji} ${floorRO}.\n\nNumele apartamentului: ${roomName.toUpperCase()}\n\n🛜 Wi-Fi:\n  • Nume: ${wifi}\n  • Parolă: WelcomeHome\n\n🔔Pentru a folosi soneria, apăsați mai întâi butonul stâng cu pictograma difuzorului🔊 pentru a vorbi, apoi apăsați butonul drept cu pictograma cheii🔑 pentru a deschide ușa.\n\n🚭 Fumatul în apartament este strict interzis.\nPentru siguranța dumneavoastră, apartamentul este echipat cu detectoare de fum.\n\n📖 Ghid pentru oaspeți — recomandări locale:\n👉 ${guide}\n\nℹ️ Confirmați sosirea trimițând mesajul "am ajuns".\n\nCu respect, Napoleon 🙏🏼`;
+    return{el,en,tr,bg,ro};
+  } else {
+    const r=RL[roomKey]||{};
+    const floorEL=r.floor||'';
+    const floorEN=r.floorEN||'';
+    const sideEL=r.side||'';
+    const sideEN=r.sideEN||'';
+    const sideTR=({'δεξιά':'sağ','αριστερά':'sol'})[sideEL]||sideEL;
+    const sideBG=({'δεξιά':'дясна','αριστερά':'лява'})[sideEL]||sideEL;
+    const sideRO=({'δεξιά':'dreapta','αριστερά':'stânga'})[sideEL]||sideEL;
+    const floorEmoji=floorEL==='1ο'?'1️⃣':floorEL==='2ο'?'2️⃣':'3️⃣';
+    const floorTR=({'1ο':'1.','2ο':'2.','3ο':'3.'})[floorEL]||floorEL;
+    const floorBG=({'1ο':'1-ви','2ο':'2-ри','3ο':'3-ти'})[floorEL]||floorEL;
+    const floorRO=({'1ο':'întâi','2ο':'al doilea','3ο':'al treilea'})[floorEL]||floorEL;
+    const el=`SnappyB - ${roomName}\n\n😊 Καλώς ήρθατε στο SnappyB, ${name}!\n\n🔐 Η κλειδοθήκη στην είσοδο του κτηρίου έχει την ετικέτα "${roomName}". Πληκτρολογήστε τον κωδικό ${lockbox||'—'} και αμέσως μετά τραβήξτε ολόκληρο το πορτάκι προς τα κάτω για να παραλάβετε τα κλειδιά.\n\n🏠 Μετά την είσοδο στο κτήριο, πάρτε το ασανσέρ στον ${floorEmoji} ${floorEL} όροφο. Το διαμέρισμα βρίσκεται στα ${sideEL} καθώς βγαίνετε από το ασανσέρ, όπως αναγράφεται και στο κουδούνι της πόρτας.\n\n🛜 Wi-Fi:\n  • Όνομα: SnappyB - ${roomName} / SnappyB - ${roomName}5g\n  • Κωδικός: WelcomeHome\n\n🚭 Απαγορεύεται αυστηρά το κάπνισμα μέσα στο διαμέρισμα.\nΓια την ασφάλειά σας, το διαμέρισμα είναι εξοπλισμένο με ανιχνευτές καπνού.\n\n📖 Οδηγός Φιλοξενίας — τοπικές μας προτάσεις:\n👉 ${guide}\n\nℹ️ Επιβεβαιώστε την άφιξή σας γράφοντας "φτάσαμε".\n\nΜε εκτίμηση, Ναπολέων 🙏🏼`;
+    const en=`SnappyB - ${roomName}\n\n😊 Welcome to SnappyB, ${name}!\n\n🔐 The lockbox at the building entrance is labeled "${roomName}". Enter the code ${lockbox||'—'} and then pull the entire door downward to retrieve the keys.\n\n🏠 After entering, take the elevator to the ${floorEmoji} ${floorEN} floor. The apartment is on the ${sideEN} as you exit the elevator, as indicated on the door bell.\n\n🛜 Wi-Fi:\n  • Name: SnappyB - ${roomName} / SnappyB - ${roomName}5g\n  • Password: WelcomeHome\n\n🚭 Smoking is strictly not permitted inside the apartment.\nFor your safety, the apartment is equipped with smoke alarms.\n\n📖 Guest Guide — local recommendations, taxi & more:\n👉 ${guide}\n\nℹ️ Please validate your arrival by messaging "we are home".\n\nSincerely, Napoleon 🙏🏼`;
+    const tr=`SnappyB - ${roomName}\n\n😊 SnappyB'ye hoş geldiniz, ${name}!\n\n🔐 Bina girişindeki anahtar kutusu "${roomName}" etiketlidir. ${lockbox||'—'} kodunu girin ve ardından anahtarları almak için kapıyı tamamen aşağı çekin.\n\n🏠 İçeri girdikten sonra asansörle ${floorEmoji} ${floorTR} kata çıkın. Daire, asansörden çıkarken ${sideTR} taraftadır ve kapı zilinde belirtilmiştir.\n\n🛜 Wi-Fi:\n  • Ad: SnappyB - ${roomName} / SnappyB - ${roomName}5g\n  • Şifre: WelcomeHome\n\n🚭 Daire içinde sigara içmek kesinlikle yasaktır.\nGüvenliğiniz için daire, duman dedektörleriyle donatılmıştır.\n\n📖 Misafir Rehberi — yerel öneriler, taksi ve daha fazlası:\n👉 ${guide}\n\nℹ️ Lütfen "geldik" yazarak varışınızı onaylayın.\n\nSaygılarımla, Napoleon 🙏🏼`;
+    const bg=`SnappyB - ${roomName}\n\n😊 Добре дошли в SnappyB, ${name}!\n\n🔐 Ключарницата на входа на сградата е с етикет "${roomName}". Въведете кода ${lockbox||'—'} и след това издърпайте вратичката надолу, за да вземете ключовете.\n\n🏠 След като влезете, вземете асансьора до ${floorEmoji} ${floorBG} етаж. Апартаментът се намира от ${sideBG} страна, когато излизате от асансьора, както е посочено на звънеца.\n\n🛜 Wi-Fi:\n  • Име: SnappyB - ${roomName} / SnappyB - ${roomName}5g\n  • Парола: WelcomeHome\n\n🚭 Пушенето в апартамента е строго забранено.\nЗа вашата безопасност апартаментът е оборудван с детектори за дим.\n\n📖 Наръчник за гости — местни препоръки, такси и още:\n👉 ${guide}\n\nℹ️ Потвърдете пристигането си, като напишете "пристигнахме".\n\nС уважение, Napoleon 🙏🏼`;
+    const ro=`SnappyB - ${roomName}\n\n😊 Bun venit la SnappyB, ${name}!\n\n🔐 Cutia de chei de la intrarea în clădire are eticheta "${roomName}". Introduceți codul ${lockbox||'—'} și apoi trageți ușița în jos pentru a prelua cheile.\n\n🏠 După ce intrați, luați liftul până la etajul ${floorEmoji} ${floorRO}. Apartamentul se află în partea ${sideRO} când ieșiți din lift, după cum este indicat pe sonerie.\n\n🛜 Wi-Fi:\n  • Nume: SnappyB - ${roomName} / SnappyB - ${roomName}5g\n  • Parolă: WelcomeHome\n\n🚭 Fumatul în apartament este strict interzis.\nPentru siguranța dumneavoastră, apartamentul este echipat cu detectoare de fum.\n\n📖 Ghid pentru oaspeți — recomandări locale, taxi și altele:\n👉 ${guide}\n\nℹ️ Confirmați sosirea trimițând mesajul "am ajuns".\n\nCu respect, Napoleon 🙏🏼`;
+    return{el,en,tr,bg,ro};
+  }
+}
+
+// ===== AUTOFILL =====
+function autofill(prop){
+  const txt=g('paste-'+prop).value;
+  const nm=txt.match(/Name:\s*([^\n\r]+)/i);
+  const ci=txt.match(/Check-in:\s*(\S+)/i);
+  const co=txt.match(/Check-out:\s*(\S+)/i);
+  let n=0;
+  if(nm){g('name-'+prop).value=nm[1].trim();n++;}
+  if(ci){const d=ci[1].trim().split('T')[0];if(/^\d{4}-\d{2}-\d{2}$/.test(d)){g('ci-'+prop).value=d;n++;}}
+  if(co){const d=co[1].trim().split('T')[0];if(/^\d{4}-\d{2}-\d{2}$/.test(d)){g('co-'+prop).value=d;n++;}}
+  g('fill-'+prop).textContent=n?`✅ ${n} πεδία συμπληρώθηκαν`:'';
+}
+
+// ===== PLATFORM & COMM =====
+function setPlat(prop,p,btn){
+  if(prop==='p') platP=p; else platL=p;
+  btn.closest('.plat-row').querySelectorAll('.pb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setComm(prop,c,btn){
+  if(prop==='p') commP=c; else commL=c;
+  btn.closest('.comm-row').querySelectorAll('.pb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ===== PISTACCHIO GRID =====
+function getRoomStatus(st){
+  const today=greeceToday();
+  if(!st) return 'free';
+  const ci=normDate(st.ci||'');
+  const co=normDate(st.co||'');
+  if(co===today) return 'checkout';
+  if(ci===today) return 'checkin';
+  if(ci<today&&co>today) return 'staying';
+  return 'occ';
+}
+function renderGridP(){
+  const grid=g('grid-p');
+  grid.innerHTML=ORDER_P.map(k=>{
+    const r=RP[k];
+    const st=roomSt['p_'+k];
+    const occ=!!st;
+    const status=getRoomStatus(st);
+    const isDirty=!occ&&cleanSt['p_'+k]==='dirty';
+    const isSel=selP.includes(k)&&!occ&&!isDirty;
+    const statusMap={
+      checkin:  {icon:'🟢',label:'CHECK-IN ΣΗΜΕΡΑ',cls:'s-checkin'},
+      staying:  {icon:'🟠',label:'ΣΕ ΔΙΑΜΟΝΗ',cls:'s-staying'},
+      checkout: {icon:'🔴',label:'CHECK-OUT ΣΗΜΕΡΑ',cls:'s-checkout'},
+      occ:      {icon:'🔴',label:'ΚΑΤΕΙΛΗΜΜΕΝΟ',cls:'s-checkout'},
+      free:     {icon:'🟢',label:'ΚΑΘΑΡΟ',cls:''}
+    };
+    const sm=statusMap[status]||statusMap.free;
+    let cardCls, nameExtra, statusExtra, label, icon, onclick;
+    if(occ){
+      cardCls=` ${sm.cls}`;nameExtra=' '+sm.cls;statusExtra=' '+sm.cls;
+      label=sm.label;icon=sm.icon;
+      onclick=`openModal('p','${k}')`;
+    } else if(isDirty){
+      cardCls=' s-dirty';nameExtra=' s-dirty';statusExtra=' s-dirty';
+      label='ΧΡΕΙΑΖΕΤΑΙ ΚΑΘΑΡΙΣΜΑ';icon='🧹';
+      onclick=`toggleClean('p','${k}')`;
+    } else {
+      cardCls=isSel?' sel':'';nameExtra='';statusExtra='';
+      label=sm.label;icon=sm.icon;
+      onclick=`selRoomP('${k}')`;
+    }
+    const dirtyBtn=!occ&&!isDirty?`<div onclick="event.stopPropagation();toggleClean('p','${k}')" style="position:absolute;top:6px;right:8px;font-size:.75rem;color:#c7c7cc;cursor:pointer;" title="Σήμαυσε ως βρώμικο">🧹</div>`:'';
+    const noteP=notesSt['p_'+k];
+    const noteDot=noteP?`<div style="position:absolute;top:6px;left:8px;width:7px;height:7px;border-radius:50%;background:var(--orange);" title="${noteP}"></div>`:'';
+    return`<div class="room-card${cardCls}" onclick="${onclick}" style="position:relative;">
+      ${noteDot}${dirtyBtn}
+      <div class="room-name${nameExtra}">${r.n}</div>
+      <div class="room-status${statusExtra}">${icon} ${label}</div>
+      ${occ?`<div class="room-info">👤 ${st.guest}<br>🔐 ${st.code}#<br>${fd(st.ci)} → ${fd(st.co)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function selRoomP(k){
+  if(cleanSt['p_'+k]==='dirty'){toggleClean('p',k);return;}
+  if(roomSt['p_'+k]) return; // Κατειλημμένο — δεν επιλέγεται
+  const idx=selP.indexOf(k);
+  if(idx>=0) selP.splice(idx,1);
+  else selP.push(k);
+  renderGridP();
+}
+function renderStatsP(){
+  const today=greeceToday();
+  if(g('p-arr')) g('p-arr').textContent=ORDER_P.filter(k=>roomSt['p_'+k]?.ci===today).length;
+  if(g('p-stay')) g('p-stay').textContent=ORDER_P.filter(k=>{const s=roomSt['p_'+k];return s&&s.ci<today&&s.co>today;}).length;
+  if(g('p-dep')) g('p-dep').textContent=ORDER_P.filter(k=>roomSt['p_'+k]?.co===today).length;
+}
+
+// ===== LIVING GRID =====
+function renderGridL(){
+  const grid=g('grid-l');
+  grid.innerHTML=ORDER_L.map(k=>{
+    const r=RL[k];
+    const st=roomSt['l_'+k];
+    const occ=!!st;
+    const status=getRoomStatus(st);
+    const isDirty=!occ&&cleanSt['l_'+k]==='dirty';
+    const isSel=selL.includes(k)&&!occ&&!isDirty;
+    const statusMap={
+      checkin:  {icon:'🟢',label:'CHECK-IN ΣΗΜΕΡΑ',cls:'s-checkin'},
+      staying:  {icon:'🟠',label:'ΣΕ ΔΙΑΜΟΝΗ',cls:'s-staying'},
+      checkout: {icon:'🔴',label:'CHECK-OUT ΣΗΜΕΡΑ',cls:'s-checkout'},
+      occ:      {icon:'🔴',label:'ΚΑΤΕΙΛΗΜΜΕΝΟ',cls:'s-checkout'},
+      free:     {icon:'🟢',label:'ΚΑΘΑΡΟ',cls:''}
+    };
+    const sm=statusMap[status]||statusMap.free;
+    let cardCls, nameExtra, statusExtra, label, icon, onclick;
+    if(occ){
+      cardCls=` ${sm.cls}`;nameExtra=' '+sm.cls;statusExtra=' '+sm.cls;
+      label=sm.label;icon=sm.icon;
+      onclick=`openModal('l','${k}')`;
+    } else if(isDirty){
+      cardCls=' s-dirty';nameExtra=' s-dirty';statusExtra=' s-dirty';
+      label='ΧΡΕΙΑΖΕΤΑΙ ΚΑΘΑΡΙΣΜΑ';icon='🧹';
+      onclick=`toggleClean('l','${k}')`;
+    } else {
+      cardCls=isSel?' sel':'';nameExtra='';statusExtra='';
+      label=sm.label;icon=sm.icon;
+      onclick=`selRoomL('${k}')`;
+    }
+    const dirtyBtnL=!occ&&!isDirty?`<div onclick="event.stopPropagation();toggleClean('l','${k}')" style="position:absolute;top:6px;right:8px;font-size:.75rem;color:#c7c7cc;cursor:pointer;" title="Σήμαυσε ως βρώμικο">🧹</div>`:'';
+    const noteL=notesSt['l_'+k];
+    const noteDotL=noteL?`<div style="position:absolute;top:6px;left:8px;width:7px;height:7px;border-radius:50%;background:var(--orange);" title="${noteL}"></div>`:'';
+    return`<div class="room-card${cardCls}" onclick="${onclick}" style="position:relative;">
+      ${noteDotL}${dirtyBtnL}
+      <div class="room-name${nameExtra}">${r.n}</div>
+      <div class="room-status${statusExtra}">${icon} ${label}</div>
+      ${occ?`<div class="room-info">👤 ${st.guest}<br>🔐 ${st.code}#<br>${fd(st.ci)} → ${fd(st.co)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function selRoomL(k){
+  if(cleanSt['l_'+k]==='dirty'){toggleClean('l',k);return;}
+  if(roomSt['l_'+k]) return; // Κατειλημμένο — δεν επιλέγεται
+  const idx=selL.indexOf(k);
+  if(idx>=0) selL.splice(idx,1);
+  else selL.push(k);
+  renderGridL();
+}
+function renderStatsL(){
+  const today=greeceToday();
+  if(g('l-arr')) g('l-arr').textContent=ORDER_L.filter(k=>roomSt['l_'+k]?.ci===today).length;
+  if(g('l-stay')) g('l-stay').textContent=ORDER_L.filter(k=>{const s=roomSt['l_'+k];return s&&s.ci<today&&s.co>today;}).length;
+  if(g('l-dep')) g('l-dep').textContent=ORDER_L.filter(k=>roomSt['l_'+k]?.co===today).length;
+}
+
+// ===== GENERATE PISTACCHIO =====
+// Αποθηκεύει παράμετρους για retry
+let _lastGenParams=null;
+
+function setApiStatus(id,type,msg){
+  const colors={info:{bg:'transparent',color:'var(--blue)'},ok:{bg:'#d1f5d3',color:'#248a3d'},err:{bg:'#ffd6d4',color:'#c00'},warn:{bg:'#fff3cd',color:'#8a6200'}};
+  const c=colors[type]||colors.info;
+  const spinner=type==='info'?'<div class="spinner"></div> ':'';
+  const radius=type==='info'?'':'border-radius:20px;padding:4px 10px;display:inline-block;';
+  g(id).innerHTML=`<div style="font-size:.75rem;${radius}background:${c.bg};color:${c.color};margin-bottom:8px;">${spinner}${msg}</div>`;
+}
+
+async function sendToTTLock(selRoom,r,code,pname,startMs,endMs,name,ci,co,cit,cot){
+  let roomPwdId=null,entPwdId=null,roomOk=false,entOk=false;
+  setApiStatus('api-p','info',`🔐 Αποστολή στο ${r.n}...`);
+  try{
+    if(r.lockId){
+      const res1=await addCodeWithResult(r.lockId,code,pname,startMs,endMs);
+      roomPwdId=res1.pwdId;
+      if(res1.finalCode!==code){code=res1.finalCode;pname=pname.replace(/\d{4}$/,code);}
+      roomOk=true;
+      setApiStatus('api-p','info',`🏠 ${r.n} ✅ — Αποστολή στην κεντρική είσοδο...`);
+      await new Promise(res=>setTimeout(res,4000));
+    }
+    const res2=await addCodeWithResult(ENTRANCE,code,pname,startMs,endMs);
+    entPwdId=res2.pwdId;
+    entOk=true;
+    setApiStatus('api-p','ok',`🏠 ${r.n} ✅ &nbsp;·&nbsp; 🚪 Κεντρική ✅ &nbsp;·&nbsp; Κωδικός: ${code}#`);
+  }catch(e){
+    const roomStatus=roomOk?`🏠 ${r.n} ✅`:`🏠 ${r.n} ❌`;
+    const entStatus=entOk?'🚪 Κεντρική ✅':'🚪 Κεντρική ❌';
+    setApiStatus('api-p','err',`${roomStatus} &nbsp;·&nbsp; ${entStatus}<br><span style="font-size:.68rem;">${e.message}</span>`);
+    // Αποθήκευση στο pending queue
+    addToPending({type:'pistacchio',selRoom,lockId:r.lockId,code,pname,startMs,endMs,name,ci,co,cit,cot,roomPwdId,roomOk,entOk});
+    // Retry button
+    g('api-p').innerHTML+=`<button onclick="retryGenP()" class="btn" style="margin-top:6px;background:var(--orange);color:white;font-size:.8rem;padding:10px;">🔄 Δοκίμασε ξανά</button>`;
+    g('api-p').innerHTML+=`<div style="font-size:.68rem;color:var(--gray);margin-top:4px;">⏳ Αποθηκεύτηκε — θα σταλεί μόλις έχεις δίκτυο</div>`;
+  }
+  return{roomPwdId,entPwdId,roomOk,entOk};
+}
+
+async function retryGenP(){
+  if(!_lastGenParams) return;
+  const {selRoom,r,code,pname,startMs,endMs,roomOk:prevRoomOk,entOk:prevEntOk}=_lastGenParams;
+  let roomPwdId=roomSt['p_'+selRoom]?.roomPwdId||null;
+  let entPwdId=roomSt['p_'+selRoom]?.entPwdId||null;
+  let newRoomOk=prevRoomOk||false;
+  let newEntOk=prevEntOk||false;
+
+  if(!prevRoomOk&&r?.lockId){
+    setApiStatus('api-p','info',`🔐 Retry ${r.n}...`);
+    try{
+      const res=await addCodeWithResult(r.lockId,code,pname,startMs,endMs);
+      roomPwdId=res.pwdId||roomPwdId;newRoomOk=true;
+    }catch(e){setApiStatus('api-p','err',`🏠 ${r.n} ❌ — ${e.message}`);}
+  }
+  if(!prevEntOk){
+    setApiStatus('api-p','info',`${newRoomOk?`🏠 ${r.n} ✅`:`🏠 ${r.n} ❌`} · 🚪 Retry Κεντρική...`);
+    await new Promise(res=>setTimeout(res,3000));
+    try{
+      const res=await addCodeWithResult(ENTRANCE,code,pname,startMs,endMs);
+      entPwdId=res.pwdId||entPwdId;newEntOk=true;
+    }catch(e){setApiStatus('api-p','err',`${newRoomOk?`🏠 ${r.n} ✅`:`🏠 ${r.n} ❌`} · 🚪 Κεντρική ❌ — ${e.message}`);}
+  }
+  if(newRoomOk&&newEntOk){
+    setApiStatus('api-p','ok',`🏠 ${r.n} ✅ &nbsp;·&nbsp; 🚪 Κεντρική ✅ &nbsp;·&nbsp; Κωδικός: ${code}#`);
+  }
+  _lastGenParams={..._lastGenParams,roomOk:newRoomOk,entOk:newEntOk};
+  roomSt['p_'+selRoom]={...roomSt['p_'+selRoom],roomPwdId,entPwdId};
+  saveAndSync('p_'+selRoom);
+}
+
+async function genP(){
+  if(!selP.length){alert('Επίλεξε τουλάχιστον ένα δωμάτιο!');return;}
+  const name=g('name-p').value.trim();
+  const ci=g('ci-p').value,cit=g('cit-p').value||'13:30';
+  const co=g('co-p').value,cot=g('cot-p').value||'12:00';
+  if(!name||!ci||!co){alert('Συμπλήρωσε όλα τα πεδία!');return;}
+  const code=Math.floor(1000+Math.random()*9000).toString();
+  const startMs=greeceDateTimeToMs(ci,cit);
+  const endMs=greeceDateTimeToMs(co,cot);
+  const roomNames=selP.map(k=>RP[k].n).join('+');
+  const pname=`${name.split(' ')[0]} ${roomNames} ${code}`;
+  const firstR=RP[selP[0]];
+  _lastGenParams={selRoom:selP[0],r:firstR,code,pname,startMs,endMs,name,ci,co,cit,cot,roomOk:false,entOk:false};
+
+  let finalCode=code;
+  let entPwdId=null;
+  let allRoomOk=true;
+
+  // Αποστολή σε κάθε επιλεγμένο δωμάτιο
+  for(const k of selP){
+    const r=RP[k];
+    setApiStatus('api-p','info',`🔐 Αποστολή στο ${r.n}...`);
+    let roomPwdId=null,roomOk=false;
+    try{
+      const res=await addCodeWithResult(r.lockId,finalCode,pname,startMs,endMs);
+      roomPwdId=res.pwdId;
+      if(res.finalCode!==finalCode) finalCode=res.finalCode;
+      roomOk=true;
+    }catch(e){allRoomOk=false;}
+    roomSt['p_'+k]={guest:name,code:finalCode,ci,co,cit,cot,plat:platP,comm:commP,roomPwdId,entPwdId:null,lockId:r.lockId};
+    saveAndSync('p_'+k);
+    await new Promise(r=>setTimeout(r,1500));
+  }
+
+  // Κεντρική είσοδος
+  const roomsLine=selP.map(k=>`🏠 ${RP[k].n} ${allRoomOk?'✅':'❌'}`).join(' · ');
+  setApiStatus('api-p','info',`${roomsLine} · <div class="spinner" style="display:inline-block;"></div> 🚪 Κεντρική...`);
+  await new Promise(r=>setTimeout(r,4000));
+  let entOk=false;
+  try{
+    const res2=await addCodeWithResult(ENTRANCE,finalCode,pname,startMs,endMs);
+    entPwdId=res2.pwdId;
+    entOk=true;
+    for(const k of selP){if(roomSt['p_'+k]){roomSt['p_'+k].entPwdId=entPwdId;saveAndSync('p_'+k);}}
+  }catch(e){}
+
+  const allOk=allRoomOk&&entOk;
+  const statusLine=selP.map(k=>`🏠 ${RP[k].n} ${allRoomOk?'✅':'❌'}`).join(' · ')+` · 🚪 Κεντρική ${entOk?'✅':'❌'} · ${finalCode}#`;
+  setApiStatus('api-p',allOk?'ok':'err',statusLine);
+  _lastGenParams={..._lastGenParams,code:finalCode,roomOk:allRoomOk,entOk};
+
+  addLog({prop:'Pistacchio',room:roomNames,guest:name,code:finalCode,ci,co,ts:now(),success:allOk});
+  const msgs=buildMsgs('p',roomNames,name,finalCode,ci,co,cit,cot,null,selP[0]);
+  _msgsP=msgs;
+  g('code-p').textContent=finalCode+'#';
+  g('msg-p').textContent=msgs.el;
+  g('res-p').style.display='block';
+  g('paste-p').value='';g('fill-p').textContent='';
+  selP=[];renderGridP();renderStatsP();
+}
+function setLangP(l,btn){
+  g('msg-p').textContent=_msgsP[l]||_msgsP.el;
+  document.querySelectorAll('#res-p .lb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function copyP(){
+  const t=g('msg-p').textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(t);
+  else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);}
+  alert('✅ Αντιγράφηκε!');
+}
+function resetP(){
+  selP=[];platP='';commP='';
+  g('paste-p').value='';g('name-p').value='';g('ci-p').value='';g('co-p').value='';
+  g('cit-p').value='13:30';g('cot-p').value='12:00';
+  g('fill-p').textContent='';g('api-p').innerHTML='';g('res-p').style.display='none';
+  document.querySelectorAll('#tab-pistacchio .pb').forEach(b=>b.classList.remove('active'));
+  renderGridP();
+}
+
+// ===== GENERATE LIVING =====
+async function genL(){
+  if(!selL.length){alert('Επίλεξε τουλάχιστον ένα δωμάτιο!');return;}
+  const name=g('name-l').value.trim();
+  const ci=g('ci-l').value,cit=g('cit-l').value||'13:30';
+  const co=g('co-l').value,cot=g('cot-l').value||'12:00';
+  if(!name||!ci||!co){alert('Συμπλήρωσε όλα τα πεδία!');return;}
+  const r=RL[selL[0]];
+  const code=r.lb;
+  roomSt['l_'+selL[0]]={guest:name,code,ci,co,cit,cot,plat:platL,comm:commL};
+  saveAndSync('l_'+selL[0]);
+  addLog({prop:'Living',room:r.n,guest:name,code,ci,co,ts:now(),success:true});
+  const msgs=buildMsgs('l',r.n,name,code,ci,co,cit,cot,r.lb,selL);
+  _msgsL=msgs;
+  g('code-l').textContent=code+'#';
+  g('msg-l').textContent=msgs.el;
+  g('res-l').style.display='block';
+  // WhatsApp button removed — χρησιμοποιεί μόνο Αντιγραφή
+  g('paste-l').value='';g('fill-l').textContent='';
+  renderGridL();renderStatsL();
+}
+function setLangL(l,btn){
+  g('msg-l').textContent=_msgsL[l]||_msgsL.el;
+  document.querySelectorAll('#res-l .lb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function copyL(){
+  const t=g('msg-l').textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(t);
+  else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);}
+  alert('✅ Αντιγράφηκε!');
+}
+function resetL(){
+  selL=[];platL='';commL='';
+  g('paste-l').value='';g('name-l').value='';g('ci-l').value='';g('co-l').value='';
+  g('cit-l').value='13:30';g('cot-l').value='12:00';
+  g('fill-l').textContent='';g('res-l').style.display='none';
+  document.querySelectorAll('#tab-living .pb').forEach(b=>b.classList.remove('active'));
+  renderGridL();
+}
+
+// ===== MODAL =====
+function openModal(prop,k){
+  editKey={prop,k};
+  // Reset note saved badge
+  const nb=g('note-saved');if(nb)nb.style.display='none';
+  const st=roomSt[(prop==='p'?'p_':'l_')+k];
+  const r=prop==='p'?RP[k]:RL[k];
+  const ciDate=normDate(st.ci||'');
+  const coDate=normDate(st.co||'');
+  const nights=ciDate&&coDate?Math.round((parseLocalDate(coDate)-parseLocalDate(ciDate))/86400000):0;
+  const platLabel={bk:'🔵 Booking',ab:'🔴 Airbnb',di:'✅ Direct','':`—`};
+  const plat=platLabel[st.plat||'']||st.plat||'—';
+  g('modal-title').textContent=`✏️ ${r.n}`;
+  g('modal-guest-info').innerHTML=
+    `<div>👤 <strong>${st.guest}</strong></div>`+
+    `<div>🔐 Κωδικός: <strong style="color:var(--blue);letter-spacing:.06em;">${st.code}#</strong></div>`+
+    `<div>📅 ${fd(ciDate)} → ${fd(coDate)} &nbsp;·&nbsp; ${nights} νύχτ${nights===1?'α':'ες'}</div>`+
+    `<div>📲 Πλατφόρμα: ${plat}</div>`;
+  g('m-ci').value=ciDate;g('m-cit').value=st.cit||'13:30';
+  // Load note
+  const nKey=(prop==='p'?'p_':'l_')+k;
+  const noteVal=notesSt[nKey]||'';
+  const mNotes=g('m-notes');
+  if(mNotes){mNotes.value=noteVal;mNotes.style.borderColor=noteVal?'var(--orange)':'var(--sep)';}
+  g('m-co').value=coDate;g('m-cot').value=st.cot||'12:00';
+  g('m-extend-days').value=1;
+  // Reset checkout button (μπορεί να έχει μείνει disabled από προηγούμενο modal)
+  const coBtn=g('modal-checkout-btn');
+  if(coBtn){coBtn.disabled=false;coBtn.textContent='🚪 Check-out & Διαγραφή κωδικού';}
+  // Αφαίρεση παλιών listeners πριν προσθέσουμε νέους (cloneNode trick)
+  ['m-ci','m-co','m-cit','m-cot'].forEach(id=>{
+    const el=g(id);
+    const fresh=el.cloneNode(true);
+    el.parentNode.replaceChild(fresh,el);
+  });
+  function updatePreview(){
+    const ci=g('m-ci').value;const co=g('m-co').value;
+    const prev=g('modal-date-preview');
+    if(ci&&co&&/^\d{4}-\d{2}-\d{2}$/.test(ci)&&/^\d{4}-\d{2}-\d{2}$/.test(co)){
+      prev.textContent=`✅ ${fd(ci)} ${g('m-cit').value} → ${fd(co)} ${g('m-cot').value}`;
+      prev.style.color='var(--green)';
+    } else {
+      prev.textContent=ci&&co?`⚠️ Μορφή: ${ci} / ${co}`:'';
+      prev.style.color='var(--orange)';
+    }
+  }
+  ['m-ci','m-co','m-cit','m-cot'].forEach(id=>g(id).addEventListener('change',updatePreview));
+  updatePreview();
+  try{
+    const msgs=buildMsgs(prop,r.n,st.guest,st.code,ciDate,coDate,st.cit||'13:30',st.cot||'12:00',r.lb||'',k);
+    _modalMsgs={el:msgs.el,en:msgs.en,tr:msgs.tr||'',bg:msgs.bg||'',ro:msgs.ro||''};
+  }catch(e){_modalMsgs={el:'',en:'',tr:'',bg:'',ro:''};}
+  g('modal-msg-box').textContent=_modalMsgs.el||'Δεν βρέθηκε μήνυμα';
+  showModalMsg('el');
+  g('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.body.style.position='fixed';
+  document.body.style.width='100%';
+}
+function closeModal(){
+  g('modal').classList.remove('open');
+  document.body.style.overflow='';
+  document.body.style.position='';
+  document.body.style.width='';
+  editKey=null;
+}
+
+// ✅ FIX 2 & 3: Αποθηκεύουμε prop/k τοπικά πριν το closeModal()
+function saveNote(){
+  if(!editKey) return;
+  const {prop,k}=editKey;
+  const nKey=(prop==='p'?'p_':'l_')+k;
+  const val=g('m-notes')?.value||'';
+  notesSt[nKey]=val;
+  saveNotes();
+  const nb=g('note-saved');
+  if(nb){nb.style.display='block';setTimeout(()=>nb.style.display='none',2000);}
+}
+
+function saveModal(){
+  if(!editKey) return;
+  const {prop,k}=editKey; // ← αποθήκευση πριν το closeModal
+  const stKey=(prop==='p'?'p_':'l_')+k;
+  const ciVal=g('m-ci').value;
+  const coVal=g('m-co').value;
+  const citVal=g('m-cit').value;
+  const cotVal=g('m-cot').value;
+  if(ciVal&&/^\d{4}-\d{2}-\d{2}$/.test(ciVal)) roomSt[stKey].ci=ciVal;
+  if(coVal&&/^\d{4}-\d{2}-\d{2}$/.test(coVal)) roomSt[stKey].co=coVal;
+  if(citVal) roomSt[stKey].cit=citVal;
+  if(cotVal) roomSt[stKey].cot=cotVal;
+  saveAndSync(stKey);
+  closeModal(); // ← closeModal μετά την αποθήκευση των τιμών
+  if(prop==='p'){renderGridP();renderStatsP();}else{renderGridL();renderStatsL();}
+}
+
+let _modalMsgs={el:'',en:'',tr:'',bg:'',ro:''};
+function showModalMsg(lang){
+  ['el','en','tr','bg','ro'].forEach(l=>{
+    const btn=g('msg-btn-'+l);
+    if(!btn) return;
+    btn.style.background=l===lang?'var(--blue)':'var(--sep)';
+    btn.style.color=l===lang?'white':'var(--text)';
+  });
+  g('modal-msg-box').textContent=_modalMsgs[lang]||'—';
+}
+function copyModalMsg(){
+  const txt=g('modal-msg-box').textContent;
+  if(!txt||txt==='—') return;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('[onclick="copyModalMsg()"]');
+    btn.textContent='✅ Αντιγράφηκε!';
+    setTimeout(()=>{btn.textContent='📋 Αντιγραφή';},2000);
+  });
+}
+
+async function extendModal(){
+  if(!editKey) return;
+  const {prop,k}=editKey;
+  const stKey=(prop==='p'?'p_':'l_')+k;
+  const st=roomSt[stKey];
+  if(!st) return;
+  const days=parseInt(g('m-extend-days').value)||1;
+  const oldCo=parseLocalDate(st.co);
+  const newCo=new Date(oldCo.getTime()+days*86400000);
+  const newCoStr=`${newCo.getFullYear()}-${String(newCo.getMonth()+1).padStart(2,'0')}-${String(newCo.getDate()).padStart(2,'0')}`;
+  const newEndTs=greeceDateTimeToMs(newCoStr,'12:00');
+  const startTs=greeceDateTimeToMs(st.ci,'13:00');
+  const btn=document.querySelector('[onclick="extendModal()"]');
+  btn.disabled=true;btn.textContent='⏳ Παράταση...';
+
+  let roomOk=null,entOk=null,roomErr='',entErr='';
+
+  // Παράταση κλειδαριάς δωματίου
+  if(st.roomPwdId&&st.lockId){
+    try{
+      const res=await(await fetch(`${PROXY}?action=extendPasscode&lockId=${st.lockId}&keyboardPwdId=${st.roomPwdId}&startDate=${startTs}&endDate=${newEndTs}`)).json();
+      const code=res?.result?.errcode;
+      if(code===0) roomOk=true;
+      else{roomOk=false;roomErr=res?.result?.errmsg||`errcode ${code}`;}
+    }catch(e){roomOk=false;roomErr=e.message;}
+  } else {
+    roomOk=true; // Living — δεν έχει TTLock
+  }
+
+  // Παράταση κεντρικής εισόδου
+  if(st.entPwdId){
+    try{
+      const res=await(await fetch(`${PROXY}?action=extendPasscode&lockId=23341511&keyboardPwdId=${st.entPwdId}&startDate=${startTs}&endDate=${newEndTs}`)).json();
+      const code=res?.result?.errcode;
+      if(code===0) entOk=true;
+      else{entOk=false;entErr=res?.result?.errmsg||`errcode ${code}`;}
+    }catch(e){entOk=false;entErr=e.message;}
+  } else {
+    entOk=true;
+  }
+
+  // Ενημέρωση state πάντα
+  roomSt[stKey].co=newCoStr;roomSt[stKey].cot='12:00';
+  saveAndSync(stKey);
+  btn.disabled=false;btn.textContent='📅 Παράταση ημερών';
+  closeModal();
+  if(prop==='p'){renderGridP();renderStatsP();}else{renderGridL();renderStatsL();}
+
+  // Εμφάνιση αποτελέσματος — ίδιο style με Generate
+  const allOk=roomOk&&entOk;
+  const rName=prop==='p'?RP[k]?.n||k:'';
+  if(allOk){
+    if(prop==='p'){
+      setApiStatus('api-p','ok',`🏠 ${rName} ✅ &nbsp;·&nbsp; 🚪 Κεντρική ✅ &nbsp;·&nbsp; Παράταση έως ${fd(newCoStr)}`);
+    } else {
+      setApiStatus('api-p','ok',`🚪 Κεντρική ✅ &nbsp;·&nbsp; Παράταση έως ${fd(newCoStr)}`);
+    }
+  } else {
+    const rStatus=prop==='p'?(roomOk?`🏠 ${rName} ✅`:`🏠 ${rName} ❌`):'';
+    const eStatus=entOk?'🚪 Κεντρική ✅':'🚪 Κεντρική ❌';
+    const errDetail=(!roomOk&&roomErr)||(!entOk&&entErr)||'';
+    setApiStatus('api-p','err',`${prop==='p'?rStatus+' &nbsp;·&nbsp; ':''}${eStatus} &nbsp;·&nbsp; Παράταση έως ${fd(newCoStr)}<br><span style="font-size:.68rem;">⚠️ ${errDetail} — άλλαξε χειροκίνητα από TTLock app</span>`);
+  }
+}
+
+// ✅ FIX: checkoutModal — αποθήκευση editKey πριν το closeModal
+async function checkoutModal(){
+  if(!editKey) return;
+  const {prop,k}=editKey;
+  const stKey=(prop==='p'?'p_':'l_')+k;
+  const st=roomSt[stKey];
+  if(!st){closeModal();return;}
+  const roomName=(prop==='p'?RP:RL)[k].n;
+  const btn=g('modal-checkout-btn');
+
+  // Living Space — δεν έχει TTLock, checkout άμεσα
+  if(prop==='l'){
+    addLog({prop:'Living',room:roomName,guest:st.guest,code:st.code,ci:st.ci,co:st.co,ts:now(),success:true,isCheckout:true});
+    delete roomSt[stKey];delete paidSt[stKey];savePaidSt();delete notesSt[stKey];saveNotes();
+    save();deleteRoomState(stKey);
+    closeModal();
+    renderGridL();renderStatsL();renderDashboard();
+    alert(`✅ Check-out ${roomName} ολοκληρώθηκε!`);
+    return;
+  }
+
+  // Pistacchio — διαγραφή TTLock κωδικών
+  if(btn){btn.disabled=true;btn.textContent='⏳ Διαγραφή κωδικών...';}
+  let roomOk=true,entOk=true;
+  if(st.roomPwdId&&st.lockId){
+    try{
+      await delCode(st.lockId,st.roomPwdId);
+      await new Promise(r=>setTimeout(r,1500));
+    }catch(e){roomOk=false;}
+  }
+  if(st.entPwdId){
+    try{await delCode(ENTRANCE,st.entPwdId);}
+    catch(e){entOk=false;}
+  }
+  addLog({prop:'Pistacchio',room:roomName,guest:st.guest,code:st.code,ci:st.ci,co:st.co,ts:now(),success:roomOk&&entOk,isCheckout:true});
+  delete roomSt[stKey];delete paidSt[stKey];savePaidSt();delete notesSt[stKey];saveNotes();
+  save();deleteRoomState(stKey);
+  if(btn){btn.disabled=false;btn.textContent='🚪 Check-out & Διαγραφή κωδικού';}
+  closeModal();
+  renderGridP();renderStatsP();renderDashboard();
+  if(roomOk&&entOk){
+    alert(`✅ Check-out ${roomName} ολοκληρώθηκε!\nΚωδικοί διαγράφηκαν επιτυχώς.`);
+  }else{
+    alert(`⚠️ Check-out ${roomName}\nΔωμάτιο: ${roomOk?'✅':'❌ ΑΠΟΤΥΧΙΑ — διάγραψε χειροκίνητα'}\nΕίσοδος: ${entOk?'✅':'❌ ΑΠΟΤΥΧΙΑ — διάγραψε χειροκίνητα'}`);
+  }
+}
+
+// ===== SUBMISSIONS =====
+async function loadSubs(_retry=0){
+  const list=g('subs-list');
+  list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;"><div class="spinner"></div> Φόρτωση...</div>';
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),15000);
+    let data;
+    try{
+      const res=await fetch(PROXY+'?action=getSubmissions',{signal:controller.signal});
+      data=await res.json();
+    }catch(fetchErr){
+      clearTimeout(timer);
+      if(_retry<2){
+        await new Promise(r=>setTimeout(r,2000));
+        return loadSubs(_retry+1);
+      }
+      throw fetchErr;
+    }
+    clearTimeout(timer);
+    const subs=(data?.result?.submissions||[]).sort((a,b)=>normDate(a.checkin)<normDate(b.checkin)?-1:1);
+    const unhandled=subs.filter(s=>!subStates[s.row]?.sent).length;
+    const badge=g('sub-badge');
+    badge.textContent=unhandled;badge.style.display=unhandled?'inline':'none';
+    if(!subs.length){list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;">Δεν υπάρχουν υποβολές.</div>';return;}
+    // Ομαδοποίηση κατά ημερομηνία check-in
+    const DOW=['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
+    let html='';
+    let lastDate=null;
+    subs.forEach((s,i)=>{
+      const ci=normDate(s.checkin);
+      if(ci!==lastDate){
+        lastDate=ci;
+        const sameDay=subs.filter(x=>normDate(x.checkin)===ci).length;
+        const[y,m,d]=ci.split('-').map(Number);
+        const dt=new Date(y,m-1,d);
+        const isToday_=ci===greeceToday();
+        html+=`<div class="date-header ${isToday_?'today':'future'}">📅 ${DOW[dt.getDay()]} ${fd(ci)}<span class="date-count">${sameDay}</span></div>`;
+      }
+      html+=renderSubCard(s,i);
+    });
+    list.innerHTML=html;
+    window._subs=subs;
+    subs.forEach((s,i)=>{
+      const st=subStates[s.row]||{};
+      if(st.generated&&st.msgEl) window[`_smsg_${i}`]={el:st.msgEl,en:st.msgEn||'',tr:st.msgTr||'',bg:st.msgBg||'',ro:st.msgRo||''};
+    });
+  }catch(e){
+    list.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--red);font-size:.82rem;">❌ ${e.message}</div>`;
+  }
+}
+
+function wrapSwipe(i,row,html){
+  return`<div class="swipe-wrap" id="sww-${i}">
+    <div class="swipe-delete-bg" id="swb-${i}">🗑️</div>
+    <div class="swipe-inner" id="swi-${i}"
+      ontouchstart="swipeStart(event,${i})"
+      ontouchmove="swipeMove(event,${i})"
+      ontouchend="swipeEnd(event,${i},${row})">
+      ${html}
+    </div>
+  </div>`;
+}
+let swipeStartX={};
+function swipeStart(e,i){swipeStartX[i]=e.touches[0].clientX;}
+function swipeMove(e,i){
+  const dx=swipeStartX[i]-e.touches[0].clientX;
+  if(dx>0){
+    const clamped=Math.min(dx,80);
+    const el=document.getElementById('swi-'+i);
+    const bg=document.getElementById('swb-'+i);
+    if(el) el.style.transform=`translateX(-${clamped}px)`;
+    if(bg) bg.style.right=`${clamped-80}px`;
+  }
+}
+function swipeEnd(e,i,row){
+  const dx=swipeStartX[i]-e.changedTouches[0].clientX;
+  const el=document.getElementById('swi-'+i);
+  const bg=document.getElementById('swb-'+i);
+  if(dx>50){
+    if(confirm('Διαγραφή υποβολής;')){deleteSub(i,row);}
+    else{if(el) el.style.transform='translateX(0)';if(bg) bg.style.right='-80px';}
+  } else {
+    if(el) el.style.transform='translateX(0)';if(bg) bg.style.right='-80px';
+  }
+}
+
+function renderSubCard(s,i){
+  const st=subStates[s.row]||{};
+  const isGen=!!st.generated,isSent=!!st.sent;
+  const cls=isSent?'card green':isGen?'card orange':'card';
+  const badge=isSent
+    ?'<span class="badge green">✅ Εστάλη</span>'
+    :isGen?'<span class="badge orange">📤 Εκκρεμεί αποστολή</span>'
+    :'<span class="badge pending">⏳ Εκκρεμεί</span>';
+  let inner='';
+  if(!isGen&&!isSent){
+    inner=`
+      <div style="font-size:.72rem;font-weight:700;color:var(--gray);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">Κατάλυμα</div>
+      <div class="plat-row" style="margin-bottom:10px;">
+        <button class="pb bk" style="font-size:.82rem;" onclick="setSubProp(${i},'p',this)">🏡 Pistacchio</button>
+        <button class="pb di" style="font-size:.82rem;" onclick="setSubProp(${i},'l',this)">🏠 Living</button>
+      </div>
+      <div id="sr-sel-${i}" style="display:none;margin-bottom:10px;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--gray);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">Δωμάτιο</div>
+        <div class="room-grid" id="sr-btns-${i}" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+      <div id="sr-status-${i}" style="font-size:.75rem;color:var(--gray);margin:8px 0;"></div>
+      <button class="btn blue" onclick="subGenerate(${i},${s.row},'${s.name}')">🔑 Generate & Αποστολή</button>`;
+  } else {
+    const msgs=window[`_smsg_${i}`]||{el:st.msgEl||'',en:st.msgEn||''};
+    inner=`
+      <div style="margin:8px 0 10px;">
+        <span style="font-size:.78rem;font-weight:600;color:#5c1527;">🏠 ${st.room}</span>
+        &nbsp;·&nbsp;
+        <span class="code-big">${st.code}#</span>
+      </div>
+      <div class="lang-row">
+        <button class="lb active" id="sl-el-${i}" onclick="switchSubLang(${i},'el',this)">🇬🇷 ΕΛ</button>
+        <button class="lb" id="sl-en-${i}" onclick="switchSubLang(${i},'en',this)">🇬🇧 EN</button>
+        <button class="lb" id="sl-tr-${i}" onclick="switchSubLang(${i},'tr',this)">🇹🇷 TR</button>
+        <button class="lb" id="sl-bg-${i}" onclick="switchSubLang(${i},'bg',this)">🇧🇬 БГ</button>
+        <button class="lb" id="sl-ro-${i}" onclick="switchSubLang(${i},'ro',this)">🇷🇴 RO</button>
+      </div>
+      <div class="msg-box" id="smsg-${i}">${msgs.el}</div>
+      <div class="btn-row">
+        <button class="btn gray" style="flex:1;" onclick="copySubMsg(${i})">📋 Αντιγραφή</button>
+        <a id="wa-sub-${i}" href="#" onclick="openWA(${i});return false;" class="btn" style="flex:1;background:#25d366;color:white;text-decoration:none;display:flex;align-items:center;justify-content:center;margin-top:8px;">💬 WhatsApp</a>
+        ${!isSent?`<button class="btn green" style="flex:1;" onclick="markSent(${i},${s.row})">✅ Εστάλη</button>`:''}
+        <button class="btn red-o" style="flex:0 0 44px;" onclick="deleteSub(${i},${s.row})">🗑️</button>
+      </div>`;
+  }
+  const cardHtml=`<div class="${cls}" id="sc-${i}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+      <div class="name">👤 ${s.name}</div>${badge}
+    </div>
+    <div class="meta">📍 ${s.city} ${s.zip} · 🪪 ${s.id}</div>
+    ${!isGen&&!isSent?`<div class="date-edit">
+      <div class="de-col"><label>Check-in</label><input type="date" id="ci-sub-${i}" value="${normDate(s.checkin)}" min="${greeceToday()}" onchange="markDateChanged(this)"></div>
+      <div class="de-col"><label>Check-out</label><input type="date" id="co-sub-${i}" value="${normDate(s.checkout)}" min="${greeceToday()}" onchange="markDateChanged(this)"></div>
+    </div>`:`<div class="meta" style="margin-top:6px;">📅 ${fd(s.checkin)} → ${fd(s.checkout)}</div>`}
+    ${inner}
+  </div>`;
+  return wrapSwipe(i,s.row,cardHtml);
+}
+
+function setSubProp(i,prop,btn){
+  pendingProps[i]=prop;pendingRooms[i]=[];
+  btn.closest('.plat-row').querySelectorAll('.pb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const rooms=prop==='p'?ROOMS_P_NAMES:ROOMS_L_NAMES;
+  g('sr-btns-'+i).style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:7px;';
+  g('sr-btns-'+i).innerHTML=Object.entries(rooms).map(([k,n])=>
+    `<button style="padding:10px 6px;border:1.5px solid var(--sep);border-radius:10px;background:var(--bg);font-family:inherit;font-size:.82rem;font-weight:500;cursor:pointer;text-align:center;" class="srb-${i}" onclick="toggleSubRoom(${i},'${k}',this)">${n}</button>`).join('');
+  g('sr-sel-'+i).style.display='block';
+}
+function toggleSubRoom(i,room,btn){
+  if(!Array.isArray(pendingRooms[i])) pendingRooms[i]=[];
+  const idx=pendingRooms[i].indexOf(room);
+  if(idx>=0){
+    pendingRooms[i].splice(idx,1);
+    btn.style.background='var(--bg)';btn.style.borderColor='var(--sep)';btn.style.fontWeight='500';
+  } else {
+    pendingRooms[i].push(room);
+    btn.style.background='#f0f6ff';btn.style.borderColor='var(--blue)';btn.style.fontWeight='700';
+  }
+}
+
+function markDateChanged(el){
+  el.classList.add('changed');
+}
+async function subGenerate(i,row,name){
+  if(!pendingProps[i]){alert('Επίλεξε κατάλυμα!');return;}
+  if(!Array.isArray(pendingRooms[i])||!pendingRooms[i].length){alert('Επίλεξε τουλάχιστον ένα δωμάτιο!');return;}
+  const prop=pendingProps[i];
+  const rks=pendingRooms[i]; // array δωματίων
+  const rk=rks[0]; // πρωτεύον δωμάτιο
+  const roomName=rks.map(k=>prop==='p'?ROOMS_P_NAMES[k]:ROOMS_L_NAMES[k]).join(' + ');
+  const code=prop==='p'?Math.floor(1000+Math.random()*9000).toString():(RL[rk]?.lb||'0000');
+  const ci=g('ci-sub-'+i).value;
+  const co=g('co-sub-'+i).value;
+  if(!ci||!co){alert('Συμπλήρωσε ημερομηνίες!');return;}
+  if(co<=ci){alert('Το check-out πρέπει να είναι μετά το check-in!');return;}
+  const startMs=greeceDateTimeToMs(ci,'13:30');
+  const endMs=greeceDateTimeToMs(co,'12:00');
+  const pname=roomName+' - '+name;
+  const statusEl=g('sr-status-'+i);
+  let roomOk=true,entOk=true,roomErr='',entErr='';
+
+  const roomResults=[]; // {rk, name, ok, err}
+  if(prop==='p'){
+    // Στέλνουμε σε κάθε επιλεγμένο δωμάτιο
+    for(const rkItem of rks){
+      const r=RP[rkItem];
+      const rn=ROOMS_P_NAMES[rkItem];
+      statusEl.innerHTML=`<div class="spinner"></div> 🔐 Αποστολή στο ${rn}...`;
+      let ok=true,err='';
+      try{
+        if(r?.lockId){
+          const res=await addCodeWithResult(r.lockId,code,pname,startMs,endMs);
+          if(res.finalCode!==code){code=res.finalCode;pname=pname.replace(/\d{4}$/,code);}
+        }
+      }catch(e){ok=false;err=e.message;}
+      roomResults.push({rk:rkItem,name:rn,ok,err});
+      await new Promise(r=>setTimeout(r,1500));
+    }
+    // Κεντρική είσοδος
+    const roomsStatus=roomResults.map(r=>`🏠 ${r.name} ${r.ok?'✅':'❌'}`).join(' · ');
+    statusEl.innerHTML=`${roomsStatus} &nbsp;·&nbsp; <div class="spinner" style="display:inline-block;"></div> 🚪 Κεντρική...`;
+    await new Promise(r=>setTimeout(r,4000));
+    try{
+      await addCodeWithResult(ENTRANCE,code,pname,startMs,endMs);
+    }catch(e){entOk=false;entErr=e.message;}
+    roomOk=roomResults.every(r=>r.ok);
+    // Τελικό αποτέλεσμα
+    const eIcon=entOk?'✅':'❌';
+    const allOk=roomOk&&entOk;
+    const roomsLine=roomResults.map(r=>`🏠 ${r.name} ${r.ok?'✅':'❌'}`).join(' · ');
+    const errMsg=roomResults.filter(r=>!r.ok).map(r=>`⚠️ ${r.name}: ${r.err}`).join(' ')+(!entOk?` ⚠️ Κεντρική: ${entErr}`:'');
+    window[`_subRetry_${i}`]={rks,roomName,code,pname,startMs,endMs,roomOk,entOk,roomResults};
+    statusEl.innerHTML=`<div style="background:${allOk?'#d1f5d3':'#ffebee'};border-radius:10px;padding:8px 10px;font-size:.78rem;font-weight:600;color:${allOk?'#248a3d':'#c62828'};">
+      ${roomsLine} &nbsp;·&nbsp; 🚪 Κεντρική ${eIcon} &nbsp;·&nbsp; ${code}#
+      ${!allOk?`<br><span style="font-size:.68rem;font-weight:400;">${errMsg}</span>`:''}
+    </div>${!allOk?`<button onclick="retrySubSend(${i})" class="btn" style="margin-top:6px;background:var(--orange);color:white;font-size:.8rem;padding:10px;">🔄 Δοκίμασε ξανά</button>`:''}`;
+  } else {
+    statusEl.innerHTML='';
+  }
+
+  const ok=roomOk&&entOk;
+  const msgs=buildMsgs(prop,roomName,name,code,ci,co,'13:30','12:00',prop==='l'?(RL[rk]?.lb||null):null,rk);
+  window[`_smsg_${i}`]=msgs;
+  subStates[row]={generated:true,sent:false,prop,room:roomName,code,ci,co,msgEl:msgs.el,msgEn:msgs.en||'',msgTr:msgs.tr||'',msgBg:msgs.bg||'',msgRo:msgs.ro||''};
+  saveSubs();
+  addLog({prop:prop==='p'?'Pistacchio':'Living',room:roomName,guest:name,code,ci,co,ts:now(),success:ok});
+  // Αποθήκευση state για κάθε δωμάτιο
+  rks.forEach(rkItem=>{
+    const stKey=(prop==='p'?'p_':'l_')+rkItem;
+    roomSt[stKey]={guest:name,code,ci,co,cit:'13:30',cot:'12:00',plat:'',comm:''};
+    saveAndSync(stKey);
+  });
+  const propName=prop==='p'?'Pistacchio by SnappyB':'SnappyB Living Spaces';
+  fetch(`${PROXY}?action=markHandled&row=${row}&room=${encodeURIComponent(roomName)}&property=${encodeURIComponent(propName)}`).catch(()=>{});
+  if(window._subs){
+    const s=window._subs[i];
+    const card=g('sc-'+i);
+    if(card){
+      const tmp=document.createElement('div');
+      tmp.innerHTML=renderSubCard(s,i);
+      card.replaceWith(tmp.firstChild);
+      const msgEl=g('smsg-'+i);
+      if(msgEl) msgEl.textContent=msgs.el;
+      // Επαναφορά status μετά το re-render
+      if(prop==='p'){
+        const newStatusEl=g('sr-status-'+i);
+        if(newStatusEl){
+          const allOk=roomOk&&entOk;
+          const rIcon=roomOk?'✅':'❌';
+          const eIcon=entOk?'✅':'❌';
+          newStatusEl.innerHTML=`<div style="background:${allOk?'#d1f5d3':'#ffebee'};border-radius:10px;padding:8px 10px;font-size:.78rem;font-weight:600;color:${allOk?'#248a3d':'#c62828'};">
+            🏠 ${roomName} ${rIcon} &nbsp;·&nbsp; 🚪 Κεντρική ${eIcon} &nbsp;·&nbsp; ${code}#
+            ${!allOk?`<br><span style="font-size:.68rem;font-weight:400;">${(!roomOk?'⚠️ '+roomName+': '+roomErr+' ':'')+(!entOk?'⚠️ Κεντρική: '+entErr:'')}</span>`:''}
+          </div>${!allOk?`<button onclick="retrySubSend(${i})" class="btn" style="margin-top:6px;background:var(--orange);color:white;font-size:.8rem;padding:10px;">🔄 Δοκίμασε ξανά</button>`:''}`;
+        }
+      }
+    }
+  }
+  updateSubBadge();
+}
+
+function switchSubLang(i,lang,btn){
+  const msgs=window[`_smsg_${i}`];
+  if(!msgs) return;
+  const msgEl=g('smsg-'+i);
+  if(msgEl) msgEl.textContent=msgs[lang]||msgs.el;
+  document.querySelectorAll(`[id^="sl-"][id$="-${i}"]`).forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function openWA(i){
+  const t=g('smsg-'+i)?.textContent||'';
+  window.location.href='whatsapp://send?phone=306979892930&text='+encodeURIComponent(t);
+}
+function copySubMsg(i){
+  const t=g('smsg-'+i)?.textContent||'';
+  if(navigator.clipboard) navigator.clipboard.writeText(t);
+  else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);}
+  alert('✅ Αντιγράφηκε!');
+}
+function markSent(i,row){
+  subStates[row]={...subStates[row],sent:true};
+  saveSubs();
+  if(window._subs){
+    const s=window._subs[i];
+    const wrap=g('sww-'+i)||g('sc-'+i);
+    if(wrap){
+      const tmp=document.createElement('div');
+      tmp.innerHTML=renderSubCard(s,i);
+      wrap.replaceWith(tmp.firstChild);
+      const msgs=window[`_smsg_${i}`];
+      if(msgs){const msgEl=g('smsg-'+i);if(msgEl)msgEl.textContent=msgs.el;}
+    }
+  }
+  updateSubBadge();
+}
+function deleteSub(i,row){
+  delete subStates[row];saveSubs();
+  fetch(`${PROXY}?action=markHandled&row=${row}`).catch(()=>{});
+  const wrap=g('sww-'+i);
+  if(wrap) wrap.remove();
+  else{const card=g('sc-'+i);if(card)card.remove();}
+  updateSubBadge();
+}
+async function retrySubSend(i){
+  const p=window[`_subRetry_${i}`];
+  if(!p) return;
+  const statusEl=g('sr-status-'+i);
+  if(!statusEl) return;
+  let roomOk=p.roomOk,entOk=p.entOk,roomErr='',entErr='';
+  const rks=p.rks||[p.rk];
+
+  // Retry μόνο στις κλειδαριές που απέτυχαν, με τον ΙΔΙΟ κωδικό
+  if(!p.roomOk){
+    for(const rkItem of rks){
+      const r=RP[rkItem];
+      if(!r?.lockId) continue;
+      statusEl.innerHTML=`<div class="spinner"></div> 🔐 Retry ${ROOMS_P_NAMES[rkItem]}...`;
+      try{
+        const res=await addCodeWithResult(r.lockId,p.code,p.pname,p.startMs,p.endMs);
+        if(res.pwdId||res.finalCode) roomOk=true;
+      }catch(e){roomErr=e.message;}
+    }
+  }
+  if(!p.entOk){
+    statusEl.innerHTML=`<div class="spinner"></div> 🚪 Retry Κεντρική...`;
+    await new Promise(r=>setTimeout(r,3000));
+    try{
+      const res=await addCodeWithResult(ENTRANCE,p.code,p.pname,p.startMs,p.endMs);
+      if(res.pwdId||res.finalCode) entOk=true;
+    }catch(e){entErr=e.message;}
+  }
+
+  const allOk=roomOk&&entOk;
+  const rIcon=roomOk?'✅':'❌';
+  const eIcon=entOk?'✅':'❌';
+  const errMsg=(!roomOk?`⚠️ ${p.roomName}: ${roomErr} `:'')+(!entOk?`⚠️ Κεντρική: ${entErr}`:'');
+  window[`_subRetry_${i}`]={...p,roomOk,entOk};
+  statusEl.innerHTML=`<div style="background:${allOk?'#d1f5d3':'#ffebee'};border-radius:10px;padding:8px 10px;font-size:.78rem;font-weight:600;color:${allOk?'#248a3d':'#c62828'};">
+    🏠 ${p.roomName} ${rIcon} &nbsp;·&nbsp; 🚪 Κεντρική ${eIcon} &nbsp;·&nbsp; ${p.code}#
+    ${!allOk?`<br><span style="font-size:.68rem;font-weight:400;">${errMsg}</span>`:''}
+  </div>${!allOk?`<button onclick="retrySubSend(${i})" class="btn" style="margin-top:6px;background:var(--orange);color:white;font-size:.8rem;padding:10px;">🔄 Δοκίμασε ξανά</button>`:''}`;
+}
+
+function updateSubBadge(){
+  const badge=g('sub-badge');
+  const n=Object.values(subStates).filter(s=>s.generated&&!s.sent).length;
+  badge.textContent=n;badge.style.display=n?'inline':'none';
+}
+
+// ===== LOG =====
+function renderLog(){
+  const today=greeceToday();
+  const allKeys=Object.keys(roomSt);
+  const arrivals=allKeys.filter(k=>{const s=roomSt[k];return s&&s.ci===today;}).length;
+  const departures=allKeys.filter(k=>{const s=roomSt[k];return s&&s.co===today;}).length;
+  const staying=allKeys.filter(k=>{const s=roomSt[k];return s&&s.ci<today&&s.co>today;}).length;
+  if(g('log-ci')) g('log-ci').textContent=arrivals;
+  if(g('log-st')) g('log-st').textContent=staying;
+  if(g('log-fl')) g('log-fl').textContent=departures;
+  const seen=new Set();
+  const uniq=actLog.filter(e=>{
+    if(!e.success||e.isCheckout) return true;
+    const k=e.guest+e.ci;if(seen.has(k)) return false;seen.add(k);return true;
+  });
+  const list=g('log-list');
+  if(!actLog.length){list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;">Κανένα log ακόμα.</div>';return;}
+  list.innerHTML=uniq.map(e=>{
+    let icon,color;
+    if(e.isCheckout){icon='🔵 CHECK-OUT';color='var(--blue)';}
+    else if(!e.success){icon='🔴 ΑΠΟΤΥΧΙΑ';color='var(--red)';}
+    else if(e.ci===today){icon='🟢 CHECK-IN';color='var(--green)';}
+    else{icon='🟠 ΣΕ ΔΙΑΜΟΝΗ';color='var(--orange)';}
+    const prop=e.prop?`<span style="font-size:.68rem;background:var(--bg);padding:1px 6px;border-radius:8px;margin-left:4px;">${e.prop}</span>`:'';
+    return`<div class="log-item">
+      <div style="font-size:.82rem;font-weight:600;color:${color};">${icon} — ${e.room}${prop}</div>
+      <div style="font-size:.72rem;color:var(--gray);margin-top:3px;">👤 ${e.guest} · 🔐 ${e.code}</div>
+      <div style="font-size:.72rem;color:var(--gray);">📅 ${fd(e.ci)} → ${fd(e.co)} · ${e.ts}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadLockEvents(_retry=0){
+  const list=g('lock-events-list');
+  list.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--gray);font-size:.82rem;"><div class="spinner"></div></div>';
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),15000);
+    let data;
+    try{
+      const res=await fetch(PROXY+'?action=getLockEvents',{signal:controller.signal});
+      data=await res.json();
+    }catch(fetchErr){
+      clearTimeout(timer);
+      if(_retry<2){
+        await new Promise(r=>setTimeout(r,2000));
+        return loadLockEvents(_retry+1);
+      }
+      throw fetchErr;
+    }
+    clearTimeout(timer);
+    const events=data?.result?.events||[];
+    if(!events.length){list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;">Δεν υπάρχουν events ακόμα.</div>';return;}
+    list.innerHTML=events.map(e=>{
+      const ok=e.result&&e.result.includes('Επιτυχία');
+      const icon=ok?'🟢':'🔴';
+      const color=ok?'var(--green)':'var(--red)';
+      const ts=(()=>{
+        if(!e.ts) return '—';
+        const s=e.ts.toString().trim();
+        // ISO format: 2026-06-06T13:38:00.000Z ή 2026-06-06T13:38:00Z
+        const mISO=s.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+        if(mISO){
+          // Μετατροπή UTC → UTC+3
+          const dt=new Date(s);
+          const local=new Date(dt.getTime()+3*3600000);
+          return String(local.getUTCDate()).padStart(2,'0')+'/'+String(local.getUTCMonth()+1).padStart(2,'0')+' '+String(local.getUTCHours()).padStart(2,'0')+':'+String(local.getUTCMinutes()).padStart(2,'0');
+        }
+        // DD/MM HH:MM format (ήδη σωστό)
+        const mDDMM=s.match(/(\d{2}\/\d{2} \d{2}:\d{2})/);
+        if(mDDMM) return mDDMM[1];
+        return s;
+      })();
+      const code=e.code&&e.code!=='—'?e.code:'';
+      const guest=code?findGuestByCode(code):'';
+      return`<div class="log-item">
+        <div style="font-size:.82rem;font-weight:600;color:${color};">${icon} ${e.lock}${code?` · 🔐 ${code}`:''}</div>
+        <div style="font-size:.72rem;color:var(--gray);margin-top:3px;">🕐 ${ts}${guest?` · 👤 ${guest}`:''}</div>
+      </div>`;
+    }).join('');
+  }catch(err){
+    list.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--red);font-size:.82rem;">❌ ${err.message}</div>`;
+  }
+}
+function findGuestByCode(code){
+  for(const key in roomSt){if(roomSt[key]&&roomSt[key].code===code) return roomSt[key].guest||'';}
+  return '';
+}
+async function clearLockEvents(){
+  if(!confirm('Εκκαθάριση όλων των events;')) return;
+  await fetch(`${PROXY}?action=clearLockEvents`).catch(()=>{});
+  loadLockEvents();
+}
+function clearLog(){if(!confirm('Εκκαθάριση;'))return;actLog=[];localStorage.removeItem('snb_log');renderLog();}
+
+// ===== SHARED ROOM STATE =====
+async function syncRoomState(_retry=0){
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),15000);
+    let data;
+    try{
+      const res=await fetch(PROXY+'?action=getRoomState',{signal:controller.signal});
+      data=await res.json();
+      clearTimeout(timer);
+    }catch(fetchErr){
+      clearTimeout(timer);
+      if(_retry<2){
+        await new Promise(r=>setTimeout(r,2000));
+        return syncRoomState(_retry+1);
+      }
+      return;
+    }
+    if(data?.result?.state){
+      roomSt=data.result.state;
+      for(const k in roomSt){
+        const s=roomSt[k];
+        if(s.ci) s.ci=normDate(s.ci);
+        if(s.co) s.co=normDate(s.co);
+        // Επαναφορά πληρωμών από ξεχωριστό storage
+        if(paidSt[k]){
+          s.paid=paidSt[k].paid;
+          s.paidBy=paidSt[k].paidBy;
+          s.paidOn=paidSt[k].paidOn;
+        }
+      }
+      localStorage.setItem('snb_rooms',JSON.stringify(roomSt));
+    }
+  }catch(e){}
+}
+async function pushRoomState(key,data){
+  const params=new URLSearchParams({action:'setRoomState',key,...data});
+  await fetch(`${PROXY}?${params}`).catch(()=>{});
+}
+async function deleteRoomState(key){
+  await fetch(`${PROXY}?action=setRoomState&key=${key}&delete=1`).catch(()=>{});
+}
+
+// ===== CHAT =====
+const DAY_COLORS={1:'#e53935',2:'#f4511e',3:'#f9a825',4:'#43a047',5:'#1e88e5',6:'#5e35b1',0:'#d81b60'};
+function dayColorFromDate(dateStr){
+  const parts=dateStr.split('/');
+  if(parts.length<2) return '#007aff';
+  const day=parseInt(parts[0]),month=parseInt(parts[1])-1;
+  const year=new Date().getFullYear();
+  const d=new Date(year,month,day);
+  return DAY_COLORS[d.getDay()]||'#007aff';
+}
+let chatAuthor=localStorage.getItem('snb_author')||'';
+let chatChannel=localStorage.getItem('snb_channel')||'clean';
+const AUTHOR_COLORS={ΝΑΠΟΛΕΩΝ:'#007aff',ΕΙΡΗΝΗ:'#e91e8c',ΣΟΥΛΑ:'#34c759',ΓΙΑΝΝΗΣ:'#ff9500'};
+const CHANNEL_LABELS={general:'ΓΕΝΙΚΑ',clean:'ΚΑΘΑΡΙΟΤΗΤΑ',wash:'ΠΛΥΝΤΗΡΙΟ'};
+
+function setChatTab(ch,btn){
+  chatChannel=ch;localStorage.setItem('snb_channel',ch);
+  document.querySelectorAll('.chat-tab').forEach(b=>{
+    b.style.background='transparent';b.style.color='var(--gray)';b.style.fontWeight='500';b.style.boxShadow='none';
+  });
+  btn.style.background='white';btn.style.color='var(--blue)';btn.style.fontWeight='700';btn.style.boxShadow='0 1px 3px rgba(0,0,0,.1)';
+  const giaBtn=g('auth-gia');
+  if(giaBtn) giaBtn.style.display=ch==='wash'?'flex':'none';
+  if(ch!=='wash'&&chatAuthor==='ΓΙΑΝΝΗΣ'){
+    chatAuthor='';localStorage.removeItem('snb_author');
+    document.querySelectorAll('#chat-authors .pb').forEach(b=>{b.style.color='';b.style.borderColor='';b.style.background='';b.style.fontWeight='';});
+  }
+  const label=CHANNEL_LABELS[ch]||ch.toUpperCase();
+  const titleEl=g('chat-feed-title');
+  if(titleEl) titleEl.childNodes[0].textContent=`ΜΗΝΥΜΑΤΑ — ${label} `;
+  loadComments();
+}
+function setAuthor(name,btn){
+  chatAuthor=name;localStorage.setItem('snb_author',name);
+  document.querySelectorAll('#chat-authors .pb').forEach(b=>{b.style.color='';b.style.borderColor='';b.style.background='';b.style.fontWeight='';});
+  const col=AUTHOR_COLORS[name]||'var(--blue)';
+  btn.style.color=col;btn.style.borderColor=col;btn.style.background=col+'18';btn.style.fontWeight='800';
+}
+async function loadComments(silent=false){
+  const list=g('chat-list');
+  if(!silent) list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;"><div class="spinner"></div> Φόρτωση...</div>';
+  try{
+    const data=await(await fetch(`${PROXY}?action=getComments&channel=${chatChannel}`)).json();
+    const comments=data?.result?.comments||[];
+    if(!comments.length){list.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray);font-size:.82rem;">Κανένα σχόλιο ακόμα.</div>';return;}
+    let lastDay='';
+    list.innerHTML=comments.map(c=>{
+      const isMe=c.author===chatAuthor;
+      let datePart='',timePart='';
+      const tsStr=c.ts?c.ts.toString():'';
+      if(tsStr.includes('T')){
+        const d=new Date(tsStr);
+        datePart=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+        timePart=`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      } else if(tsStr.includes('/')){
+        const parts=tsStr.split(' ');datePart=parts[0]||'';timePart=parts[1]||'';
+      } else {datePart=tsStr;}
+      const dayColor=dayColorFromDate(datePart);
+      const authorColor=AUTHOR_COLORS[c.author]||'var(--gray)';
+      let dayBanner='';
+      if(datePart!==lastDay){
+        lastDay=datePart;
+        dayBanner=`<div style="text-align:center;margin:10px 0 6px;"><span style="background:${dayColor};color:white;font-size:.65rem;font-weight:700;padding:3px 12px;border-radius:20px;">${datePart}</span></div>`;
+      }
+      const bubbleStyle=isMe?`background:${dayColor};`:`background:${dayColor}15;border:1.5px solid ${dayColor}40;`;
+      const textColor=isMe?'white':'color:#1a1a1a;';
+      return`${dayBanner}<div style="display:flex;flex-direction:column;align-items:${isMe?'flex-end':'flex-start'};margin-bottom:8px;">
+        <div style="font-size:.65rem;color:${authorColor};font-weight:700;margin-bottom:3px;padding:0 4px;">${c.author}</div>
+        <div class="chat-bubble ${isMe?'me':'other'}" style="${bubbleStyle}${textColor}">
+          ${c.text.replace(/\n/g,'<br>')}
+          <div class="chat-meta" style="text-align:${isMe?'right':'left'};">${timePart}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(err){
+    list.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--red);font-size:.82rem;">❌ ${err.message}</div>`;
+  }
+}
+async function clearComments(){
+  if(!confirm('Να διαγραφούν ΟΛΑ τα μηνύματα;')) return;
+  if(!confirm('⚠️ Οριστική διαγραφή — δεν αναιρείται. Συνέχεια;')) return;
+  try{await fetch(`${PROXY}?action=clearComments&channel=${chatChannel}`);await loadComments();}
+  catch(e){alert('❌ Σφάλμα διαγραφής');}
+}
+async function sendComment(){
+  if(!chatAuthor){alert('Επίλεξε πρώτα το όνομά σου!');return;}
+  const txt=g('chat-input').value.trim();
+  if(!txt){alert('Γράψε κάτι πρώτα!');return;}
+  const btn=g('chat-send');
+  btn.disabled=true;btn.textContent='⏳ Αποστολή...';
+  try{
+    await fetch(`${PROXY}?action=addComment&author=${encodeURIComponent(chatAuthor)}&channel=${chatChannel}&room=—&text=${encodeURIComponent(txt)}`);
+    g('chat-input').value='';await loadComments();
+  }catch(e){alert('❌ Σφάλμα αποστολής');}
+  btn.disabled=false;btn.textContent='✉️ Αποστολή';
+}
+
+// ===== DARK MODE =====
+function toggleDark(){
+  const isDark=document.body.classList.toggle('dark');
+  localStorage.setItem('snb_dark',isDark?'1':'0');
+  g('dark-btn').textContent=isDark?'☀️':'🌙';
+}
+if(localStorage.getItem('snb_dark')==='1'){
+  document.body.classList.add('dark');
+  document.addEventListener('DOMContentLoaded',()=>{const b=g('dark-btn');if(b)b.textContent='☀️';});
+}
+
+// ===== PENDING QUEUE FUNCTIONS =====
+function showPendingPanel(){
+  const list=g('pending-list');
+  if(!pendingQueue.length){list.innerHTML='<div style="text-align:center;padding:1rem;color:var(--gray);font-size:.82rem;">Δεν υπάρχουν εκκρεμείς αποστολές.</div>';g('pending-modal').classList.add('open');return;}
+  list.innerHTML=pendingQueue.map((p,i)=>`
+    <div style="background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:.78rem;">
+      <div style="font-weight:700;">🏠 ${p.pname} · 🔐 ${p.code}#</div>
+      <div style="color:var(--gray);font-size:.7rem;margin-top:2px;">🕐 ${p.ts} · 🏠 ${p.roomOk?'✅':'❌'} · 🚪 ${p.entOk?'✅':'❌'}</div>
+      <button onclick="retrySingle(${i})" class="btn" style="margin-top:6px;background:var(--orange);color:white;font-size:.75rem;padding:8px;">🔄 Αποστολή</button>
+      <button onclick="removeFromPending(${i});showPendingPanel();" class="btn gray" style="margin-top:4px;font-size:.75rem;padding:8px;">🗑️ Διαγραφή</button>
+    </div>`).join('');
+  g('pending-modal').classList.add('open');
+}
+
+async function retrySingle(idx){
+  const p=pendingQueue[idx];
+  if(!p) return;
+  // Βρίσκουμε το selRoom από το lockId που αποθηκεύτηκε
+  const selRoom=p.selRoom||Object.keys(RP).find(k=>RP[k].lockId==p.lockId)||null;
+  const r=selRoom?RP[selRoom]:{lockId:p.lockId,n:p.pname.split(' - ')[0]};
+  setApiStatus('api-p','info',`🔄 Επανάληψη για ${p.pname}...`);
+  g('pending-modal').classList.remove('open');
+  const {roomPwdId,entPwdId}=await sendToTTLock(selRoom,r,p.code,p.pname,p.startMs,p.endMs,p.name,p.ci,p.co,p.cit,p.cot);
+  // Διαγράφουμε από queue μόνο αν πέτυχε η κεντρική (το κρίσιμο)
+  if(entPwdId) removeFromPending(idx);
+}
+
+async function retryAllPending(){
+  g('pending-modal').classList.remove('open');
+  for(let i=pendingQueue.length-1;i>=0;i--){
+    await retrySingle(i);
+    await new Promise(res=>setTimeout(res,2000));
+  }
+}
+
+// Online/offline detection
+window.addEventListener('online',()=>{
+  const s=g('ttlock-status');
+  if(s){s.textContent='● Live';s.style.color='var(--green)';}
+  if(pendingQueue.length){
+    setTimeout(()=>{
+      if(confirm(`📶 Επέστρεψε το δίκτυο! Υπάρχουν ${pendingQueue.length} εκκρεμείς αποστολές. Να σταλούν τώρα;`)){
+        retryAllPending();
+      }
+    },1000);
+  }
+});
+window.addEventListener('offline',()=>{
+  const s=g('ttlock-status');
+  if(s){s.textContent='● Offline';s.style.color='var(--red)';}
+});
+
+// ===== PING / SIGNAL CHECK =====
+async function checkPing(){
+  const badge=g('ping-badge');
+  if(!badge) return;
+  if(!navigator.onLine){badge.textContent='Offline';badge.style.background='#ffebee';badge.style.color='#c62828';return;}
+  try{
+    const t0=Date.now();
+    await fetch(PROXY+'?action=test',{cache:'no-store'});
+    const ms=Date.now()-t0;
+    if(ms<800){badge.textContent=`${ms}ms 🟢`;badge.style.background='#d1f5d3';badge.style.color='#248a3d';}
+    else if(ms<2000){badge.textContent=`${ms}ms 🟡`;badge.style.background='#fff8e1';badge.style.color='#8a6200';}
+    else{badge.textContent=`${ms}ms 🔴`;badge.style.background='#ffebee';badge.style.color='#c62828';}
+  }catch(e){badge.textContent='❌';badge.style.background='#ffebee';badge.style.color='#c62828';}
+}
+checkPing();
+setInterval(checkPing,60000);
+
+// ===== DASHBOARD =====
+let dashView='both';
+
+function setDashView(v,btn){
+  dashView=v;
+  document.querySelectorAll('.dash-seg').forEach(b=>{
+    b.style.background='transparent';b.style.color='var(--gray)';
+    b.style.fontWeight='500';b.style.boxShadow='none';
+  });
+  btn.style.background='white';btn.style.color='var(--blue)';
+  btn.style.fontWeight='700';btn.style.boxShadow='0 1px 3px rgba(0,0,0,.1)';
+  renderDashboard();
+}
+
+function renderDashboard(){
+  const today=greeceToday();
+  const allKeys=Object.keys(roomSt);
+
+  // Φίλτρο κλειδιών ανάλογα με view
+  const keys=allKeys.filter(k=>{
+    if(dashView==='p') return k.startsWith('p_');
+    if(dashView==='l') return k.startsWith('l_');
+    return true;
+  });
+
+  const totalRooms=dashView==='p'?6:dashView==='l'?5:11;
+  const occ=keys.filter(k=>roomSt[k]).length;
+  const arr=keys.filter(k=>normDate(roomSt[k]?.ci||'')===today).length;
+  const dep=keys.filter(k=>normDate(roomSt[k]?.co||'')===today).length;
+  const inhouse=keys.filter(k=>{const s=roomSt[k];return s&&normDate(s.ci||'')<today&&normDate(s.co||'')>today;}).length;
+  const free=totalRooms-occ;
+  const pct=totalRooms>0?Math.round(occ/totalRooms*100):0;
+  const circumference=175.9;
+  const offset=circumference-(pct/100*circumference);
+
+  const pOcc=Object.keys(roomSt).filter(k=>k.startsWith('p_')).length;
+  const lOcc=Object.keys(roomSt).filter(k=>k.startsWith('l_')).length;
+
+  // Date label
+  const now=new Date();
+  const dl=`ΣΗΜΕΡΑ — ${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
+  if(g('dash-date-label')) g('dash-date-label').textContent=dl;
+
+  g('d-arr').textContent=arr;
+  g('d-dep').textContent=dep;
+  g('d-house').textContent=inhouse;
+  g('d-pct').textContent=pct+'%';
+  g('d-occ').textContent=`${occ} / ${totalRooms}`;
+  g('d-free').textContent=free;
+  g('occ-arc').setAttribute('stroke-dashoffset',offset);
+
+  // Per-building breakdown
+  if(dashView==='both'){
+    g('d-p-row').style.display='flex';g('d-l-row').style.display='flex';
+    g('d-p-occ').textContent=`${pOcc} / 6`;
+    g('d-l-occ').textContent=`${lOcc} / 5`;
+  } else if(dashView==='p'){
+    g('d-p-row').style.display='flex';g('d-l-row').style.display='none';
+    g('d-p-occ').textContent=`${pOcc} / 6`;
+  } else {
+    g('d-p-row').style.display='none';g('d-l-row').style.display='flex';
+    g('d-l-occ').textContent=`${lOcc} / 5`;
+  }
+
+  // Payments — Direct only
+  const directRooms=allKeys.filter(k=>{
+    const s=roomSt[k];
+    return s&&s.plat==='di';
+  });
+
+  const payEl=g('d-payments');
+  if(!directRooms.length){
+    payEl.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--gray);font-size:.82rem;">Δεν υπάρχουν Direct κρατήσεις</div>';
+    return;
+  }
+
+  payEl.innerHTML=directRooms.map(k=>{
+    const s=roomSt[k];
+    const isProp=k.startsWith('p_')?'🏡':'🏠';
+    const rk=k.replace(/^[pl]_/,'');
+    const rName=(k.startsWith('p_')?RP[rk]?.n:RL[rk]?.n)||rk;
+    const paid=s.paid&&s.paid!=='0';
+    const paidLabel=paid?`✅ ${s.paidBy||'—'} · ${s.paidOn||'—'}`:'🔴 Οφείλεται';
+    const badge=`<span style="font-size:.65rem;font-weight:700;padding:3px 8px;border-radius:8px;background:${paid?'#d1f5d3':'#ffebee'};color:${paid?'#248a3d':'#c62828'};white-space:nowrap;cursor:pointer;" onclick="togglePaid(this,'${k}')">${paidLabel}</span>`;
+    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:.5px solid var(--sep);">
+      <div>
+        <div style="font-size:.8rem;font-weight:600;">${isProp} ${rName}</div>
+        <div style="font-size:.68rem;color:var(--gray);margin-top:1px;">👤 ${s.guest} · 📅 ${fd(s.ci)} → ${fd(s.co)}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('');
+}
+
+function togglePaid(el,key){
+  if(!roomSt[key]) return;
+  const isPaid=roomSt[key].paid&&roomSt[key].paid!=='0';
+  if(!isPaid){
+    // Επιλογή ποιος εισέπραξε
+    showPayModal(key);
+  } else {
+    if(!confirm('Να αλλάξει σε 🔴 Οφείλεται;')) return;
+    roomSt[key].paid='0';
+    delete roomSt[key].paidBy;
+    delete roomSt[key].paidOn;
+    // Διαγραφή και από paidSt
+    delete paidSt[key];
+    savePaidSt();
+    saveAndSync(key);
+    renderDashboard();
+  }
+}
+
+function showPayModal(key){
+  const r=roomSt[key];
+  if(!r) return;
+  // Simple modal με 3 κουμπιά
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;';
+  const box=document.createElement('div');
+  box.style.cssText='background:var(--card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:540px;';
+  // Χρήση ώρας Ελλάδας για την ημερομηνία πληρωμής
+  const gt=greeceToday().split('-');
+  const dateStr=gt[2]+'/'+gt[1];
+  box.innerHTML=`
+    <div style="font-size:1rem;font-weight:700;margin-bottom:4px;">💰 Ποιος εισέπραξε;</div>
+    <div style="font-size:.78rem;color:var(--gray);margin-bottom:16px;">${r.guest} · ${dateStr}</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button onclick="setPaid('${key}','ΝΑΠΟΛΕΩΝ','${dateStr}',this.closest('.pay-overlay'))" style="padding:14px;border:none;border-radius:12px;background:#007aff;color:white;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;">👤 ΝΑΠΟΛΕΩΝ</button>
+      <button onclick="setPaid('${key}','ΕΙΡΗΝΗ','${dateStr}',this.closest('.pay-overlay'))" style="padding:14px;border:none;border-radius:12px;background:#e91e8c;color:white;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;">👤 ΕΙΡΗΝΗ</button>
+      <button onclick="this.closest('.pay-overlay').remove()" style="padding:13px;border:1.5px solid var(--sep);border-radius:12px;background:var(--card);color:var(--gray);font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;margin-top:2px;">Ακύρωση</button>
+    </div>`;
+  overlay.className='pay-overlay';
+  overlay.appendChild(box);
+  overlay.onclick=function(e){
+    if(e.target===overlay){
+      overlay.remove();
+      document.body.style.overflow='';
+      document.body.style.position='';
+      document.body.style.width='';
+    }
+  };
+  document.body.style.overflow='hidden';
+  document.body.style.position='fixed';
+  document.body.style.width='100%';
+  document.body.appendChild(overlay);
+}
+
+function setPaid(key,who,dateStr,overlay){
+  if(!roomSt[key]) return;
+  roomSt[key].paid='1';
+  roomSt[key].paidBy=who;
+  roomSt[key].paidOn=dateStr;
+  // Αποθήκευση και στο ξεχωριστό paidSt
+  paidSt[key]={paid:'1',paidBy:who,paidOn:dateStr};
+  savePaidSt();
+  saveAndSync(key);
+  if(overlay){
+    overlay.remove();
+    document.body.style.overflow='';
+    document.body.style.position='';
+    document.body.style.width='';
+  }
+  renderDashboard();
+}
+
+// ===== INIT =====
+const today=greeceToday();
+const tomorrow=new Date(new Date(today+'T12:00:00Z').getTime()+86400000).toISOString().slice(0,10);
+g('ci-p').value=today;g('co-p').value=tomorrow;
+g('ci-l').value=today;g('co-l').value=tomorrow;
+
+if(chatAuthor){
+  const map={ΝΑΠΟΛΕΩΝ:'auth-nap',ΕΙΡΗΝΗ:'auth-eir',ΣΟΥΛΑ:'auth-sou',ΓΙΑΝΝΗΣ:'auth-gia'};
+  const btnId=map[chatAuthor];
+  const btn=btnId?g(btnId):null;
+  if(btn){
+    const col=AUTHOR_COLORS[chatAuthor]||'var(--blue)';
+    btn.style.color=col;btn.style.borderColor=col;btn.style.background=col+'18';btn.style.fontWeight='800';
+  }
+}
+if(chatChannel){
+  const ctMap={clean:'ct-clean',wash:'ct-wash'};
+  const ctBtn=ctMap[chatChannel]?g(ctMap[chatChannel]):g('ct-clean');
+  if(ctBtn) setChatTab(chatChannel,ctBtn);
+}
+
+renderPendingBadge();
+// Επαναφορά πληρωμών από paidSt στο roomSt (χωρίς sync)
+for(const k in roomSt){
+  if(paidSt[k]){
+    roomSt[k].paid=paidSt[k].paid;
+    roomSt[k].paidBy=paidSt[k].paidBy;
+    roomSt[k].paidOn=paidSt[k].paidOn;
+  }
+}
+syncRoomState().then(()=>{
+  renderGridP();renderGridL();renderStatsP();renderStatsL();renderLog();renderDashboard();
+});
+loadSubs();
+</script>
+</body>
+</html>
