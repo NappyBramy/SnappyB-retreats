@@ -615,7 +615,7 @@ function greeceToday(){return new Date(Date.now()+TZ).toISOString().slice(0,10);
 function greeceDateTimeToMs(d,t){const[y,m,dy]=d.split('-').map(Number);const[h,mi]=t.split(':').map(Number);return Date.UTC(y,m-1,dy,h,mi,0)-TZ;}
 const ENTRANCE=23341511;
 const RP={pink:{n:'Pink',lockId:22109259,floor:'1ο'},green:{n:'Green',lockId:22112067,floor:'1ο'},candy:{n:'Candy',lockId:22106895,floor:'2ο'},funky:{n:'Funky',lockId:22105673,floor:'2ο'},forest:{n:'Forest',lockId:23343961,floor:'3ο'},blossom:{n:'Blossom',lockId:23106539,floor:'3ο'}};
-const RL={primopiano:{n:'Primopiano',lb:'1952',floor:'1ο',floorEN:'1st',side:'δεξιά',sideEN:'right'},terracotta:{n:'Terracotta',lb:'9626',floor:'1ο',floorEN:'1st',side:'αριστερά',sideEN:'left'},reef:{n:'Reef',lb:'5827',floor:'2ο',floorEN:'2nd',side:'αριστερά',sideEN:'left'},minimalo:{n:'Minimalo',lb:'8948',floor:'2ο',floorEN:'2nd',side:'δεξιά',sideEN:'right'},colours:{n:'Colours',lb:'9380',floor:'3ο',floorEN:'3rd',side:'δεξιά',sideEN:'right'}};
+const RL={primopiano:{n:'Primopiano',lb:'1952',floor:'1ο',floorEN:'1st',side:'δεξιά',sideEN:'right'},terracotta:{n:'Terracotta',lb:'9626',floor:'1ο',floorEN:'1st',side:'αριστερά',sideEN:'left'},reef:{n:'Reef',lb:'1349',floor:'2ο',floorEN:'2nd',side:'αριστερά',sideEN:'left'},minimalo:{n:'Minimalo',lb:'8948',floor:'2ο',floorEN:'2nd',side:'δεξιά',sideEN:'right'},colours:{n:'Colours',lb:'9380',floor:'3ο',floorEN:'3rd',side:'δεξιά',sideEN:'right'}};
 const ORDER_P=['pink','green','candy','funky','forest','blossom'];
 const ORDER_L=['primopiano','terracotta','reef','minimalo','colours'];
 const ROOMS_P_NAMES={pink:'Pink',green:'Green',candy:'Candy',funky:'Funky',forest:'Forest',blossom:'Blossom'};
