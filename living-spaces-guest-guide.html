@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SnappyB Living Spaces — Guest Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg1: #dbe4f5;
+  --bg2: #f3dde6;
+  --bg3: #d9eee6;
+  --glass: rgba(255,255,255,0.55);
+  --glass-strong: rgba(255,255,255,0.72);
+  --glass-border: rgba(255,255,255,0.6);
+  --hairline: rgba(0,0,0,0.07);
+  --ink: #1c1c1e;
+  --ink-soft: #3a3a3c;
+  --muted: #6e6e73;
+  --accent: #0a84ff;
+  --accent-soft: rgba(10,132,255,0.12);
+  --green: #0a84ff;
+  --green-mid: #0a84ff;
+  --green-light: #5ac8fa;
+  --green-pale: rgba(10,132,255,0.08);
+  --gold: #ff9f0a;
+  --gold-light: rgba(255,159,10,0.15);
+  --cream: #f5f6f8;
+  --dark: #1c1c1e;
+  --gray: var(--muted);
+  --border: var(--hairline);
+  --white: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, var(--bg1) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 90% 20%, var(--bg2) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 60% at 50% 100%, var(--bg3) 0%, transparent 60%),
+    #eef1f6;
+  background-attachment: fixed;
+  color: var(--ink);
+  font-weight: 400;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hero {
+  background: transparent;
+  color: var(--ink);
+  padding: 56px 20px 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before { content: none; }
+
+.hero-content { position: relative; z-index: 1; }
+
+.hero-leaf {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  display: block;
+  filter: saturate(1.1);
+}
+
+.hero-brand {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+
+.hero-sub {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.ornament { display: none; }
+
+.property-bar {
+  background: var(--glass-strong);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--hairline);
+}
+.property-bar::-webkit-scrollbar { display: none; }
+
+.prop-btn {
+  flex: 1;
+  min-width: 160px;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+
+.prop-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.lang-bar {
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 16px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.5);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.welcome-banner {
+  background: transparent;
+  border-bottom: none;
+  padding: 24px 20px 8px;
+  text-align: center;
+}
+
+.welcome-banner h2 {
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.welcome-banner p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.property-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.container {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 16px 16px 60px;
+}
+
+.section {
+  background: var(--glass);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border-radius: 20px;
+  padding: 22px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.6) inset;
+  border: 1px solid var(--glass-border);
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.section-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--accent-soft);
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.checkin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.time-card {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+}
+
+.time-card .time-icon { font-size: 1.3rem; margin-bottom: 4px; }
+.time-card .time-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
+.time-card .time-value { font-family: inherit; font-size: 1.5rem; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+
+.wifi-box {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+.wifi-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.wifi-row:last-child { margin-bottom: 0; }
+.wifi-label { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+.wifi-value { font-weight: 600; font-size: 0.92rem; color: var(--ink); }
+
+.copy-btn {
+  padding: 5px 12px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.access-box {
+  background: rgba(10,132,255,0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 18px;
+  color: white;
+  text-align: center;
+}
+
+.access-box .access-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.access-box .access-title { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; margin-bottom: 4px; font-weight: 600; }
+.access-box .access-desc { font-size: 0.85rem; line-height: 1.6; opacity: 0.95; }
+
+.rule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.rule-item:last-child { border-bottom: none; }
+.rule-icon { font-size: 1.05rem; flex-shrink: 0; margin-top: 1px; }
+
+.emergency-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.emergency-card {
+  background: rgba(255,255,255,0.5);
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid var(--hairline);
+  text-decoration: none;
+  display: block;
+  transition: background 0.2s, transform 0.1s;
+  cursor: pointer;
+}
+.emergency-card:active {
+  background: rgba(10,132,255,0.1);
+  transform: scale(0.97);
+}
+
+.emergency-card .e-icon { font-size: 1.25rem; margin-bottom: 4px; }
+.emergency-card .e-label { font-size: 0.63rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; font-weight: 600; }
+.emergency-card .e-number { font-family: inherit; font-size: 1.3rem; font-weight: 600; color: var(--ink); }
+
+.contact-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.contact-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.contact-name { font-weight: 600; font-size: 0.95rem; color: var(--ink); margin-bottom: 2px; }
+.contact-role { font-size: 0.72rem; color: var(--muted); margin-bottom: 8px; }
+
+.contact-btns { display: flex; gap: 6px; }
+.contact-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.72rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.contact-btn.wa { background: #25d366; color: white; }
+.contact-btn.vb { background: #7360f2; color: white; }
+.contact-btn.ph { background: var(--accent); color: white; }
+
+.map-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+.map-link:hover { background: rgba(255,255,255,0.7); }
+
+.parking-box {
+  background: rgba(255,159,10,0.08);
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  border: 1px solid rgba(255,159,10,0.2);
+}
+
+.guide-footer {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.guide-footer .footer-brand {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <span class="hero-leaf">🌿</span>
+    <div class="hero-brand">SnappyB Living Spaces</div>
+    <div class="hero-sub">Guest Guide</div>
+    <div class="ornament"><span>✦</span></div>
+  </div>
+</div>
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('el')">🇬🇷 ΕΛ</button>
+  <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+  <button class="lang-btn" onclick="setLang('tr')">🇹🇷 TR</button>
+  <button class="lang-btn" onclick="setLang('bg')">🇧🇬 BG</button>
+  <button class="lang-btn" onclick="setLang('ro')">🇷🇴 RO</button>
+</div>
+
+<div class="welcome-banner">
+  <h2 id="welcome-title">Καλώς ήρθατε!</h2>
+  <p id="welcome-text">Χαιρόμαστε που θα σας φιλοξενήσουμε. Αυτός ο οδηγός έχει όλα όσα χρειάζεστε για μια υπέροχη διαμονή.</p>
+  <div class="property-address" id="property-address">
+    📍 Πέττα 14, Αλεξανδρούπολη
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🗺️</div>
+      <div class="section-title" id="location-title">Τοποθεσία</div>
+    </div>
+    <div style="font-size:0.85rem; color:var(--gray); line-height:1.6; margin-bottom:10px;" id="location-desc">
+      Βρισκόμαστε στην καρδιά της Αλεξανδρούπολης, κοντά σε όλα τα αξιοθέατα, εστιατόρια και καταστήματα.
+    </div>
+    <a href="https://maps.app.goo.gl/ye4H3GmRg9Sg1pbV8" target="_blank" class="map-link" id="map-link">
+      🗺️ Άνοιγμα στο Google Maps
+    </a>
+    <div class="parking-box" style="margin-top:10px; display:none;" id="parking-box">
+      <span id="parking-text">Διαθέτουμε 2 ιδιωτικές θέσεις στάθμευσης (πρώτος αφίχθη, πρώτος εξυπηρετείται). Υπάρχει επίσης δωρεάν χώρος στάθμευσης στον δρόμο απέναντι.</span>
+      <div id="parking-photos" style="margin-top:12px; display:flex; flex-direction:column; gap:10px;">
+        <video controls playsinline muted style="width:100%;border-radius:10px;" preload="metadata">
+          <source src="parking-video.mp4" type="video/mp4">
+        </video>
+</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🗝️</div>
+      <div class="section-title" id="checkin-title">Check-in & Check-out</div>
+    </div>
+    <div class="checkin-grid">
+      <div class="time-card">
+        <div class="time-icon">🌅</div>
+        <div class="time-label" id="checkin-label">Check-in</div>
+        <div class="time-value">15:00</div>
+      </div>
+      <div class="time-card">
+        <div class="time-icon">🌇</div>
+        <div class="time-label" id="checkout-label">Check-out</div>
+        <div class="time-value">11:00</div>
+      </div>
+    </div>
+    <div style="margin-top:12px; font-size:0.8rem; color:var(--gray); line-height:1.6;" id="checkin-note">
+      ⏰ Ώρα άφιξης από τις 15:00. Αναχώρηση έως τις 11:00. Για early check-in ή late check-out επικοινωνήστε μαζί μας.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <div class="section-title" id="rules-title">Κανόνες Σπιτιού</div>
+    </div>
+    <div id="rules-list"></div>
+  </div>
+
+  <div class="section" id="services-section">
+    <div class="section-header">
+      <div class="section-icon">✨</div>
+      <div class="section-title" id="services-title">Υπηρεσίες</div>
+    </div>
+    <div class="rule-item">
+      <span class="rule-icon">🫧</span>
+      <span id="laundry-text">Πλυντήριο & στεγνωτήριο διαθέσιμα δωρεάν στον 3ο όροφο.</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🍽️</div>
+      <div class="section-title" id="reco-title">Προτάσεις</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;" id="reco-tabs">
+      <button onclick="showReco('bakery',this)" class="reco-tab" id="rtbtn-bakery" style="padding:8px 14px;border:1.5px solid var(--green-pale);border-radius:20px;background:transparent;font-family:inherit;font-size:.8rem;cursor:pointer;color:#555;transition:all .2s;">🥐 <span id="rt-bakery">Φούρνοι</span></button>
+      <button onclick="showReco('brunch',this)" class="reco-tab" id="rtbtn-brunch" style="padding:8px 14px;border:1.5px solid var(--green-pale);border-radius:20px;background:transparent;font-family:inherit;font-size:.8rem;cursor:pointer;color:#555;transition:all .2s;">🍳 <span id="rt-brunch">Brunch</span></button>
+      <button onclick="showReco('fish',this)" class="reco-tab" id="rtbtn-fish" style="padding:8px 14px;border:1.5px solid var(--green-pale);border-radius:20px;background:transparent;font-family:inherit;font-size:.8rem;cursor:pointer;color:#555;transition:all .2s;">🐟 <span id="rt-fish">Ψάρι</span></button>
+      <button onclick="showReco('meat',this)" class="reco-tab" id="rtbtn-meat" style="padding:8px 14px;border:1.5px solid var(--green-pale);border-radius:20px;background:transparent;font-family:inherit;font-size:.8rem;cursor:pointer;color:#555;transition:all .2s;">🥩 <span id="rt-meat">Κρέας</span></button>
+      <button onclick="showReco('drinks',this)" class="reco-tab" id="rtbtn-drinks" style="padding:8px 14px;border:1.5px solid var(--green-pale);border-radius:20px;background:transparent;font-family:inherit;font-size:.8rem;cursor:pointer;color:#555;transition:all .2s;">☕ <span id="rt-drinks">Καφέ</span></button>
+      <button onclick="showReco('beach',this)" class="reco-tab" id="rtbtn-beach" style="padding:8px 14px;border:1.5px solid var(--green-pale);border-radius:20px;background:transparent;font-family:inherit;font-size:.8rem;cursor:pointer;color:#555;transition:all .2s;">🏖️ <span id="rt-beach">Beach Bar</span></button>
+      <button onclick="showReco('taxi',this)" class="reco-tab" id="rtbtn-taxi" style="padding:8px 14px;border:1.5px solid var(--green-pale);border-radius:20px;background:transparent;font-family:inherit;font-size:.8rem;cursor:pointer;color:#555;transition:all .2s;">🚕 <span id="rt-taxi">Taxi</span></button>
+    </div>
+    <div id="reco-content" style="display:none;">
+      <div id="rc-bakery" class="reco-panel" style="display:none;">
+        <div class="rule-item"><span class="rule-icon">🥐</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-artos">Άρτος</div><a href="https://share.google/yWTF1vknMswmGCGgP" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🥐</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-familys">Family's</div><a href="https://share.google/aPn2uAtd52Atl7BEY" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🥐</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-papa">Παπαλαμπίδης <span style="font-size:.72rem;color:var(--gray);" id="mugatsas-label">(μουγάτσες)</span></div><a href="https://share.google/glYRSB6ufa9OkM7JQ" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🥐</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-zafras">Ζάφρας</div><a href="https://share.google/ZBbRVBgupmUCWeWMF" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+      </div>
+      <div id="rc-brunch" class="reco-panel" style="display:none;">
+        <div class="rule-item"><span class="rule-icon">🍳</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-zopyron">Ζόπυρον</div><a href="https://share.google/jIaWn90QMRCS6zyFh" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+      </div>
+      <div id="rc-fish" class="reco-panel" style="display:none;">
+        <div class="rule-item"><span class="rule-icon">🐟</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-zourafa">Ζουράφα</div><a href="https://share.google/YyP4kTBfYHXcneuLy" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🐟</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-katse">Κάτσε Καλά</div><a href="https://share.google/8Zlpub21ihwldd1OB" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🐟</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-agios">Αη Γιώργης</div><a href="https://share.google/8mz0mYMUvWeHIChSC" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+      </div>
+      <div id="rc-meat" class="reco-panel" style="display:none;">
+        <div class="rule-item"><span class="rule-icon">🥩</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-loukoulos">Λούκουλος</div><a href="https://share.google/ZNFd3CFGkBmF4kU9i" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🥩</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-tsitsiko">Τσιτσίκο</div><a href="https://share.google/BlruOJueDbMf5zd9f" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+      </div>
+      <div id="rc-drinks" class="reco-panel" style="display:none;">
+        <div class="rule-item"><span class="rule-icon">🍷</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="n-solo">Σόλο</div><a href="https://share.google/7MRguiRotQ6palykh" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🍷</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;">Fleur de Lis</div><a href="https://share.google/wSjADQyofIi4NCAkl" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🍷</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;">Cohen</div><a href="https://share.google/ZQ2kOrCOUs3WKhSw7" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">☕</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;">Kerouac</div><a href="https://share.google/VRhZ076JwuewD9wYX" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+      </div>
+      <div id="rc-beach" class="reco-panel" style="display:none;">
+        <div class="rule-item"><span class="rule-icon">🏖️</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;">Baja Beach Bar</div><a href="https://share.google/p5jWkXpM2fa0fjy23" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🏖️</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;">Nãma Beach Life Experience</div><a href="https://maps.app.goo.gl/xGq6HyvS29fLSpcVA" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🏖️</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;">Thea Thalassa-Cavo</div><a href="https://maps.app.goo.gl/6aJviKET7zBrDKg56" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+        <div class="rule-item"><span class="rule-icon">🏖️</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;">Xarama Seaside Luxury</div><a href="https://maps.app.goo.gl/SWrZYVBHKYVP4H8H9" target="_blank" style="font-size:.72rem;color:var(--green);">📍 Google Maps</a></div></div>
+      </div>
+      <div id="rc-taxi" class="reco-panel" style="display:none;">
+        <div class="rule-item"><span class="rule-icon">🚕</span><div style="flex:1;"><div style="font-weight:500;font-size:.85rem;" id="taxi-label">Ταξί Αλεξανδρούπολης</div><a href="tel:2551033500" style="font-size:.85rem;color:var(--green);font-weight:600;">📞 25510 33500</a></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📞</div>
+      <div class="section-title" id="contact-title">Επικοινωνία & Έκτακτα</div>
+    </div>
+
+    <div class="contact-box" style="margin-bottom:16px;">
+      <div class="contact-avatar">👨‍💼</div>
+      <div>
+        <div class="contact-name">Napoleon</div>
+        <div class="contact-role" id="contact-role">Ιδιοκτήτης — SnappyB Retreats</div>
+        <div class="contact-btns">
+          <a href="https://wa.me/306979892937" class="contact-btn wa">WhatsApp</a>
+          <a href="viber://chat?number=+306979892937" class="contact-btn vb">Viber</a>
+          <a href="tel:+306979892937" class="contact-btn ph">📞</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--gray); margin-bottom:8px;" id="emergency-title">Αριθμοί Έκτακτης Ανάγκης</div>
+    <div class="emergency-grid">
+      <a href="tel:112" class="emergency-card">
+        <div class="e-icon">🚨</div>
+        <div class="e-label" id="e-emergency">Έκτακτη Ανάγκη</div>
+        <div class="e-number">112</div>
+      </a>
+      <a href="tel:100" class="emergency-card">
+        <div class="e-icon">👮</div>
+        <div class="e-label" id="e-police">Αστυνομία</div>
+        <div class="e-number">100</div>
+      </a>
+      <a href="tel:166" class="emergency-card">
+        <div class="e-icon">🚑</div>
+        <div class="e-label" id="e-ambulance">Ασθενοφόρο</div>
+        <div class="e-number">166</div>
+      </a>
+      <a href="tel:199" class="emergency-card">
+        <div class="e-icon">🚒</div>
+        <div class="e-label" id="e-fire">Πυροσβεστική</div>
+        <div class="e-number">199</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="guide-footer">
+  <div class="footer-brand">🌿 SnappyB Retreats</div>
+  Αλεξανδρούπολη, Ελλάδα
+</div>
+
+<script>
+let currentLang = 'el';
+let currentProperty = 'living';
+let activeRecoTab = null;
+const RECO_TABS = {"el": {"bakery": "Φούρνοι", "brunch": "Brunch", "fish": "Ψάρι", "meat": "Κρέας", "drinks": "Καφέ", "taxi": "Taxi", "beach": "Beach Bar"}, "en": {"bakery": "Bakeries", "brunch": "Brunch", "fish": "Seafood", "meat": "Meat", "drinks": "Café", "taxi": "Taxi", "beach": "Beach Bar"}, "tr": {"bakery": "Fırınlar", "brunch": "Brunch", "fish": "Deniz Ürünleri", "meat": "Et", "drinks": "Kafe", "taxi": "Taksi", "beach": "Plaj Bar"}, "bg": {"bakery": "Фурни", "brunch": "Бранч", "fish": "Риба", "meat": "Месо", "drinks": "Кафе", "taxi": "Такси", "beach": "Плажен бар"}, "ro": {"bakery": "Brutării", "brunch": "Brunch", "fish": "Pește", "meat": "Carne", "drinks": "Cafea", "taxi": "Taxi", "beach": "Bar de plajă"}};
+
+function showReco(cat, btn) {
+  if(activeRecoTab === cat) {
+    document.getElementById('rc-'+cat).style.display = 'none';
+    document.getElementById('reco-content').style.display = 'none';
+    btn.style.background = 'transparent';
+    btn.style.borderColor = 'var(--green-pale)';
+    btn.style.color = '#555';
+    btn.style.fontWeight = '500';
+    activeRecoTab = null;
+    return;
+  }
+  document.querySelectorAll('.reco-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.reco-tab').forEach(b => {
+    b.style.background = 'transparent';
+    b.style.borderColor = 'var(--green-pale)';
+    b.style.color = '#555';
+    b.style.fontWeight = '500';
+  });
+  document.getElementById('rc-'+cat).style.display = 'block';
+  document.getElementById('reco-content').style.display = 'block';
+  btn.style.background = 'var(--green)';
+  btn.style.borderColor = 'var(--green)';
+  btn.style.color = 'white';
+  btn.style.fontWeight = '700';
+  activeRecoTab = cat;
+}
+
+const CONTENT = {
+  el: {
+    welcomeTitle: 'Καλώς ήρθατε!',
+    welcomeText: 'Χαιρόμαστε που θα σας φιλοξενήσουμε. Αυτός ο οδηγός έχει όλα όσα χρειάζεστε για μια υπέροχη διαμονή.',
+    checkinTitle: 'Check-in & Check-out',
+    checkinLabel: 'Check-in',
+    checkoutLabel: 'Check-out',
+    checkinNote: '⏰ Ώρα άφιξης από τις 15:00. Αναχώρηση έως τις 11:00. Για early check-in ή late check-out επικοινωνήστε μαζί μας.',
+    rulesTitle: 'Κανόνες Σπιτιού',
+    rules: [
+      ['🚭', 'Απαγορεύεται αυστηρά το κάπνισμα μέσα στο διαμέρισμα. Το κτήριο είναι εξοπλισμένο με ανιχνευτές καπνού.'],
+      ['🔇', 'Παρακαλούμε τηρείτε ησυχία μετά τις 22:00.'],
+      ['🐾', 'Δεν επιτρέπονται κατοικίδια χωρίς προηγούμενη συνεννόηση.'],
+      ['🗑️', 'Παρακαλούμε χρησιμοποιείτε τους κάδους ανακύκλωσης.'],
+      ['✅', 'Επιβεβαιώστε την άφιξή σας στέλνοντας "we are home".']
+    ],
+    contactTitle: 'Επικοινωνία & Έκτακτα',
+    contactRole: 'Ιδιοκτήτης — SnappyB Retreats',
+    emergencyTitle: 'Αριθμοί Έκτακτης Ανάγκης',
+    eEmergency: 'Έκτακτη Ανάγκη', ePolice: 'Αστυνομία', eAmbulance: 'Ασθενοφόρο', eFire: 'Πυροσβεστική',
+    locationTitle: 'Τοποθεσία',
+    locationDescP: 'Βρισκόμαστε στην καρδιά της Αλεξανδρούπολης, κοντά σε όλα τα αξιοθέατα, εστιατόρια και καταστήματα.',
+    locationDescL: 'Βρισκόμαστε κοντά στο κέντρο της Αλεξανδρούπολης με εύκολη πρόσβαση σε όλα τα σημεία ενδιαφέροντος.',
+    mapLink: '🗺️ Άνοιγμα στο Google Maps',
+    addressP: '📍 Πέττα 14, Αλεξανδρούπολη',
+    addressL: '📍 Πέττα 14, Αλεξανδρούπολη',
+    parkingText: '🅿️ Διαθέτουμε 2 ιδιωτικές θέσεις στάθμευσης (πρώτος αφίχθη, πρώτος εξυπηρετείται). Υπάρχει επίσης ένας επιπλέον δωρεάν χώρος στάθμευσης στη γωνία, καθώς και δωρεάν στάθμευση στον δρόμο απέναντι — απλώς προσέξτε να μην μπλοκάρετε ιδιωτικές θέσεις.',
+    servicesTitle: 'Υπηρεσίες',
+    laundryText: 'Πλυντήριο & στεγνωτήριο διαθέσιμα δωρεάν στον 3ο όροφο.'
+  },
+  en: {
+    welcomeTitle: 'Welcome!',
+    welcomeText: 'We\'re delighted to host you. This guide has everything you need for a wonderful stay.',
+    checkinTitle: 'Check-in & Check-out',
+    checkinLabel: 'Check-in',
+    checkoutLabel: 'Check-out',
+    checkinNote: '⏰ Check-in from 15:00. Check-out by 11:00. Contact us for early check-in or late check-out.',
+    rulesTitle: 'House Rules',
+    rules: [
+      ['🚭', 'Smoking is strictly prohibited inside the apartment. The building is equipped with smoke detectors.'],
+      ['🔇', 'Please keep noise levels down after 22:00.'],
+      ['🐾', 'Pets are not allowed without prior arrangement.'],
+      ['🗑️', 'Please use the recycling bins provided.'],
+      ['✅', 'Confirm your arrival by sending "we are home".']
+    ],
+    contactTitle: 'Contact & Emergency',
+    contactRole: 'Owner — SnappyB Retreats',
+    emergencyTitle: 'Emergency Numbers',
+    eEmergency: 'Emergency', ePolice: 'Police', eAmbulance: 'Ambulance', eFire: 'Fire Brigade',
+    locationTitle: 'Location',
+    locationDescP: 'We are located in the heart of Alexandroupolis, close to all attractions, restaurants and shops.',
+    locationDescL: 'We are located near the center of Alexandroupolis with easy access to all points of interest.',
+    mapLink: '🗺️ Open in Google Maps',
+    addressP: '📍 Moschonesion 28A, Alexandroupolis',
+    addressL: '📍 Petta 14, Alexandroupolis',
+    parkingText: '🅿️ We have 2 private parking spots (first come, first served). There is also an additional free parking area on the corner, plus free street parking across the street — just please do not block any private driveways.',
+    servicesTitle: 'Services',
+    laundryText: 'Washing machine & dryer available free of charge on the 3rd floor.'
+  },
+  tr: {
+    welcomeTitle: 'Hoş Geldiniz!',
+    welcomeText: 'Sizi ağırlamaktan mutluluk duyuyoruz. Bu rehber, harika bir konaklama için ihtiyacınız olan her şeyi içermektedir.',
+    checkinTitle: 'Giriş & Çıkış',
+    checkinLabel: 'Giriş',
+    checkoutLabel: 'Çıkış',
+    checkinNote: '⏰ Giriş saati 15:00\'den itibaren. Çıkış en geç 11:00\'e kadar. Erken giriş veya geç çıkış için bizimle iletişime geçin.',
+    rulesTitle: 'Ev Kuralları',
+    rules: [
+      ['🚭', 'Dairede sigara içmek kesinlikle yasaktır. Bina duman dedektörleriyle donatılmıştır.'],
+      ['🔇', 'Lütfen 22:00\'den sonra sessiz olunuz.'],
+      ['🐾', 'Önceden anlaşma yapılmadan evcil hayvan kabul edilmemektedir.'],
+      ['🗑️', 'Lütfen geri dönüşüm kutularını kullanınız.'],
+      ['✅', '"we are home" mesajı göndererek varışınızı onaylayın.']
+    ],
+    contactTitle: 'İletişim & Acil Durum',
+    contactRole: 'Sahibi — SnappyB Retreats',
+    emergencyTitle: 'Acil Numaralar',
+    eEmergency: 'Acil Durum', ePolice: 'Polis', eAmbulance: 'Ambulans', eFire: 'İtfaiye',
+    locationTitle: 'Konum',
+    locationDescP: 'Alexandroupolis\'in kalbinde, tüm turistik yerlere, restoranlara ve mağazalara yakın konumdayız.',
+    locationDescL: 'Tüm ilgi noktalarına kolay erişim sağlayan Alexandroupolis merkezine yakın konumdayız.',
+    mapLink: '🗺️ Google Maps\'te Aç',
+    addressP: '📍 Moschonesion 28A, Aleksandrupolis',
+    addressL: '📍 Petta 14, Aleksandrupolis',
+    parkingText: '🅿️ 2 özel park yerimiz mevcuttur (ilk gelen alır). Köşede ayrıca ek bir ücretsiz otopark alanı ve karşı sokakta ücretsiz sokak parkı da mevcuttur — lütfen özel araç yollarını kapatmayın.',
+    servicesTitle: 'Hizmetler',
+    laundryText: '3. katta ücretsiz çamaşır makinesi ve kurutma makinesi mevcuttur.'
+  },
+  bg: {
+    welcomeTitle: 'Добре дошли!',
+    welcomeText: 'Радваме се да ви посрещнем. Това ръководство съдържа всичко необходимо за прекрасен престой.',
+    checkinTitle: 'Настаняване & Напускане',
+    checkinLabel: 'Настаняване',
+    checkoutLabel: 'Напускане',
+    checkinNote: '⏰ Настаняване от 15:00 ч. Напускане до 11:00 ч. За ранно настаняване или късно напускане се свържете с нас.',
+    rulesTitle: 'Домашни Правила',
+    rules: [
+      ['🚭', 'Пушенето в апартамента е строго забранено. Сградата е оборудвана с детектори за дим.'],
+      ['🔇', 'Моля спазвайте тишина след 22:00 ч.'],
+      ['🐾', 'Домашни любимци не се допускат без предварителна уговорка.'],
+      ['🗑️', 'Моля използвайте кошчетата за рециклиране.'],
+      ['✅', 'Потвърдете пристигането си като изпратите "we are home".']
+    ],
+    contactTitle: 'Контакт & Спешни случаи',
+    contactRole: 'Собственик — SnappyB Retreats',
+    emergencyTitle: 'Спешни Номера',
+    eEmergency: 'Спешна помощ', ePolice: 'Полиция', eAmbulance: 'Линейка', eFire: 'Пожарна',
+    locationTitle: 'Местоположение',
+    locationDescP: 'Намираме се в сърцето на Александруполис, близо до всички забележителности, ресторанти и магазини.',
+    locationDescL: 'Намираме се близо до центъра на Александруполис с лесен достъп до всички интересни места.',
+    mapLink: '🗺️ Отвори в Google Maps',
+    addressP: '📍 Moschonesion 28A, Александруполис',
+    addressL: '📍 Petta 14, Александруполис',
+    parkingText: '🅿️ Разполагаме с 2 частни паркоместа (на принципа първи дошъл, първи обслужен). Има и допълнително безплатно място за паркиране на ъгъла, както и безплатно улично паркиране отсреща — моля, не блокирайте частни входове.',
+    servicesTitle: 'Услуги',
+    laundryText: 'Перална машина и сушилня са на разположение безплатно на 3-тия етаж.'
+  },
+  ro: {
+    welcomeTitle: 'Bun venit!',
+    welcomeText: 'Suntem încântați să vă găzduim. Acest ghid conține tot ce aveți nevoie pentru un sejur minunat.',
+    checkinTitle: 'Check-in & Check-out',
+    checkinLabel: 'Check-in',
+    checkoutLabel: 'Check-out',
+    checkinNote: '⏰ Check-in de la ora 15:00. Check-out până la ora 11:00. Contactați-ne pentru check-in timpuriu sau check-out târziu.',
+    rulesTitle: 'Regulile Casei',
+    rules: [
+      ['🚭', 'Fumatul în apartament este strict interzis. Clădirea este echipată cu detectoare de fum.'],
+      ['🔇', 'Vă rugăm să mențineți liniștea după ora 22:00.'],
+      ['🐾', 'Animalele de companie nu sunt permise fără o înțelegere prealabilă.'],
+      ['🗑️', 'Vă rugăm să folosiți coșurile de reciclare.'],
+      ['✅', 'Confirmați sosirea trimițând mesajul "we are home".']
+    ],
+    contactTitle: 'Contact & Urgențe',
+    contactRole: 'Proprietar — SnappyB Retreats',
+    emergencyTitle: 'Numere de Urgență',
+    eEmergency: 'Urgență', ePolice: 'Poliție', eAmbulance: 'Ambulanță', eFire: 'Pompieri',
+    locationTitle: 'Locație',
+    locationDescP: 'Suntem situați în inima orașului Alexandroupolis, aproape de toate atracțiile, restaurantele și magazinele.',
+    locationDescL: 'Suntem situați aproape de centrul orașului Alexandroupolis, cu acces facil la toate punctele de interes.',
+    mapLink: '🗺️ Deschide în Google Maps',
+    addressP: '📍 Moschonesion 28A, Alexandroupolis',
+    addressL: '📍 Petta 14, Alexandroupolis',
+    parkingText: '🅿️ Avem 2 locuri de parcare private (primul venit, primul servit). Există și o zonă suplimentară de parcare gratuită la colț, plus parcare stradală gratuită vizavi — vă rugăm să nu blocați intrările private.',
+    servicesTitle: 'Servicii',
+    laundryText: 'Mașină de spălat și uscător disponibile gratuit la etajul 3.'
+  }
+};
+
+const PROPERTIES = {
+  living: {
+    mapUrl: 'https://maps.app.goo.gl/ye4H3GmRg9Sg1pbV8',
+    showParking: true,
+    isKeyless: false
+  }
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['el','en','tr','bg','ro'][i] === lang);
+  });
+  render();
+}
+
+function render() {
+  const c = CONTENT[currentLang];
+  const p = PROPERTIES[currentProperty];
+
+  document.getElementById('welcome-title').textContent = c.welcomeTitle;
+  document.getElementById('welcome-text').textContent = c.welcomeText;
+  document.getElementById('property-address').textContent = c.addressL;
+
+  document.getElementById('checkin-title').textContent = c.checkinTitle;
+  document.getElementById('checkin-label').textContent = c.checkinLabel;
+  document.getElementById('checkout-label').textContent = c.checkoutLabel;
+  document.getElementById('checkin-note').textContent = c.checkinNote;
+
+  document.getElementById('rules-title').textContent = c.rulesTitle;
+  document.getElementById('rules-list').innerHTML = c.rules.map(([icon, text]) =>
+    `<div class="rule-item"><span class="rule-icon">${icon}</span><span>${text}</span></div>`
+  ).join('');
+
+  document.getElementById('contact-title').textContent = c.contactTitle;
+  document.getElementById('contact-role').textContent = c.contactRole;
+  document.getElementById('emergency-title').textContent = c.emergencyTitle;
+  document.getElementById('e-emergency').textContent = c.eEmergency;
+  document.getElementById('e-police').textContent = c.ePolice;
+  document.getElementById('e-ambulance').textContent = c.eAmbulance;
+  document.getElementById('e-fire').textContent = c.eFire;
+
+  document.getElementById('reco-title').textContent = currentLang === 'el' ? 'Προτάσεις' : 'Our Recommendations';
+  document.getElementById('taxi-label').textContent = currentLang === 'el' ? 'Ταξί Αλεξανδρούπολης' : 'Alexandroupolis Taxi';
+  document.getElementById('mugatsas-label').textContent = currentLang === 'el' ? '(μουγάτσες)' : '(local pastry)';
+
+  const isEl = currentLang === 'el';
+  document.getElementById('n-artos').textContent = isEl ? 'Άρτος' : 'Artos';
+  document.getElementById('n-familys').textContent = "Family's";
+  document.getElementById('n-papa').childNodes[0].textContent = isEl ? 'Παπαλαμπίδης ' : 'Papalampidis ';
+  document.getElementById('n-zafras').textContent = isEl ? 'Ζάφρας' : 'Zafras';
+  document.getElementById('n-zopyron').textContent = isEl ? 'Ζόπυρον' : 'Zopyron';
+  document.getElementById('n-zourafa').textContent = isEl ? 'Ζουράφα' : 'Zourafa';
+  document.getElementById('n-katse').textContent = isEl ? 'Κάτσε Καλά' : 'Katse Kala';
+  document.getElementById('n-agios').textContent = isEl ? 'Αη Γιώργης' : 'St George';
+  document.getElementById('n-loukoulos').textContent = isEl ? 'Λούκουλος' : 'Loukoulos';
+  document.getElementById('n-tsitsiko').textContent = isEl ? 'Τσιτσίκο' : 'Tsitsiko';
+  document.getElementById('n-solo').textContent = isEl ? 'Σόλο' : 'Solo';
+
+  document.getElementById('location-title').textContent = c.locationTitle;
+  document.getElementById('location-desc').textContent = c.locationDescL;
+  document.getElementById('map-link').textContent = c.mapLink;
+  document.getElementById('map-link').href = p.mapUrl;
+
+  document.getElementById('services-section').style.display = 'none';
+  document.getElementById('services-title').textContent = c.servicesTitle;
+  document.getElementById('laundry-text').textContent = c.laundryText;
+
+  const parkingBox = document.getElementById('parking-box');
+  parkingBox.style.display = p.showParking ? 'block' : 'none';
+  if (p.showParking) document.getElementById('parking-text').textContent = c.parkingText;
+
+  const rt = RECO_TABS[currentLang] || RECO_TABS['el'];
+  document.getElementById('rt-bakery').textContent = rt.bakery;
+  document.getElementById('rt-brunch').textContent = rt.brunch;
+  document.getElementById('rt-fish').textContent   = rt.fish;
+  document.getElementById('rt-meat').textContent   = rt.meat;
+  document.getElementById('rt-drinks').textContent = rt.drinks;
+  document.getElementById('rt-beach').textContent  = rt.beach;
+  document.getElementById('rt-taxi').textContent   = rt.taxi;
+}
+
+render();
+</script>
+</body>
+</html>
