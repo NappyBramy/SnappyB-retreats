@@ -1373,7 +1373,7 @@ function saveSubRevenue(i,row){
   const btn=document.querySelector(`[onclick="saveSubRevenue(${i},${row})"]`);
   if(btn){btn.style.background='#8e8e93';btn.textContent='✅ Αποθηκεύτηκε';btn.disabled=true;}
 }
-function openWA(i){const t=g('smsg-'+i)?.textContent||'';window.location.href='whatsapp://send?phone=306979892930&text='+encodeURIComponent(t);}
+function openWA(i){const t=g('smsg-'+i)?.textContent||'';window.location.href='whatsapp://send?phone=306979892937&text='+encodeURIComponent(t);}
 function copySubMsg(i){const t=g('smsg-'+i)?.textContent||'';if(navigator.clipboard)navigator.clipboard.writeText(t);else{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);}alert('✅ Αντιγράφηκε!');}
 function markSent(i,row){
   subStates[row]={...subStates[row],sent:true,sentAt:greeceToday()};
